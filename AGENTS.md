@@ -36,54 +36,91 @@
 
 ```
 D:\code\html\Project\AI chat\Jarvis\
-├── backend/                       # Python Flask API Microservices
-│   ├── api/
-│   │   ├── ai.py                  # Gemini API routing & backend fallback bridge
-│   │   ├── auth.py                # Biometric face detection, OTP (Email/SMS), MongoDB & JSON auth
-│   │   ├── calls.py               # Encrypted communications & mail dispatch routes
-│   │   ├── chat.py                # Chat log persistence & SQLite/JSON database routes
-│   │   ├── code.py                # Competitive programming & Code Interpreter execution router
-│   │   ├── files.py               # Disk upload and dataset file management
-│   │   ├── system.py              # CPU/RAM/Thermal telemetry, shell command executor, config sync
-│   │   └── weather.py             # Global atmospheric weather data resolver
-│   ├── automation/
-│   │   └── os_controls.py         # Native Windows OS subprocess automation (apps, audio, power)
-│   ├── data/
-│   │   └── users.json             # Persistent local user account records
-│   ├── database/
-│   │   └── db_manager.py          # Chat history database manager
-│   └── server.py                  # Primary Flask backend server entry point (Port 5000)
+├── backend/                       # Python Flask API Microservices (Port 5000)
+│   ├── api/                       # REST Blueprints (ai, auth, calls, chat, code, files, system, weather)
+│   ├── automation/                # Native OS controls, media playback, hardware telemetry
+│   ├── data/                      # Local user records (users.json.example)
+│   ├── database/                  # SQLite/JSON chat history & database manager
+│   ├── config.py                  # Backend server configuration
+│   └── server.py                  # Primary Flask backend server entry point
 │
-├── frontend/                      # Web HUD & Tactical Interface
+├── frontend/                      # Web HUD & Tactical Interface (Port 8080)
 │   ├── index.html                 # Main HUD Dashboard (Arc Reactor, Chat Feed, Side Drawer, Modals)
 │   ├── auth.html                  # Standalone Tactical Intelligence Biometric Auth Terminal
+│   ├── favicon.ico                # App Favicon
 │   ├── css/                       # Modular CSS stylesheets (HUD, Glassmorphism, animations, lockscreen)
-│   ├── js/
-│   │   ├── ai.js                  # Gemini AI connector, Pollinations 4K Flux generator, knowledge fallback
-│   │   ├── animations.js          # Interactive particle mesh canvas & click ripple physics
-│   │   ├── app.js                 # Boot loader sequencer & global DOM event bindings
-│   │   ├── chat.js                # Message bubbles, Prism code blocks, 4K artwork bubbles, PDF export
-│   │   ├── commands.js            # Natural language & voice command parser / intent router
-│   │   ├── dashboard.js           # Live diagnostic polling (/api/system/command), telemetry widgets
-│   │   ├── lockscreen.js          # Optical face scan overlay, webcam stream, PIN fallback (3000)
-│   │   ├── settings.js            # 360° Color Wheel, theme presets, API key sync, voice volume slider
-│   │   ├── storage.js             # LocalStorage wrapper utilities
-│   │   ├── utils.js               # Global UI modal handlers, Web Audio tone synthesizers, state vars
-│   │   ├── voice.js               # Web Speech STT (SpeechRecognition) & TTS (SpeechSynthesis / Cloud TTS)
-│   │   └── weather.js             # Weather widget synchronization
-│   └── assets/                    # HUD icons, Arc Reactor animations, avatar images
+│   ├── js/                        # Frontend modules (ai, voice, commands, dashboard, lockscreen, settings)
+│   └── assets/                    # HUD icons, Arc Reactor animations, avatar images, sounds
 │
-├── config/
-│   └── api_keys.json              # Backend API keys and assistant configuration
-├── actions/
-│   └── code_helper.py             # Automated code execution sandbox
-├── docs/                          # Comprehensive technical documentation
+├── core/                          # Multimodal Live Engines (STT, TTS, LLM Orchestration)
+│   ├── __init__.py                # Package exports
+│   ├── llm.py                     # LLM orchestration client (Gemini, Ollama, OpenAI)
+│   ├── prompt.txt                 # Master system prompt definitions
+│   ├── stt.py                     # Offline Whisper & Vosk Speech-to-Text
+│   ├── tts.py                     # EdgeTTS, Kokoro, ElevenLabs Text-to-Speech
+│   ├── installer.py               # Dynamic dependency installer
+│   └── startup.py                 # Core startup sequence
+│
+├── actions/                       # Native Agent Tool Execution Handlers
+│   ├── __init__.py                # Canonical tool exports
+│   ├── browser_control.py         # Playwright browser automation
+│   ├── code_helper.py             # Python sandbox & competitive programming
+│   ├── computer_control.py        # System control & process supervisor
+│   ├── computer_settings.py       # Windows settings & audio controls
+│   ├── desktop.py                 # Desktop file & window management
+│   ├── dev_agent.py               # Autonomous developer workflow agent
+│   ├── file_controller.py         # Safe filesystem controller & search
+│   ├── flight_finder.py           # Flight & travel lookups
+│   ├── game_updater.py            # Game launcher & patch supervisor
+│   ├── messaging.py               # Secure message & mail dispatch
+│   ├── music.py                   # Media playback with dynamic fallback
+│   ├── open_app.py                # Application & URI launcher
+│   ├── proactive.py               # Proactive background monitoring engine
+│   ├── reminder.py                # Task scheduler & reminder notifications
+│   ├── screen_processor.py        # Camera & screen capture OCR/vision
+│   ├── system_monitor.py          # Real-time hardware telemetry
+│   ├── weather.py                 # Weather data provider
+│   ├── web_search.py              # Web search & news intelligence
+│   └── youtube.py                 # YouTube streaming & transcript extractor
+│
+├── memory/                        # Context & Configuration Management
+│   ├── __init__.py
+│   ├── config_manager.py          # Configuration & API key loader
+│   ├── memory_manager.py          # Conversation memory persistence
+│   └── user_profile.json          # Default user state
+│
+├── config/                        # Shared Configuration & Icons
+│   ├── __init__.py
+│   ├── api_keys.json.example      # Sample configuration blueprint
+│   ├── environment.py             # Cross-platform environment resolution
+│   └── jarvis.ico                 # App Icon
+│
+├── docs/                          # Comprehensive Technical Documentation
 │   ├── API_DOCUMENTATION.md       # Complete REST API reference
-│   ├── DEVELOPER_GUIDE.md         # Developer onboarding & extension handbook
-│   └── DESIGN.md                  # Interface visual & UI/UX design specifications
-├── AGENTS.md                      # THIS FILE (AI Agent primary context)
+│   ├── ARCHITECTURE.md            # System Architecture & diagrams
+│   ├── DESIGN.md                  # HUD Design Specifications & Color Palettes
+│   ├── DEVELOPER_GUIDE.md         # Developer setup & extension handbook
+│   ├── INSTALLATION.md            # Step-by-step installation & deployment
+│   ├── PYTHON_TUTORIAL.md         # Codebase tutorial & scripting guide
+│   └── USER_GUIDE.md              # User operation & voice command handbook
+│
+├── tests/                         # Automated Unit & Integration Tests
+│   ├── __init__.py
+│   ├── test_ai.py                 # AI & LLM provider tests
+│   ├── test_api.py                # Flask API routes tests
+│   ├── test_auth.py               # Authentication & OTP tests
+│   ├── test_backend.py            # Backend OS controls & diagnostics tests
+│   └── test_voice.py              # STT / TTS configuration tests
+│
+├── screenshots/                   # High-resolution HUD interface captures
+├── demo/                          # Demos & animated previews
+├── run_dashboard.py               # 🚀 Main Full-Stack Launcher (Port 5000 + Port 8080)
+├── main.py                        # 🎙️ Live Gemini Multimodal Audio Desktop Client
+├── ui.py                          # 🖥️ PyQt6 Sci-Fi Desktop Client UI
+├── setup.py                       # Standard Setuptools packaging
 ├── PROJECT_OVERVIEW.md            # Complete architectural overview
-└── run_dashboard.py               # Unified dual-server launcher (Flask + HTTP Server)
+├── README.md                      # GitHub repository presentation
+└── package.json                   # Project metadata & npm scripts
 ```
 
 ---

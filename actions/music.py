@@ -2,8 +2,9 @@ import os
 import random
 import platform
 import subprocess
+from pathlib import Path
 
-DEFAULT_MUSIC_DIR = r"C:\Users\seaem\Music\New folder\video"
+DEFAULT_MUSIC_DIR = os.environ.get("JARVIS_MUSIC_DIR", str(Path.home() / "Music"))
 
 def get_track_list(directory: str = DEFAULT_MUSIC_DIR) -> list[str]:
     """Returns a list of all audio and video file paths in the target directory."""

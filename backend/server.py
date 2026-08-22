@@ -37,7 +37,7 @@ def home():
         "version": "3.2.0"
     })
 
-if __name__ == '__main__':
+def main():
     print("==================================================================")
     print(" J.A.R.V.I.S. AUTOMATED COGNITIVE BACKEND SERVER v3.2.0             ")
     print("==================================================================")
@@ -45,3 +45,6 @@ if __name__ == '__main__':
     host = os.getenv("FLASK_HOST", "0.0.0.0")
     port = int(os.getenv("FLASK_PORT", 5000))
     app.run(host=host, port=port, debug=True, use_reloader=False)
+
+if __name__ == '__main__':
+    main()

@@ -85,101 +85,80 @@ JARVIS-AI/
 │       ├── dashboard.js
 │       ├── weather.js
 │       ├── lockscreen.js
+│       ├── reactor3d.js
 │       ├── settings.js
 │       ├── storage.js
 │       ├── animations.js
 │       └── utils.js
 │
 ├── backend/
-│   ├── server.py
+│   ├── server.py                   # Flask API entry point (Port 5000)
 │   ├── config.py
-│   │
-│   ├── api/
-│   │   ├── auth.py
-│   │   ├── chat.py
-│   │   ├── system.py
-│   │   ├── weather.py
-│   │   ├── calls.py
-│   │   ├── files.py
-│   │   └── ai.py
-│   │
-│   ├── automation/
-│   │   ├── browser.py
-│   │   ├── calculator.py
-│   │   ├── desktop.py
-│   │   ├── media.py
-│   │   ├── screenshot.py
-│   │   └── system_control.py
-│   │
-│   ├── database/
-│   │   ├── chat_history.json
-│   │   ├── settings.json
-│   │   ├── favorites.json
-│   │   └── reminders.json
-│   │
-│   └── models/
-│       ├── face_auth.py
-│       ├── diagnostics.py
-│       └── ai_engine.py
+│   ├── api/                        # REST Blueprints (Auth, Chat, System, Weather, AI, Files, Code)
+│   ├── automation/                 # OS automation, media & hardware telemetry
+│   ├── database/                   # Chat history database manager
+│   └── data/                       # Local account records
 │
 ├── core/
-│   ├── llm.py
-│   ├── speech_to_text.py
-│   ├── text_to_speech.py
-│   ├── memory_manager.py
+│   ├── __init__.py
+│   ├── llm.py                      # LLM provider orchestration
+│   ├── prompt.txt                  # System prompt definitions
+│   ├── stt.py                      # Offline Whisper & Vosk STT
+│   ├── tts.py                      # EdgeTTS, Kokoro, ElevenLabs TTS
 │   ├── installer.py
 │   └── startup.py
 │
 ├── actions/
-│   ├── browser_control.py
-│   ├── desktop_control.py
-│   ├── weather.py
-│   ├── reminder.py
-│   ├── youtube.py
-│   ├── file_search.py
-│   ├── screen_capture.py
-│   ├── messaging.py
-│   └── music.py
+│   ├── __init__.py                 # Tool exports
+│   ├── browser_control.py          # Browser automation
+│   ├── code_helper.py              # Competitive programming sandbox
+│   ├── computer_control.py         # System control
+│   ├── computer_settings.py        # Windows settings
+│   ├── desktop.py                  # Desktop automation
+│   ├── dev_agent.py                # Developer agent
+│   ├── file_controller.py          # File management & search
+│   ├── flight_finder.py            # Travel search
+│   ├── game_updater.py             # Game supervisor
+│   ├── messaging.py                # Secure email & notifications
+│   ├── music.py                    # Audio/video playback
+│   ├── open_app.py                 # Application launcher
+│   ├── proactive.py                # Background proactive engine
+│   ├── reminder.py                 # Task reminders
+│   ├── screen_processor.py         # Vision & screen OCR
+│   ├── system_monitor.py           # Hardware telemetry
+│   ├── weather.py                  # Weather provider
+│   ├── web_search.py               # Web & news search
+│   └── youtube.py                  # YouTube streaming & transcripts
 │
 ├── memory/
-│   ├── conversation.json
-│   ├── user_profile.json
-│   ├── settings.json
-│   └── cache/
+│   ├── __init__.py
+│   ├── config_manager.py           # API key & setting resolver
+│   ├── memory_manager.py           # Conversation memory
+│   └── user_profile.json
 │
 ├── config/
-│   ├── api_keys.json
-│   ├── certificates/
-│   ├── prompts/
-│   └── environment.py
+│   ├── __init__.py
+│   ├── api_keys.json.example       # API configuration blueprint
+│   ├── environment.py              # Cross-platform environment resolution
+│   └── jarvis.ico                  # Application icon
 │
 ├── docs/
-│   ├── Project_Report.pdf
-│   ├── User_Guide.md
-│   ├── API_Documentation.md
-│   ├── Installation.md
-│   ├── Architecture.png
-│   └── Screenshots/
+│   ├── API_DOCUMENTATION.md        # REST API endpoint reference
+│   ├── ARCHITECTURE.md             # System architecture & diagrams
+│   ├── DESIGN.md                   # HUD Design & Theme specifications
+│   ├── DEVELOPER_GUIDE.md          # Developer onboarding guide
+│   ├── INSTALLATION.md             # Step-by-step setup handbook
+│   ├── PYTHON_TUTORIAL.md          # Python codebase tutorial
+│   └── USER_GUIDE.md               # User & voice commands handbook
 │
-├── screenshots/
-│   ├── boot-screen.png
-│   ├── login.png
-│   ├── dashboard.png
-│   ├── weather.png
-│   ├── automation.png
-│   ├── chat.png
-│   ├── voice.png
-│   └── settings.png
-│
-├── demo/
-│   ├── demo.mp4
-│   └── demo.gif
-│
-├── tests/
-│   ├── test_api.py
-│   ├── test_voice.py
-│   ├── test_ai.py
-│   └── test_backend.py
+├── screenshots/                    # High-resolution HUD interface captures
+├── demo/                           # Demos & animated previews
+├── tests/                          # Automated unit & integration tests
+├── run_dashboard.py                # 🚀 Unified Full-Stack Launcher (Backend + Web HUD)
+├── main.py                         # 🎙️ Live Audio Multimodal Desktop Client
+├── ui.py                           # 🖥️ PyQt6 Desktop Client GUI
+├── setup.py                        # Setuptools packaging specification
+└── package.json                    # Project metadata & npm scripts
 ```
 
 ### 2. Run a Local Server

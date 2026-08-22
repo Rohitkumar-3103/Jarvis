@@ -36,12 +36,12 @@ from memory.memory_manager import (
 from actions.file_processor import file_processor
 from actions.flight_finder     import flight_finder
 from actions.open_app          import open_app
-from actions.weather_report    import weather_action
-from actions.send_message      import send_message
+from actions.weather         import weather_action
+from actions.messaging       import send_message
 from actions.reminder          import reminder
 from actions.computer_settings import computer_settings
 from actions.screen_processor  import _capture_camera, _capture_screen
-from actions.youtube_video     import youtube_video
+from actions.youtube           import youtube_video
 from actions.desktop           import desktop_control
 from actions.browser_control   import browser_control
 from actions.file_controller   import file_controller

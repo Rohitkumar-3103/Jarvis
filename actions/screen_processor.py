@@ -283,14 +283,21 @@ class _VisionSession:
                     backoff = 2.0  
                     print("[Vision] ✅ Connected")
 
-                    async with asyncio.TaskGroup() as tg:
-                        tg.create_task(self._send_loop())
-                        tg.create_task(self._recv_loop())
-                        tg.create_task(self._play_loop())
+                    send_t = asyncio.create_task(self._send_loop())
+                    recv_t = asyncio.create_task(self._recv_loop())
+                    play_t = asyncio.create_task(self._play_loop())
+                    done, pending = await asyncio.wait(
+                        [send_t, recv_t, play_t],
+                        return_when=asyncio.FIRST_EXCEPTION,
+                    )
+                    for task in pending:
+                        task.cancel()
+                    for task in done:
+                        if task.exception():
+                            print(f"[Vision] ⚠️  Session task error: {task.exception()}")
 
-            except* Exception as eg:
-                for exc in eg.exceptions:
-                    print(f"[Vision] ⚠️  Session error: {exc}")
+            except Exception as eg:
+                print(f"[Vision] ⚠️  Session error: {eg}")
             finally:
                 self._session = None
                 self._ready_evt.clear()

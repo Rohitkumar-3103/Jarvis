@@ -1,8 +1,30 @@
 {
   "name": "jarvis-ai-os",
-  "version": "3.0.0",
-  "description": "Full Stack J.A.R.V.I.S. AI Assistant OS",
+  "version": "3.2.0",
+  "description": "J.A.R.V.I.S. AI OS — Tactical Sci-Fi HUD, Multimodal Cognition, 4K Image Gen & Autonomous OS Automation",
+  "main": "run_dashboard.py",
   "scripts": {
-    "start": "python run_dashboard.py"
+    "start": "python run_dashboard.py",
+    "dashboard": "python run_dashboard.py",
+    "backend": "python backend/server.py",
+    "desktop": "python main.py",
+    "test": "pytest",
+    "lint": "flake8 ."
+  },
+  "keywords": [
+    "jarvis",
+    "ai-assistant",
+    "hud",
+    "gemini",
+    "voice-assistant",
+    "scifi-ui",
+    "automation",
+    "flux-ai"
+  ],
+  "author": "Rohit Kumar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rohitkumar-3103/Jarvis.git"
   }
 }

@@ -12,13 +12,22 @@ import webbrowser
 from pathlib import Path
 from typing import Optional
 
-from playwright.async_api import (
-    async_playwright,
-    BrowserContext,
-    Page,
-    Playwright,
-    TimeoutError as PlaywrightTimeout,
-)
+try:
+    from playwright.async_api import (
+        async_playwright,
+        BrowserContext,
+        Page,
+        Playwright,
+        TimeoutError as PlaywrightTimeout,
+    )
+    _PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    _PLAYWRIGHT_AVAILABLE = False
+    async_playwright = None
+    BrowserContext = None
+    Page = None
+    Playwright = None
+    PlaywrightTimeout = TimeoutError
 _OS = platform.system()   # "Windows" | "Darwin" | "Linux"
 
 def _normalize_url(url: str) -> str:
