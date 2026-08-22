@@ -195,32 +195,62 @@ async function queryGeminiAPI(promptText) {
     updateCoreState('IDLE');
 }
 
-async function fetchWikipediaSummary(topic) {
-    if (!topic || topic.length < 2) return null;
+async function fetchOnlineIntelligence(query) {
+    const cleanTopic = query
+        .replace(/^what is the formula of\s+/i, '')
+        .replace(/^what is the formula for\s+/i, '')
+        .replace(/^what is the definition of\s+/i, '')
+        .replace(/^what is the meaning of\s+/i, '')
+        .replace(/^what is the\s+/i, '')
+        .replace(/^what is\s+/i, '')
+        .replace(/^what are\s+/i, '')
+        .replace(/^what does\s+/i, '')
+        .replace(/^explain\s+/i, '')
+        .replace(/^tell me about\s+/i, '')
+        .replace(/^define\s+/i, '')
+        .replace(/^meaning of\s+/i, '')
+        .replace(/^who is\s+/i, '')
+        .replace(/^who was\s+/i, '')
+        .replace(/\?/g, '')
+        .trim();
+
+    if (!cleanTopic || cleanTopic.length < 2) return null;
+
+    // 1. DuckDuckGo Instant Knowledge API
     try {
-        const cleanTitle = topic.replace(/[?.,!]/g, '').trim();
-        const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTitle)}`;
+        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
-        
-        const res = await fetch(url, { 
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch(ddgUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.AbstractText && data.AbstractText.length > 20) {
+                return `${data.AbstractText}, Sir.`;
+            }
+        }
+    } catch (e) {}
+
+    // 2. Wikipedia Encyclopedic REST API
+    try {
+        const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTopic)}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(wikiUrl, { 
             signal: controller.signal,
             headers: { 'Accept': 'application/json' }
         });
         clearTimeout(timeoutId);
-        
         if (res.ok) {
             const data = await res.json();
-            if (data.extract && data.type !== 'disambiguation') {
-                // Return first 2-3 sentences for clean speech & display
+            if (data.extract && data.type !== 'disambiguation' && data.extract.length > 20) {
                 const sentences = data.extract.split(/(?<=[.!?])\s+/);
                 const shortExtract = sentences.slice(0, 3).join(' ');
-                return `${shortExtract} (Source: Encyclopedic Archives), Sir.`;
+                return `${shortExtract}, Sir.`;
             }
         }
-    } catch (e) {
-        // Network or timeout failure
-    }
+    } catch (e) {}
+
     return null;
 }
 
@@ -269,7 +299,16 @@ async function generateFallbackKnowledge(query) {
         return "New York City is a major global hub for international finance, diplomacy, culture, and architecture, Sir.";
     }
 
-    // 3. Physics & Fundamental Scientific Formulas
+    // 3. Physics & Mechanics
+    if (/\bdynamics\b/i.test(q)) {
+        return "Dynamics is the branch of classical mechanics concerned with the study of forces and torques and their effect on the motion of physical bodies, governed by Newton's Laws of Motion, Sir.";
+    }
+    if (/\bkinematics\b/i.test(q)) {
+        return "Kinematics is the branch of classical mechanics that describes the motion of points, bodies, and systems of bodies without considering the forces that cause them to move, Sir.";
+    }
+    if (q === "formula" || q === "what is formula" || q === "what is a formula" || q === "define formula") {
+        return "In science and mathematics, a Formula is a concise symbolic representation or rule (such as F = ma or E = mc²) used to state relationships between physical quantities or compute mathematical values, Sir.";
+    }
     if (q.includes("photosynthesis")) {
         return "Photosynthesis is the biological process by which autotrophic organisms (such as plants, algae, and cyanobacteria) convert light energy from sunlight into chemical energy in the form of glucose, releasing oxygen as a byproduct. Chemical equation: **6CO₂ + 6H₂O + Light Energy ➔ C₆H₁₂O₆ + 6O₂**, Sir.";
     }
@@ -375,8 +414,8 @@ async function generateFallbackKnowledge(query) {
     if (q.includes("binary search")) {
         return "Binary Search is an efficient $O(\\log n)$ divide-and-conquer algorithm that finds target values within sorted arrays by repeatedly halving the search interval, Sir.";
     }
-    if (q.includes("dynamic programming")) {
-        return "Dynamic Programming is an optimization technique that solves complex problems by breaking them down into overlapping subproblems and memoizing intermediate solutions to achieve polynomial time complexity, Sir.";
+    if (/\b(dynamic programming|dp algorithm|dp approach)\b/i.test(q)) {
+        return "Dynamic Programming is an algorithmic optimization technique that solves complex problems by breaking them down into overlapping subproblems and memoizing intermediate solutions to achieve polynomial time complexity, Sir.";
     }
     if (q.includes("array")) {
         return "An Array is a linear data structure storing homogenous data elements in contiguous memory slots, supporting $O(1)$ constant-time indexed lookups, Sir.";
@@ -431,32 +470,16 @@ async function generateFallbackKnowledge(query) {
         }
     }
 
-    // 9. Live Wikipedia Summary Query Fallback
-    const cleanTopic = query
-        .replace(/^what is the formula of\s+/i, '')
-        .replace(/^what is the formula for\s+/i, '')
-        .replace(/^what is the\s+/i, '')
-        .replace(/^what is\s+/i, '')
-        .replace(/^what are\s+/i, '')
-        .replace(/^explain\s+/i, '')
-        .replace(/^tell me about\s+/i, '')
-        .replace(/^define\s+/i, '')
-        .replace(/^who is\s+/i, '')
-        .replace(/^who was\s+/i, '')
-        .replace(/\?/g, '')
-        .trim();
-
-    if (cleanTopic && cleanTopic.length >= 2) {
-        const wikiExtract = await fetchWikipediaSummary(cleanTopic);
-        if (wikiExtract) {
-            return wikiExtract;
-        }
+    // 9. Live Online Intelligence Engine (DuckDuckGo + Wikipedia)
+    const onlineAnswer = await fetchOnlineIntelligence(query);
+    if (onlineAnswer) {
+        return onlineAnswer;
     }
 
     // 10. Fallback with Guidance
-    const topic = cleanTopic || query;
-    const formattedTopic = topic.charAt(0).toUpperCase() + topic.slice(1);
-    return `I have cataloged your query regarding **${formattedTopic}**, Sir. For comprehensive real-time generative reasoning across any topic, you can connect your Gemini API key in Settings (⚙️).`;
+    const topic = query.replace(/^what is\s+/i, '').replace(/^explain\s+/i, '').replace(/\?/g, '').trim();
+    const formattedTopic = (topic || query).charAt(0).toUpperCase() + (topic || query).slice(1);
+    return `I have cataloged your query regarding **${formattedTopic}**, Sir. For real-time unrestricted generative intelligence across any topic (like Gemini or ChatGPT), you can also link your free Gemini API key in Settings (⚙️).`;
 }
 
 async function triggerCodeAutomation(promptText, language) {
