@@ -2,6 +2,113 @@
 // J.A.R.V.I.S. 3.2.0 - Google Gemini & Universal Cognitive AI Engine
 // ==========================================================================
 
+const ACRONYMS_DATABASE = {
+    "NDA": "The full form of **NDA** has three primary meanings, Sir:\n1. **National Defence Academy** — The premier joint training academy for the Indian Army, Navy, and Air Force.\n2. **Non-Disclosure Agreement** — A legally binding confidentiality agreement between parties.\n3. **National Democratic Alliance** — A political coalition in India.",
+    "ISRO": "The full form of **ISRO** is **Indian Space Research Organisation**, India's national space exploration agency headquartered in Bengaluru, Sir.",
+    "DRDO": "The full form of **DRDO** is **Defence Research and Development Organisation**, India's military research and development agency, Sir.",
+    "NASA": "The full form of **NASA** is **National Aeronautics and Space Administration**, the United States civil space agency, Sir.",
+    "UPSC": "The full form of **UPSC** is **Union Public Service Commission**, India's premier central recruiting agency for civil services (IAS, IPS, IFS), Sir.",
+    "IAS": "The full form of **IAS** is **Indian Administrative Service**, the premier administrative civil service branch of India, Sir.",
+    "IPS": "The full form of **IPS** is **Indian Police Service**, the senior law enforcement civil service branch of India, Sir.",
+    "IFS": "The full form of **IFS** is **Indian Foreign Service** (or Indian Forest Service), Sir.",
+    "IIT": "The full form of **IIT** is **Indian Institute of Technology**, premier autonomous public technical universities across India, Sir.",
+    "NIT": "The full form of **NIT** is **National Institute of Technology**, premier public engineering institutes in India, Sir.",
+    "AIIMS": "The full form of **AIIMS** is **All India Institute of Medical Sciences**, autonomous public medical research universities in India, Sir.",
+    "WHO": "The full form of **WHO** is **World Health Organization**, the United Nations specialized agency responsible for global public health, Sir.",
+    "UN": "The full form of **UN** is **United Nations**, the international intergovernmental organization founded to maintain international peace and security, Sir.",
+    "UNO": "The full form of **UNO** is **United Nations Organization**, Sir.",
+    "UNESCO": "The full form of **UNESCO** is **United Nations Educational, Scientific and Cultural Organization**, Sir.",
+    "UNICEF": "The full form of **UNICEF** is **United Nations International Children's Emergency Fund**, Sir.",
+    "FBI": "The full form of **FBI** is **Federal Bureau of Investigation**, the domestic intelligence and security service of the United States, Sir.",
+    "CIA": "The full form of **CIA** is **Central Intelligence Agency**, the foreign civilian intelligence service of the United States, Sir.",
+    "RAW": "The full form of **RAW** is **Research and Analysis Wing**, the primary foreign intelligence agency of India, Sir.",
+    "CBI": "The full form of **CBI** is **Central Bureau of Investigation**, the premier domestic crime investigating agency of India, Sir.",
+    "ED": "The full form of **ED** is **Enforcement Directorate**, the economic intelligence agency responsible for enforcing economic laws in India, Sir.",
+    "GST": "The full form of **GST** is **Goods and Services Tax**, the comprehensive indirect tax levied on goods and services across India, Sir.",
+    "ATM": "The full form of **ATM** is **Automated Teller Machine**, an electronic banking outlet allowing automated cash withdrawals and deposits, Sir.",
+    "OTP": "The full form of **OTP** is **One-Time Password**, a single-use numerical security passcode valid for an authentication session, Sir.",
+    "PIN": "The full form of **PIN** is **Personal Identification Number**, a numeric passcode used for secure user authentication, Sir.",
+    "PAN": "The full form of **PAN** is **Permanent Account Number**, a 10-digit alphanumeric identifier issued by the Indian Income Tax Department, Sir.",
+    "SIM": "The full form of **SIM** is **Subscriber Identity Module**, a smart card that securely stores mobile subscriber identity keys, Sir.",
+    "PDF": "The full form of **PDF** is **Portable Document Format**, a versatile file format developed by Adobe to present documents reliably, Sir.",
+    "USB": "The full form of **USB** is **Universal Serial Bus**, an industry standard for connecting peripheral devices to computers, Sir.",
+    "GPS": "The full form of **GPS** is **Global Positioning System**, a satellite-based radionavigation system providing precise geolocational coordinates, Sir.",
+    "VPN": "The full form of **VPN** is **Virtual Private Network**, an encrypted connection over the Internet from a device to a secure network, Sir.",
+    "IP": "The full form of **IP** is **Internet Protocol**, the principal communications protocol for relaying datagrams across network boundaries, Sir.",
+    "URL": "The full form of **URL** is **Uniform Resource Locator**, the colloquial web address referencing a specific Internet resource, Sir.",
+    "HTTP": "The full form of **HTTP** is **Hypertext Transfer Protocol**, the foundation data communication protocol for the World Wide Web, Sir.",
+    "HTTPS": "The full form of **HTTPS** is **Hypertext Transfer Protocol Secure**, the encrypted extension of HTTP using TLS/SSL encryption, Sir.",
+    "HTML": "The full form of **HTML** is **Hypertext Markup Language**, the standard markup language for web documents, Sir.",
+    "CSS": "The full form of **CSS** is **Cascading Style Sheets**, the stylesheet language used for styling HTML elements, Sir.",
+    "JS": "The full form of **JS** is **JavaScript**, the high-level programming language that powers interactive behavior across the web, Sir.",
+    "API": "The full form of **API** is **Application Programming Interface**, a set of definitions and protocols for building and integrating application software, Sir.",
+    "AI": "The full form of **AI** is **Artificial Intelligence**, the simulation of human intelligence processes by computer systems, Sir.",
+    "ML": "The full form of **ML** is **Machine Learning**, an AI discipline focused on building applications that learn patterns from data, Sir.",
+    "DL": "The full form of **DL** is **Deep Learning**, a subset of machine learning based on multi-layered artificial neural networks, Sir.",
+    "CPU": "The full form of **CPU** is **Central Processing Unit**, the primary electronic circuitry that executes instructions comprising a computer program, Sir.",
+    "GPU": "The full form of **GPU** is **Graphics Processing Unit**, a specialized electronic processor designed to accelerate 3D rendering and parallel computational workloads, Sir.",
+    "RAM": "The full form of **RAM** is **Random Access Memory**, high-speed volatile computational memory providing instant read/write access to running applications, Sir.",
+    "ROM": "The full form of **ROM** is **Read-Only Memory**, non-volatile memory storing permanent firmware instructions like the system BIOS, Sir.",
+    "SSD": "The full form of **SSD** is **Solid State Drive**, a high-speed flash-memory storage device with no moving mechanical parts, Sir.",
+    "HDD": "The full form of **HDD** is **Hard Disk Drive**, electro-mechanical data storage using magnetic rotating platters, Sir.",
+    "BIOS": "The full form of **BIOS** is **Basic Input/Output System**, the motherboard firmware used to perform hardware initialization during the booting process, Sir.",
+    "OS": "The full form of **OS** is **Operating System**, system software that manages computer hardware, software resources, and common services, Sir.",
+    "SQL": "The full form of **SQL** is **Structured Query Language**, a domain-specific language used for managing data in relational database systems, Sir.",
+    "DBMS": "The full form of **DBMS** is **Database Management System**, software that enables users to create, maintain, and control access to structured databases, Sir.",
+    "JSON": "The full form of **JSON** is **JavaScript Object Notation**, a lightweight open-standard data interchange format, Sir.",
+    "XML": "The full form of **XML** is **Extensible Markup Language**, a markup language designed for storing and transporting structured data, Sir.",
+    "SDK": "The full form of **SDK** is **Software Development Kit**, a collection of software development tools in one installable package, Sir.",
+    "GUI": "The full form of **GUI** is **Graphical User Interface**, a visual interface allowing users to interact with electronic devices through graphical icons, Sir.",
+    "CLI": "The full form of **CLI** is **Command Line Interface**, a text-based interface used for entering commands and running programs, Sir.",
+    "LAN": "The full form of **LAN** is **Local Area Network**, a computer network interconnecting computers within a limited area, Sir.",
+    "WAN": "The full form of **WAN** is **Wide Area Network**, a telecommunications network extending over a large geographic distance, Sir.",
+    "WiFi": "The full form of **WiFi** stands for **Wireless Fidelity**, the radio wireless networking technology for local area network device connectivity, Sir.",
+    "CCTV": "The full form of **CCTV** is **Closed-Circuit Television**, video transmission to a specific, limited set of monitors, Sir.",
+    "LED": "The full form of **LED** is **Light Emitting Diode**, a semiconductor light source that emits light when current flows through it, Sir.",
+    "LCD": "The full form of **LCD** is **Liquid Crystal Display**, a flat-panel display technology using liquid crystals, Sir.",
+    "OLED": "The full form of **OLED** is **Organic Light Emitting Diode**, display technology that produces deep blacks and vibrant colors through individual organic pixels, Sir.",
+    "UPI": "The full form of **UPI** is **Unified Payments Interface**, the real-time instant payment system developed by the National Payments Corporation of India (NPCI), Sir.",
+    "NEFT": "The full form of **NEFT** is **National Electronic Funds Transfer**, an electronic funds transfer system maintained by the RBI, Sir.",
+    "RTGS": "The full form of **RTGS** is **Real Time Gross Settlement**, continuous settlement of fund transfers individually on an order-by-order basis, Sir.",
+    "IMPS": "The full form of **IMPS** is **Immediate Payment Service**, an instant inter-bank electronic fund transfer service in India, Sir.",
+    "EMI": "The full form of **EMI** is **Equated Monthly Installment**, a fixed payment amount made by a borrower to a lender on a specified calendar date each month, Sir.",
+    "KYC": "The full form of **KYC** is **Know Your Customer**, the mandatory process of customer identity verification by financial institutions, Sir.",
+    "FIR": "The full form of **FIR** is **First Information Report**, a written document prepared by police upon receiving information about a cognizable offence, Sir.",
+    "CV": "The full form of **CV** is **Curriculum Vitae**, an in-depth summary of an individual's career, qualifications, and education history, Sir.",
+    "CEO": "The full form of **CEO** is **Chief Executive Officer**, the highest-ranking executive in an organization responsible for overall management and operations, Sir.",
+    "CTO": "The full form of **CTO** is **Chief Technology Officer**, the executive overseeing technical and engineering operations, Sir.",
+    "CFO": "The full form of **CFO** is **Chief Financial Officer**, the executive responsible for managing the financial actions of a company, Sir.",
+    "HR": "The full form of **HR** is **Human Resources**, the corporate division responsible for screening, recruiting, and training personnel, Sir.",
+    "SOS": "The full form of **SOS** is commonly referred to as **Save Our Souls** or **Save Our Ship**, the international Morse code distress signal (· · · — — — · · ·), Sir."
+};
+
+function resolveAcronymOrFullForm(promptText) {
+    if (!promptText || typeof promptText !== 'string') return null;
+    const lower = promptText.toLowerCase().trim();
+    
+    const isFullFormQuery = lower.includes("full form") || lower.includes("ful form") || lower.includes("fullform") || 
+                           lower.includes("ka full form") || lower.includes("ki full form") || lower.includes("full form of") ||
+                           lower.includes("stands for") || lower.includes("stand for") || lower.includes("meaning of") ||
+                           lower.includes("matlab");
+                           
+    if (!isFullFormQuery) return null;
+
+    let candidate = promptText
+        .replace(/\b(koi|kya|hai|he|batao|bataiye|ka|ki|ke|ful|full|form|fullform|of|the|what|is|mean|meaning|stands|stand|for|in|hindi|english|matlab|bhai|sir|please|plz)\b/gi, '')
+        .replace(/[^a-zA-Z0-9]/g, ' ')
+        .trim();
+
+    const words = candidate.split(/\s+/).filter(w => w.length >= 2);
+    for (let word of words) {
+        const upper = word.toUpperCase();
+        if (ACRONYMS_DATABASE[upper]) {
+            return ACRONYMS_DATABASE[upper];
+        }
+    }
+
+    return null;
+}
+
 function evaluateMathExpression(expr) {
     if (!expr || typeof expr !== 'string') return null;
     const clean = expr.trim().toLowerCase()
@@ -56,6 +163,15 @@ async function queryGeminiAPI(promptText) {
     if (mathResult) {
         appendChatBubble('JARVIS', mathResult);
         speak(mathResult.replace(/[*_#`]/g, ""));
+        updateCoreState('IDLE');
+        return;
+    }
+
+    // 0.5. Instant Acronym & Full Form Resolution
+    const acronymResult = resolveAcronymOrFullForm(promptText);
+    if (acronymResult) {
+        appendChatBubble('JARVIS', acronymResult);
+        speak(acronymResult.replace(/[*_#`]/g, ""));
         updateCoreState('IDLE');
         return;
     }
@@ -152,7 +268,7 @@ async function queryGeminiAPI(promptText) {
     // Google Gemini API (if key AIzaSy... is configured)
     if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
         const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
-        let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max). Do not output markdown lists, stars, or header syntax.";
+        let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. You understand and answer in English and Hindi (Hinglish). Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max).";
         let detectedModeBadge = "";
 
         if (isAlgoRequest) {
@@ -201,25 +317,22 @@ async function queryGeminiAPI(promptText) {
     updateCoreState('IDLE');
 }
 
-async function fetchOnlineIntelligence(query) {
-    const cleanTopic = query
-        .replace(/^what is the formula of\s+/i, '')
-        .replace(/^what is the formula for\s+/i, '')
-        .replace(/^what is the definition of\s+/i, '')
-        .replace(/^what is the meaning of\s+/i, '')
-        .replace(/^what is the\s+/i, '')
-        .replace(/^what is an?\s+/i, '')
-        .replace(/^what are\s+/i, '')
-        .replace(/^what does\s+/i, '')
-        .replace(/^explain\s+/i, '')
-        .replace(/^tell me about\s+/i, '')
-        .replace(/^define\s+/i, '')
-        .replace(/^meaning of\s+/i, '')
-        .replace(/^who is\s+/i, '')
-        .replace(/^who was\s+/i, '')
-        .replace(/,\s*no explanation.*$/i, '')
+function cleanHinglishQuery(query) {
+    let clean = query.trim()
+        .replace(/\b(koi|bhai|sir|please|plz)\b/gi, '')
+        .replace(/\b(kya hai|kya hota hai|kya he|kisko bolte hai|kisko kehte hain|kise kehte hai)\b/gi, '')
+        .replace(/\b(batao|bataiye|samjhao|samjha do|bataye|batao na)\b/gi, '')
+        .replace(/\b(ke bare me|ke bare mein|ke baare me|ke baare mein|ka matlab|ki paribhasha)\b/gi, '')
+        .replace(/\b(what is the formula of|what is the formula for|what is the definition of|what is the meaning of|what is the|what is an?|what are|what does|explain|tell me about|define|meaning of|who is|who was)\b/gi, '')
+        .replace(/,\s*no explanation.*$/gi, '')
         .replace(/\?/g, '')
+        .replace(/\s+/g, ' ')
         .trim();
+    return clean;
+}
+
+async function fetchOnlineIntelligence(query) {
+    const cleanTopic = cleanHinglishQuery(query);
 
     if (!cleanTopic || cleanTopic.length < 2) return null;
 
@@ -443,7 +556,7 @@ async function generateFallbackKnowledge(query) {
     }
 
     // 9. Fallback with Guidance
-    const topic = query.replace(/^what is\s+/i, '').replace(/^explain\s+/i, '').replace(/\?/g, '').trim();
+    const topic = cleanHinglishQuery(query);
     const formattedTopic = (topic || query).charAt(0).toUpperCase() + (topic || query).slice(1);
     return `I have cataloged your query regarding **${formattedTopic}**, Sir. For unrestricted real-time generative conversation across any topic (like Gemini or ChatGPT), you can also link your free Gemini API key in Settings (⚙️).`;
 }
