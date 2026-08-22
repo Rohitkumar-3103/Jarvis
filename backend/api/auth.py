@@ -12,8 +12,10 @@ import random
 import smtplib
 import datetime
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from pymongo import MongoClient
+try:
+    from pymongo import MongoClient
+except ImportError:
+    MongoClient = None
 
 auth_api = Blueprint('auth_api', __name__)
 
@@ -27,6 +29,8 @@ except Exception:
 pending_sessions = {}
 
 def get_mongo_collection():
+    if MongoClient is None:
+        return None
     try:
         # Check MongoDB connection with a 2-second timeout
         client = MongoClient("mongodb://127.0.0.1:27017/", serverSelectionTimeoutMS=2000)
@@ -317,7 +321,7 @@ def verify_otp():
                     "password": user_data["password_raw"],
                     "passwordConf": user_data["password_raw"],
                     "fullname": user_data["fullname"],
-                    "createdAt": datetime.datetime.utcnow()
+                    "createdAt": datetime.datetime.now(datetime.timezone.utc)
                 })
             else:
                 db = get_users_db()
