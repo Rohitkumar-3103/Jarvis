@@ -46,6 +46,7 @@ function appendChatBubbleDOM(sender, text, timeStr, buttons = null) {
 
     const bubble = document.createElement('div');
     bubble.className = `chat-bubble ${sender.toLowerCase()}-bubble`;
+    bubble.dataset.rawText = text;
 
     const senderDiv = document.createElement('div');
     senderDiv.className = 'bubble-sender';
@@ -53,6 +54,7 @@ function appendChatBubbleDOM(sender, text, timeStr, buttons = null) {
 
     const textDiv = document.createElement('div');
     textDiv.className = 'bubble-text';
+    textDiv.dataset.rawText = text;
     textDiv.innerHTML = formatMessageText(text);
 
     // Trigger Prism highlight on code blocks
@@ -122,6 +124,7 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
 
     const bubble = document.createElement('div');
     bubble.className = `chat-bubble ${sender.toLowerCase()}-bubble`;
+    bubble.dataset.rawText = `[IMAGE: ${imgUrl}]`;
 
     const senderDiv = document.createElement('div');
     senderDiv.className = 'bubble-sender';
@@ -150,7 +153,7 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
     img.onclick = () => window.open(imgUrl, '_blank');
 
     const dlBtn = document.createElement('button');
-    dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE ULTRA-HD 4K ARTWORK';
+    dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE';
     dlBtn.style.marginTop = '8px';
     dlBtn.style.display = 'flex';
     dlBtn.style.alignItems = 'center';
@@ -159,11 +162,12 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
     dlBtn.style.background = 'rgba(0, 240, 255, 0.12)';
     dlBtn.style.border = '1px solid var(--theme-primary, #00f0ff)';
     dlBtn.style.color = 'var(--theme-primary, #00f0ff)';
-    dlBtn.style.padding = '6px 12px';
+    dlBtn.style.padding = '7px 14px';
     dlBtn.style.borderRadius = '6px';
-    dlBtn.style.fontSize = '11px';
+    dlBtn.style.fontSize = '12px';
     dlBtn.style.fontFamily = 'var(--font-hud)';
-    dlBtn.style.letterSpacing = '1px';
+    dlBtn.style.letterSpacing = '1.5px';
+    dlBtn.style.fontWeight = 'bold';
     dlBtn.style.cursor = 'pointer';
     dlBtn.style.transition = 'all 0.2s';
     dlBtn.onmouseover = () => {
@@ -177,7 +181,7 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
 
     dlBtn.onclick = async () => {
         try {
-            dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i>DOWNLOADING 4K ARTWORK...';
+            dlBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i>DOWNLOADING...';
             const res = await fetch(imgUrl);
             const blob = await res.blob();
             const url = window.URL.createObjectURL(blob);
@@ -188,15 +192,15 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
-            dlBtn.innerHTML = '<i class="fa-solid fa-circle-check" style="margin-right: 6px;"></i>SAVED TO DISK!';
+            dlBtn.innerHTML = '<i class="fa-solid fa-circle-check" style="margin-right: 6px;"></i>SAVED!';
             setTimeout(() => {
-                dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE ULTRA-HD 4K ARTWORK';
+                dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE';
             }, 2000);
         } catch (err) {
             window.open(imgUrl, '_blank');
-            dlBtn.innerHTML = '<i class="fa-solid fa-up-right-from-square" style="margin-right: 6px;"></i>OPENED IN FULL RESOLUTION';
+            dlBtn.innerHTML = '<i class="fa-solid fa-up-right-from-square" style="margin-right: 6px;"></i>OPENED FULL RES';
             setTimeout(() => {
-                dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE ULTRA-HD 4K ARTWORK';
+                dlBtn.innerHTML = '<i class="fa-solid fa-download" style="margin-right: 6px;"></i>SAVE';
             }, 2000);
         }
     };
@@ -214,6 +218,7 @@ function appendChatBubbleImageDOM(sender, imgUrl, timeStr) {
 
     chatLogsContainer.appendChild(bubble);
     chatLogsContainer.scrollTop = chatLogsContainer.scrollHeight;
+    saveChatLogsToStorage();
 }
 
 window.appendChatBubbleImageDOM = appendChatBubbleImageDOM;
@@ -230,11 +235,9 @@ function saveChatLogsToStorage() {
         
         const sender = senderEl.textContent;
         const time = timeEl.textContent;
-        let text = "";
+        let text = bubble.dataset.rawText || (textEl ? (textEl.dataset.rawText || textEl.innerText || textEl.textContent) : "");
         
-        if (textEl) {
-            text = textEl.textContent;
-        } else {
+        if (!text) {
             const imgEl = bubble.querySelector('img');
             if (imgEl) {
                 text = `[IMAGE: ${imgEl.getAttribute('src')}]`;
@@ -255,31 +258,43 @@ function saveChatLogsToStorage() {
 async function loadChatLogsFromStorage() {
     if (!chatLogsContainer) return;
     
+    let loadedLogs = null;
     try {
         const response = await fetch(`${BACKEND_URL}/api/chat/history`);
         if (response.ok) {
             const serverLogs = await response.json();
             if (serverLogs && serverLogs.length > 0) {
-                chatLogsContainer.innerHTML = '';
-                serverLogs.forEach(msg => {
-                    appendChatBubbleDOM(msg.sender || 'JARVIS', msg.text || '', msg.timestamp || '00:00');
-                });
-                return;
+                loadedLogs = serverLogs.map(m => ({ sender: m.sender, text: m.text, time: m.timestamp }));
             }
         }
     } catch(err) {}
 
-    const saved = localStorage.getItem('jarvis_chat_logs');
-    if (saved) {
-        try {
-            const bubbles = JSON.parse(saved);
-            if (bubbles.length > 0) {
-                chatLogsContainer.innerHTML = '';
-                bubbles.forEach(b => {
-                    appendChatBubbleDOM(b.sender, b.text, b.time);
-                });
+    if (!loadedLogs) {
+        const saved = localStorage.getItem('jarvis_chat_logs');
+        if (saved) {
+            try {
+                loadedLogs = JSON.parse(saved);
+            } catch(e) {}
+        }
+    }
+
+    if (loadedLogs && loadedLogs.length > 0) {
+        chatLogsContainer.innerHTML = '';
+        loadedLogs.forEach(msg => {
+            const sender = msg.sender || 'JARVIS';
+            const text = msg.text || '';
+            const time = msg.time || msg.timestamp || '00:00';
+            
+            const imgMatch = text.match(/^\[IMAGE:\s*(https?:\/\/[^\]]+)\]$/i);
+            if (imgMatch) {
+                appendChatBubbleImageDOM(sender, imgMatch[1], time);
+            } else {
+                appendChatBubbleDOM(sender, text, time);
             }
-        } catch(e) {}
+        });
+        if (window.Prism) {
+            Prism.highlightAllUnder(chatLogsContainer);
+        }
     }
 }
 
