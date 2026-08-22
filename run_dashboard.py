@@ -38,8 +38,17 @@ def find_free_port(start_port=8080):
     return start_port
 
 def find_valid_python():
-    # Try current python, then fallback options that might have libraries installed
-    candidates = [
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    venv_python_win = os.path.join(script_dir, ".venv", "Scripts", "python.exe")
+    venv_python_posix = os.path.join(script_dir, ".venv", "bin", "python")
+    
+    candidates = []
+    if os.path.exists(venv_python_win):
+        candidates.append(venv_python_win)
+    elif os.path.exists(venv_python_posix):
+        candidates.append(venv_python_posix)
+        
+    candidates += [
         sys.executable,
         "py -3.12",
         "py -3.10",
@@ -56,13 +65,13 @@ def find_valid_python():
                     raise ImportError("cv2 missing CascadeClassifier")
                 return [sys.executable]
             else:
-                parts = cand.split()
+                parts = [cand] if os.path.isfile(cand) else cand.split()
                 # Run a check to verify both flask and valid cv2 are present
                 r = subprocess.run(
                     parts + ["-c", "import flask, cv2; assert hasattr(cv2, 'CascadeClassifier')"], 
                     capture_output=True, 
                     text=True, 
-                    timeout=2
+                    timeout=3
                 )
                 if r.returncode == 0:
                     return parts

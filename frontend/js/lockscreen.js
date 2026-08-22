@@ -65,11 +65,8 @@ function loadUserProfile(user) {
     if (profileUsername) profileUsername.textContent = `@${user.username}`;
     if (profileClearance) profileClearance.textContent = user.role.toUpperCase();
     if (profileAvatarImg && user.avatar) {
-        profileAvatarImg.src = `frontend/${user.avatar}`;
-        // Fallback check if running directly from frontend web server
-        profileAvatarImg.onerror = () => {
-            profileAvatarImg.src = user.avatar;
-        };
+        const cleanAvatar = user.avatar.replace(/^frontend\//, '');
+        profileAvatarImg.src = cleanAvatar;
     }
 }
 
