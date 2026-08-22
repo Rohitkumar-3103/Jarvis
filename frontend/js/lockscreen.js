@@ -329,10 +329,15 @@ async function handleLogin() {
             activeOtpUsername = username;
             if (authFormsBox) authFormsBox.style.display = 'none';
             if (otpVerificationBox) otpVerificationBox.style.display = 'flex';
-            lockStatusDisplay.textContent = "TWO-FACTOR SECURITY OTP DISPATCHED. ENTER CODE.";
-            speak("Verification code sent to registered communications vectors.");
+            if (data.otp_code) {
+                lockStatusDisplay.textContent = `SECURITY OTP [${data.otp_code}] DISPATCHED. ENTER CODE.`;
+                speak(`Security verification code is ${data.otp_code.split('').join(' ')}.`);
+            } else {
+                lockStatusDisplay.textContent = "TWO-FACTOR SECURITY OTP DISPATCHED. ENTER CODE.";
+                speak("Verification code sent to registered communications vectors.");
+            }
         } else {
-            lockStatusDisplay.textContent = `ACCESS DENIED // ${data.message.toUpperCase()}`;
+            lockStatusDisplay.textContent = `ACCESS DENIED // ${(data.message || '').toUpperCase()}`;
             speak("Access denied. Credentials mismatch.");
         }
     } catch (err) {
@@ -390,10 +395,15 @@ async function handleRegister() {
             activeOtpUsername = username;
             if (authFormsBox) authFormsBox.style.display = 'none';
             if (otpVerificationBox) otpVerificationBox.style.display = 'flex';
-            lockStatusDisplay.textContent = "SECURITY AUTHENTICATION OTP DISPATCHED.";
-            speak("One Time Password verification dispatched.");
+            if (data.otp_code) {
+                lockStatusDisplay.textContent = `SECURITY OTP [${data.otp_code}] DISPATCHED.`;
+                speak(`Registration code is ${data.otp_code.split('').join(' ')}.`);
+            } else {
+                lockStatusDisplay.textContent = "SECURITY AUTHENTICATION OTP DISPATCHED.";
+                speak("One Time Password verification dispatched.");
+            }
         } else {
-            lockStatusDisplay.textContent = `REGISTRATION REFUSED // ${data.message.toUpperCase()}`;
+            lockStatusDisplay.textContent = `REGISTRATION REFUSED // ${(data.message || '').toUpperCase()}`;
             speak("Registration failed.");
         }
     } catch (err) {

@@ -12,6 +12,7 @@ import random
 import smtplib
 import datetime
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 try:
     from pymongo import MongoClient
 except ImportError:
@@ -25,15 +26,15 @@ try:
 except Exception:
     FACE_CASCADE = None
 
-# Memory cache for pending OTPs: {username: {"otp": "123456", "user_data": {...}}}
+# Memory cache for pending OTPs: {identifier_or_username: {"otp": "123456", "user_data": {...}}}
 pending_sessions = {}
 
 def get_mongo_collection():
     if MongoClient is None:
         return None
     try:
-        # Check MongoDB connection with a 2-second timeout
-        client = MongoClient("mongodb://127.0.0.1:27017/", serverSelectionTimeoutMS=2000)
+        mongo_uri = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017/")
+        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=2000)
         client.server_info() # Force connection check
         db = client["ManualAuth"]
         return db["users"]
@@ -153,12 +154,55 @@ def send_sms_otp(target_phone, otp_code):
         print(f"[-] Failed to send Twilio SMS OTP: {str(e)}")
         return False
 
+@auth_api.route('/api/auth/send-otp', methods=['POST'])
+def send_otp_endpoint():
+    try:
+        data = request.get_json() or {}
+        identifier = (data.get('identifier') or data.get('username') or data.get('email') or '').strip().lower()
+        channel = data.get('channel', 'email')
+
+        if not identifier:
+            return jsonify({"status": "error", "message": "Identifier required to dispatch OTP."}), 400
+
+        otp_code = f"{random.randint(100000, 999999)}"
+        
+        # Save or update pending session
+        if identifier in pending_sessions:
+            pending_sessions[identifier]["otp"] = otp_code
+        else:
+            pending_sessions[identifier] = {
+                "otp": otp_code,
+                "action": "verify",
+                "user_data": {
+                    "username": identifier.split('@')[0],
+                    "email": identifier if '@' in identifier else f"{identifier}@starkindustries.com",
+                    "fullname": identifier.split('@')[0].upper(),
+                    "role": "Terminal User",
+                    "avatar": "assets/images/avatar.png"
+                }
+            }
+
+        if channel == 'phone' or identifier.startswith('+'):
+            send_sms_otp(identifier, otp_code)
+        else:
+            send_email_otp(identifier, otp_code)
+
+        return jsonify({
+            "status": "success",
+            "success": True,
+            "message": f"Security OTP dispatched to {identifier}.",
+            "identifier": identifier,
+            "otp_code": otp_code
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @auth_api.route('/api/auth/register', methods=['POST'])
 def register_user():
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         required = ('username', 'password', 'fullname', 'email', 'phone')
-        if not data or not all(k in data for k in required):
+        if not all(k in data for k in required):
             return jsonify({"status": "error", "message": "Missing credentials profile metadata."}), 400
 
         username = data['username'].strip().lower()
@@ -188,14 +232,13 @@ def register_user():
         otp_code = f"{random.randint(100000, 999999)}"
         pass_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
-        # Cache pending registration
-        pending_sessions[username] = {
+        session_obj = {
             "otp": otp_code,
             "action": "register",
             "user_data": {
                 "username": username,
                 "password": pass_hash,
-                "password_raw": password, # Cache raw for MongoDB plain-text compatibility
+                "password_raw": password,
                 "fullname": fullname,
                 "email": email,
                 "phone": phone,
@@ -204,14 +247,24 @@ def register_user():
             }
         }
 
+        # Cache pending registration by username and email
+        pending_sessions[username] = session_obj
+        pending_sessions[email.lower()] = session_obj
+        if phone:
+            pending_sessions[phone] = session_obj
+
         # Dispatch OTPs
         send_email_otp(email, otp_code)
         send_sms_otp(phone, otp_code)
 
         return jsonify({
             "status": "otp_required",
+            "success": True,
             "message": "Security One-Time Password (OTP) dispatched.",
-            "username": username
+            "username": username,
+            "email": email,
+            "phone": phone,
+            "otp_code": otp_code
         })
 
     except Exception as e:
@@ -220,27 +273,33 @@ def register_user():
 @auth_api.route('/api/auth/login', methods=['POST'])
 def login_user():
     try:
-        data = request.get_json()
-        if not data or not all(k in data for k in ('username', 'password')):
+        data = request.get_json() or {}
+        username_raw = data.get('username') or data.get('email', '')
+        password = data.get('password', '')
+
+        if not username_raw or not password:
             return jsonify({"status": "error", "message": "Username and password security parameters required."}), 400
 
-        username = data['username'].strip().lower()
-        password = data['password']
-
+        username = username_raw.strip().lower()
         user_found = False
         user_fullname = username
         user_email = "tony@starkindustries.com"
         user_phone = "+1234567890"
+        user_role = "Terminal User"
 
         # 1. Query MongoDB first if active
         mongo_col = get_mongo_collection()
         if mongo_col is not None:
             mongo_user = mongo_col.find_one({"$or": [{"email": username}, {"username": username}]})
             if mongo_user:
-                if mongo_user.get("password") == password:
+                stored_pass = mongo_user.get("password")
+                input_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+                if stored_pass == password or stored_pass == input_hash:
                     user_found = True
                     user_fullname = mongo_user.get("fullname") or mongo_user.get("username", username).upper()
                     user_email = mongo_user.get("email", "")
+                    username = mongo_user.get("username", username)
+                    user_role = "Terminal User"
                 else:
                     return jsonify({"status": "denied", "message": "Security vector mismatch. Access denied."}), 401
 
@@ -250,11 +309,12 @@ def login_user():
             if username in db['users']:
                 user = db['users'][username]
                 input_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-                if user['password'] == input_hash:
+                if user['password'] == input_hash or user['password'] == password:
                     user_found = True
                     user_fullname = user['fullname']
                     user_email = user.get('email', '')
                     user_phone = user.get('phone', '')
+                    user_role = user.get('role', 'Terminal User')
                 else:
                     return jsonify({"status": "denied", "message": "Security vector mismatch. Access denied."}), 401
 
@@ -263,16 +323,21 @@ def login_user():
 
         # Generate OTP for 2FA
         otp_code = f"{random.randint(100000, 999999)}"
-        pending_sessions[username] = {
+        session_obj = {
             "otp": otp_code,
             "action": "login",
             "user_data": {
                 "username": username,
                 "fullname": user_fullname,
-                "role": "Terminal User" if username != "ironman" else "Primary User // Administrator",
+                "email": user_email,
+                "phone": user_phone,
+                "role": user_role if username != "ironman" else "Primary User // Administrator",
                 "avatar": "assets/images/avatar.png"
             }
         }
+
+        pending_sessions[username] = session_obj
+        pending_sessions[user_email.lower()] = session_obj
 
         # Dispatch OTPs
         send_email_otp(user_email, otp_code)
@@ -280,8 +345,12 @@ def login_user():
 
         return jsonify({
             "status": "otp_required",
+            "success": True,
             "message": "Security Verification Code (OTP) dispatched.",
-            "username": username
+            "username": username,
+            "email": user_email,
+            "phone": user_phone,
+            "otp_code": otp_code
         })
 
     except Exception as e:
@@ -290,17 +359,17 @@ def login_user():
 @auth_api.route('/api/auth/verify-otp', methods=['POST'])
 def verify_otp():
     try:
-        data = request.get_json()
-        if not data or not all(k in data for k in ('username', 'otp')):
-            return jsonify({"status": "error", "message": "Username and verification code are required."}), 400
+        data = request.get_json() or {}
+        identifier = (data.get('username') or data.get('identifier') or data.get('email') or '').strip().lower()
+        otp = str(data.get('otp', '')).strip()
 
-        username = data['username'].strip().lower()
-        otp = data['otp'].strip()
+        if not identifier or not otp:
+            return jsonify({"status": "error", "message": "Username/Identifier and verification code are required."}), 400
 
-        if username not in pending_sessions:
-            return jsonify({"status": "error", "message": "No active pending authentication session."}), 400
+        if identifier not in pending_sessions:
+            return jsonify({"status": "error", "message": "No active pending authentication session for this user."}), 400
 
-        session_record = pending_sessions[username]
+        session_record = pending_sessions[identifier]
         if session_record['otp'] != otp:
             return jsonify({"status": "error", "message": "Invalid authentication code. Match failed."}), 400
 
@@ -309,23 +378,23 @@ def verify_otp():
         if session_record['action'] == 'register':
             mongo_col = get_mongo_collection()
             if mongo_col is not None:
-                # Find maximum unique_id
                 max_user = mongo_col.find_one(sort=[("unique_id", -1)])
                 c = (max_user["unique_id"] + 1) if (max_user and "unique_id" in max_user) else 1
                 
-                # Insert into MongoDB collection using Node.js plain-text schema
-                mongo_col.insert_one({
-                    "unique_id": c,
-                    "email": user_data["email"],
-                    "username": user_data["username"],
-                    "password": user_data["password_raw"],
-                    "passwordConf": user_data["password_raw"],
-                    "fullname": user_data["fullname"],
-                    "createdAt": datetime.datetime.now(datetime.timezone.utc)
-                })
+                # Check if user already exists
+                if not mongo_col.find_one({"$or": [{"username": user_data["username"]}, {"email": user_data["email"]}]}):
+                    mongo_col.insert_one({
+                        "unique_id": c,
+                        "email": user_data["email"],
+                        "username": user_data["username"],
+                        "password": user_data.get("password_raw", user_data["password"]),
+                        "passwordConf": user_data.get("password_raw", user_data["password"]),
+                        "fullname": user_data["fullname"],
+                        "createdAt": datetime.datetime.now(datetime.timezone.utc)
+                    })
             else:
                 db = get_users_db()
-                db['users'][username] = {
+                db['users'][user_data["username"]] = {
                     "username": user_data["username"],
                     "password": user_data["password"],
                     "fullname": user_data["fullname"],
@@ -336,18 +405,22 @@ def verify_otp():
                 }
                 save_users_db(db)
 
-        # Clear pending session cache
-        del pending_sessions[username]
+        # Clear pending session keys
+        keys_to_delete = [k for k, v in pending_sessions.items() if v == session_record]
+        for k in keys_to_delete:
+            del pending_sessions[k]
 
         return jsonify({
             "status": "success",
+            "success": True,
             "authorized": True,
             "message": "Verification complete. Security clearance approved.",
             "user": {
                 "username": user_data['username'],
                 "fullname": user_data['fullname'],
-                "role": user_data['role'],
-                "avatar": user_data['avatar']
+                "role": user_data.get('role', 'Terminal User'),
+                "avatar": user_data.get('avatar', 'assets/images/avatar.png'),
+                "email": user_data.get('email', '')
             }
         })
 

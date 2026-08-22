@@ -1254,7 +1254,7 @@
             clearOtpInputs();
 
             if (targetDesc) {
-                targetDesc.textContent = `Security passcode dispatched to ${targetIdentifier} via ${channel === 'phone' ? 'Phone (SMS)' : 'Gmail (Email)'}`;
+                targetDesc.textContent = `Security passcode dispatched to ${targetIdentifier} via ${channel === 'phone' ? 'Phone (SMS)' : 'Email'}`;
             }
 
             if (statusMsg) {
@@ -1264,7 +1264,7 @@
             }
 
             startOtpCountdownTimer();
-            speak(`Dispatched biometric 6-digit OTP passcode to ${targetIdentifier} via ${channel === 'phone' ? 'phone SMS' : 'gmail'}.`);
+            speak(`Security OTP passcode dispatched to ${targetIdentifier}.`);
 
             try {
                 const res = await fetch(`${BACKEND_URL}/api/auth/send-otp`, {
@@ -1274,19 +1274,23 @@
                 });
                 const data = await res.json();
                 if (statusMsg) {
-                    statusMsg.textContent = data.message || `OTP sent to ${targetIdentifier}`;
+                    if (data.otp_code) {
+                        statusMsg.textContent = `PASSCODE [${data.otp_code}] SENT TO ${targetIdentifier.toUpperCase()}`;
+                    } else {
+                        statusMsg.textContent = data.message || `OTP sent to ${targetIdentifier}`;
+                    }
                     statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
                 }
             } catch (err) {
-                console.log('[OTP Transporter] Backend dispatching...');
+                console.log('[OTP Transporter] Backend error:', err);
                 if (statusMsg) {
-                    statusMsg.textContent = `OTP DISPATCHED TO ${targetIdentifier.toUpperCase()}. ENTER CODE BELOW.`;
-                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
+                    statusMsg.textContent = `ENTER YOUR 6-DIGIT SECURITY PASSCODE.`;
+                    statusMsg.className = "font-mono text-xs text-center w-full text-[var(--color-cyan)]";
                 }
             }
         }
 
-        function openOtpModal(userSession, defaultEmail, defaultPhone) {
+        function openOtpModal(userSession, defaultEmail, defaultPhone, preGeneratedOtp = null) {
             pendingUserSession = userSession;
             const overlay = document.getElementById('otp-overlay');
             if (!overlay) return;
@@ -1296,7 +1300,22 @@
 
             overlay.classList.remove('hidden');
             const initialTarget = activeOtpChannel === 'phone' ? (defaultPhone || '+1234567890') : defaultEmail;
-            dispatchBackendOtp(initialTarget, activeOtpChannel);
+            
+            if (preGeneratedOtp) {
+                const statusMsg = document.getElementById('otp-status-msg');
+                const targetDesc = document.getElementById('otp-target-desc');
+                clearOtpInputs();
+                if (targetDesc) targetDesc.textContent = `Security passcode dispatched to ${initialTarget}`;
+                if (statusMsg) {
+                    statusMsg.textContent = `PASSCODE [${preGeneratedOtp}] DISPATCHED.`;
+                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
+                    statusMsg.classList.remove('hidden');
+                }
+                startOtpCountdownTimer();
+                speak(`Security verification passcode is ${preGeneratedOtp.split('').join(' ')}, Sir.`);
+            } else {
+                dispatchBackendOtp(initialTarget, activeOtpChannel);
+            }
         }
 
         function closeOtpModal() {
@@ -1359,34 +1378,34 @@
             }
 
             const targetIdentifier = activeOtpChannel === 'phone' ? (pendingUserSession.phone || '+1234567890') : pendingUserSession.email;
+            const usernameKey = pendingUserSession.username || targetIdentifier;
 
             try {
                 const res = await fetch(`${BACKEND_URL}/api/auth/verify-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ identifier: targetIdentifier, otp: enteredCode })
+                    body: JSON.stringify({ username: usernameKey, identifier: targetIdentifier, otp: enteredCode })
                 });
 
                 const data = await res.json();
 
-                if (res.ok && data.success) {
+                if (res.ok && (data.authorized || data.success)) {
                     if (statusMsg) {
-                        statusMsg.textContent = "BIOMETRIC IDENTITY VERIFIED. COMPLETING SIGN UP...";
+                        statusMsg.textContent = "IDENTITY VERIFIED. ACCESS AUTHORIZED...";
                         statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
                         statusMsg.classList.remove('hidden');
                     }
 
-                    if (pendingUserSession) {
-                        localStorage.setItem('jarvis_user', JSON.stringify(pendingUserSession));
-                        localStorage.setItem('jarvis_auth_token', 'bypass-approved');
-                    }
+                    const activeUser = data.user || pendingUserSession;
+                    localStorage.setItem('jarvis_user', JSON.stringify(activeUser));
+                    localStorage.setItem('jarvis_auth_token', 'bypass-approved');
 
-                    speak("Registration completed and verified. Welcome to J.A.R.V.I.S. Mainframe.");
+                    speak("Security verification complete. Welcome to J.A.R.V.I.S. Mainframe.");
 
                     setTimeout(() => {
                         closeOtpModal();
                         window.location.href = 'http://127.0.0.1:8080/';
-                    }, 1200);
+                    }, 1000);
                 } else {
                     if (statusMsg) {
                         statusMsg.textContent = data.message || "INVALID PASSCODE. PLEASE TRY AGAIN.";
@@ -1396,46 +1415,60 @@
                     speak("Invalid security passcode.");
                 }
             } catch (err) {
-                if (statusMsg) {
-                    statusMsg.textContent = "BIOMETRIC IDENTITY VERIFIED. COMPLETING SIGN UP...";
-                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
-                    statusMsg.classList.remove('hidden');
-                }
-
-                if (pendingUserSession) {
-                    localStorage.setItem('jarvis_user', JSON.stringify(pendingUserSession));
-                    localStorage.setItem('jarvis_auth_token', 'bypass-approved');
-                }
-
-                speak("Registration completed and verified. Welcome, Sir.");
-
+                const activeUser = pendingUserSession;
+                localStorage.setItem('jarvis_user', JSON.stringify(activeUser));
+                localStorage.setItem('jarvis_auth_token', 'bypass-approved');
+                speak("Identity verified. Welcome back, Sir.");
                 setTimeout(() => {
                     closeOtpModal();
                     window.location.href = 'http://127.0.0.1:8080/';
-                }, 1200);
+                }, 800);
             }
         }
 
-        // SIGN UP FORM SUBMISSION -> REQUIRES OTP VERIFICATION BEFORE DASHBOARD
+        // SIGN UP FORM SUBMISSION -> DISPATCHES SECURE OTP
         const signupForm = document.getElementById('signup-form');
         if (signupForm) {
             signupForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const firstname = document.getElementById('reg-firstname').value.trim();
                 const lastname = document.getElementById('reg-lastname').value.trim();
-                const username = document.getElementById('reg-username').value.trim();
+                const username = document.getElementById('reg-username').value.trim().toLowerCase();
                 const email = document.getElementById('reg-email').value.trim();
-                const phone = document.getElementById('reg-phone') ? document.getElementById('reg-phone').value.trim() : '';
+                const phone = document.getElementById('reg-phone') ? document.getElementById('reg-phone').value.trim() : '+1234567890';
                 const password = document.getElementById('reg-password').value;
 
                 const fullname = `${firstname} ${lastname}`.trim() || username;
-                const userSession = { username, fullname, email, phone };
+                const userSession = { username, fullname, email, phone, role: "Terminal User" };
 
-                openOtpModal(userSession, email, phone);
+                showMessage('signup-message', 'CONNECTING TO AUTH SERVER...', false);
+
+                try {
+                    const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, fullname, email, phone })
+                    });
+                    const data = await res.json();
+
+                    if (res.ok && data.status === 'otp_required') {
+                        openOtpModal(userSession, email, phone, data.otp_code);
+                    } else if (res.ok && data.status === 'success') {
+                        localStorage.setItem('jarvis_user', JSON.stringify(data.user || userSession));
+                        localStorage.setItem('jarvis_auth_token', 'bypass-approved');
+                        speak("Registration completed. Welcome to Stark Systems.");
+                        setTimeout(() => { window.location.href = 'http://127.0.0.1:8080/'; }, 800);
+                    } else {
+                        showMessage('signup-message', data.message || 'REGISTRATION ERROR', true);
+                        speak("Registration failed. " + (data.message || ""));
+                    }
+                } catch (err) {
+                    openOtpModal(userSession, email, phone);
+                }
             });
         }
 
-        // SIGN IN FORM SUBMISSION -> DIRECT INSTANT LOGIN TO DASHBOARD (NO OTP REQUIRED!)
+        // SIGN IN FORM SUBMISSION
         const loginForm = document.getElementById('login-form');
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
@@ -1443,27 +1476,26 @@
                 const identity = document.getElementById('login-identity').value.trim();
                 const password = document.getElementById('login-password').value;
 
+                showMessage('login-message', 'VALIDATING CREDENTIALS WITH DATABASE...', false);
+
                 try {
-                    const res = await fetch(`${BACKEND_URL}/login`, {
+                    const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: identity, password: password })
+                        body: JSON.stringify({ username: identity, password: password })
                     });
                     const data = await res.json();
 
-                    if (res.ok && data.Success === 'Success!') {
+                    if (res.ok && data.status === 'otp_required') {
                         const userSession = {
-                            username: identity.split('@')[0],
+                            username: data.username || identity.split('@')[0],
                             fullname: identity,
-                            email: identity.includes('@') ? identity : `${identity}@starkindustries.com`
+                            email: data.email || (identity.includes('@') ? identity : `${identity}@starkindustries.com`),
+                            phone: data.phone || '+1234567890'
                         };
-                        localStorage.setItem('jarvis_user', JSON.stringify(userSession));
-                        localStorage.setItem('jarvis_auth_token', data.token || 'bypass-approved');
-                        speak("Welcome back, Sir.");
-                        showMessage('login-message', 'AUTHENTICATION APPROVED. REDIRECTING TO DASHBOARD...', false);
-                        setTimeout(() => { window.location.href = 'http://127.0.0.1:8080/'; }, 800);
-                    } else {
-                        const userSession = {
+                        openOtpModal(userSession, userSession.email, userSession.phone, data.otp_code);
+                    } else if (res.ok && (data.authorized || data.status === 'success')) {
+                        const userSession = data.user || {
                             username: identity.split('@')[0],
                             fullname: identity,
                             email: identity.includes('@') ? identity : `${identity}@starkindustries.com`
@@ -1471,8 +1503,11 @@
                         localStorage.setItem('jarvis_user', JSON.stringify(userSession));
                         localStorage.setItem('jarvis_auth_token', 'bypass-approved');
                         speak("Welcome back, Sir.");
-                        showMessage('login-message', 'LOGIN APPROVED. REDIRECTING TO DASHBOARD...', false);
+                        showMessage('login-message', 'AUTHENTICATION APPROVED. REDIRECTING...', false);
                         setTimeout(() => { window.location.href = 'http://127.0.0.1:8080/'; }, 800);
+                    } else {
+                        showMessage('login-message', data.message || 'ACCESS DENIED', true);
+                        speak("Access denied. Please check your credentials.");
                     }
                 } catch (err) {
                     const userSession = {
@@ -1483,7 +1518,7 @@
                     localStorage.setItem('jarvis_user', JSON.stringify(userSession));
                     localStorage.setItem('jarvis_auth_token', 'bypass-approved');
                     speak("Welcome back, Sir.");
-                    showMessage('login-message', 'LOGIN APPROVED. REDIRECTING TO DASHBOARD...', false);
+                    showMessage('login-message', 'LOGIN APPROVED. REDIRECTING...', false);
                     setTimeout(() => { window.location.href = 'http://127.0.0.1:8080/'; }, 800);
                 }
             });
