@@ -1,14 +1,66 @@
 // ==========================================================================
-// J.A.R.V.I.S. 3.0 - Google Gemini AI Connect Engine (Cognitive Layer)
+// J.A.R.V.I.S. 3.2.0 - Google Gemini & Universal Cognitive AI Engine
 // ==========================================================================
 
+function evaluateMathExpression(expr) {
+    if (!expr || typeof expr !== 'string') return null;
+    const clean = expr.trim().toLowerCase()
+        .replace(/^what is\s+/gi, '')
+        .replace(/^calculate\s+/gi, '')
+        .replace(/^solve\s+/gi, '')
+        .replace(/^compute\s+/gi, '')
+        .replace(/^value of\s+/gi, '')
+        .replace(/^equals\s+/gi, '')
+        .replace(/^equal to\s+/gi, '')
+        .replace(/\?/g, '')
+        .trim();
+
+    // 1. Percentage check: e.g. "20% of 500"
+    const pctMatch = clean.match(/^(\d+(?:\.\d+)?)\s*%\s*(?:of|\*)\s*(\d+(?:\.\d+)?)$/);
+    if (pctMatch) {
+        const pct = parseFloat(pctMatch[1]);
+        const total = parseFloat(pctMatch[2]);
+        const res = (pct / 100) * total;
+        return `${pct}% of ${total} is **${res}**, Sir.`;
+    }
+
+    // 2. Square Root: sqrt(144) or square root of 144
+    const sqrtMatch = clean.match(/^sqrt\s*\(\s*(\d+(?:\.\d+)?)\s*\)$/i) || clean.match(/^square root of\s*(\d+(?:\.\d+)?)$/i);
+    if (sqrtMatch) {
+        const val = parseFloat(sqrtMatch[1]);
+        const res = Math.sqrt(val);
+        return `The square root of ${val} is **${parseFloat(res.toFixed(4))}**, Sir.`;
+    }
+
+    // 3. Pure arithmetic: numbers, +, -, *, /, %, ^, (, ), spaces, .
+    const isArithmetic = /^[0-9+\-*/%.^()\s]+$/.test(clean) && /[0-9]/.test(clean) && /[+\-*/%.^]/.test(clean);
+    if (isArithmetic) {
+        try {
+            const sanitized = clean.replace(/\^/g, '**');
+            const res = Function(`"use strict"; return (${sanitized})`)();
+            if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+                const formattedRes = Number.isInteger(res) ? res.toLocaleString() : parseFloat(res.toFixed(4)).toString();
+                return `The result of ${clean} is **${formattedRes}**, Sir.`;
+            }
+        } catch(e) {}
+    }
+
+    return null;
+}
+
 async function queryGeminiAPI(promptText) {
-    const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
-    let lastError = null;
+    const promptLower = promptText.toLowerCase().trim();
 
-    const promptLower = promptText.toLowerCase();
+    // 0. Instant Mathematical Computation
+    const mathResult = evaluateMathExpression(promptText);
+    if (mathResult) {
+        appendChatBubble('JARVIS', mathResult);
+        speak(mathResult.replace(/[*_#`]/g, ""));
+        updateCoreState('IDLE');
+        return;
+    }
 
-    // Image Generation Intent Detection (Expanded AI Art Patterns)
+    // Image Generation Intent Detection
     const imageKeywords = [
         "generate image", "generate picture", "generate photo", "create image", "create picture", "create photo", 
         "make image", "make picture", "make photo", "draw a", "draw", "paint a", "paint", "make a picture of", 
@@ -23,7 +75,6 @@ async function queryGeminiAPI(promptText) {
     if (isImageRequest) {
         updateCoreState('THINKING');
         
-        // Clean prompt text by removing common action prefixes
         let cleanPrompt = promptText;
         const prefixes = [
             /generate an image of/i, /generate image of/i, /generate a picture of/i, /generate picture of/i, /generate a photo of/i, /generate photo of/i,
@@ -40,29 +91,19 @@ async function queryGeminiAPI(promptText) {
             cleanPrompt = cleanPrompt.replace(pattern, "");
         }
         cleanPrompt = cleanPrompt.trim();
-        if (!cleanPrompt) {
-            cleanPrompt = "futuristic Iron Man Arc Reactor suit in neon cyan lighting";
-        }
+        if (!cleanPrompt) cleanPrompt = "futuristic Iron Man Arc Reactor suit in neon cyan lighting";
         
         const randomSeed = Math.floor(Math.random() * 1000000);
-        
-        // Exact 2D Front-View Studio Anime Portrait (Matching Reference Image naruto.jpg)
         let formattedPrompt = cleanPrompt;
-        let modelParam = "flux";
-        const promptLowerCheck = cleanPrompt.toLowerCase();
-        const isAnime = promptLowerCheck.includes('naruto') || promptLowerCheck.includes('anime') || promptLowerCheck.includes('manga') || promptLowerCheck.includes('goku') || promptLowerCheck.includes('sasuke');
+        const isAnime = promptLower.includes('naruto') || promptLower.includes('anime') || promptLower.includes('manga') || promptLower.includes('goku') || promptLower.includes('sasuke');
         
         if (isAnime) {
             formattedPrompt = `front view close-up portrait of Naruto Uzumaki, 2D anime illustration art style, spiky yellow hair, Leaf Village headband with metallic plate, one bright blue eye and one red eye, cheek whiskers, high collar orange jacket, clean 2D anime linework, painted canvas background, masterpiece`;
-            modelParam = "flux";
         } else {
             formattedPrompt = `${cleanPrompt}, bright vivid lighting, clear detailed face, high quality, sharp focus, clean vibrant colors`;
-            modelParam = "flux";
         }
         
-        // Build Pollinations AI High-Quality Image URL (2D & 3D Enhanced)
         const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(formattedPrompt)}?width=1024&height=1024&seed=${randomSeed}&nologo=true&enhance=true`;
-        
         speak(`Generating AI image for ${cleanPrompt}, Sir.`);
         
         setTimeout(() => {
@@ -71,17 +112,15 @@ async function queryGeminiAPI(promptText) {
             speak("Here is your requested image, Sir.");
             updateCoreState('IDLE');
         }, 1200);
-        
         return;
     }
 
-    // Classification Keywords
+    // Code Automation & Competitive Programming Intent Detection
     const cpKeywords = ["problem", "codeforces", "codechef", "leetcode", "atcoder", "hackerrank", "uva", "spoj", "constraints", "sample input", "sample output"];
     const codingKeywords = ["code", "python", "javascript", "js", "c++", "cpp", "java", "html", "css", "function", "programming", "compile", "debug", "script", "regex"];
     const debugKeywords = ["error", "exception", "traceback", "syntaxerror", "nameerror", "typeerror", "bug", "crash", "fails", "failed", "fix"];
     const algoKeywords = ["algorithm", "how does", "sorting", "searching", "data structure", "bubble sort", "binary search", "dijkstra", "fibonacci", "graph", "tree", "linked list"];
 
-    // 1. Intent Detection
     const hasWrite = promptLower.includes("write") || promptLower.includes("create") || promptLower.includes("build") || promptLower.includes("implement") || promptLower.includes("solve") || promptLower.includes("run") || promptLower.includes("compile");
     const hasLang = codingKeywords.some(k => promptLower.includes(k));
 
@@ -90,9 +129,7 @@ async function queryGeminiAPI(promptText) {
     let isDebugging = debugKeywords.some(k => promptLower.includes(k)) && (promptLower.includes("code") || promptLower.includes("file") || promptLower.includes("script") || promptLower.includes("line") || promptLower.includes("\n"));
     let isAlgoRequest = algoKeywords.some(k => promptLower.includes(k)) && !isCodeGeneration;
 
-    // A. Leaf: Complete Problem Statement (Automatic Code Interpreter)
-    const isDetailedCP = isCP && (promptText.length > 200 || promptLower.includes("input") || promptLower.includes("output") || promptLower.includes("constraints") || promptLower.includes("n =") || promptLower.includes("k ="));
-    if (isDetailedCP) {
+    if (isCP && (promptText.length > 200 || promptLower.includes("input") || promptLower.includes("output") || promptLower.includes("constraints"))) {
         let lang = "cpp";
         if (promptLower.includes("python")) lang = "python";
         else if (promptLower.includes("javascript") || promptLower.includes("js")) lang = "javascript";
@@ -101,7 +138,6 @@ async function queryGeminiAPI(promptText) {
         return;
     }
 
-    // B. Leaf: Code Generation (Automatic Code Interpreter)
     if (isCodeGeneration) {
         let lang = "python";
         if (promptLower.includes("c++") || promptLower.includes("cpp")) lang = "cpp";
@@ -113,85 +149,55 @@ async function queryGeminiAPI(promptText) {
         return;
     }
 
-    // C. Setup System Instructions for remaining requests (Algorithm, Debugging, CP Title, General Chat)
-    let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max) so they translate perfectly to voice feedback. Do not output markdown lists, stars, or header syntax.";
-    let detectedModeBadge = "";
+    // Google Gemini API (if key AIzaSy... is configured)
+    if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
+        const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+        let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max). Do not output markdown lists, stars, or header syntax.";
+        let detectedModeBadge = "";
 
-    if (isAlgoRequest) {
-        activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Algorithm Explanations. Describe what the algorithm does, how it works, and its time complexity in simple terms. Keep it under 5 sentences, Sir.";
-        detectedModeBadge = "🧠 Mode Detected: Algorithm Explanation\n\n";
-    } else if (isDebugging) {
-        activeInstruction = "You are J.A.R.V.I.S. Debugging Assistant. Locate the bug, explain why it occurred in simple terms, and provide the corrected code. Keep it crisp and polite, Sir.";
-        detectedModeBadge = "🧠 Mode Detected: Debugger\n\n";
-    } else if (isCP) {
-        activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. When the user mentions a competitive programming problem name/ID (e.g., Maximum Factors Problem, Two Sum, Codeforces 210A): 1. NEVER assume the problem statement. 2. If the full problem statement is provided, solve exactly that problem. 3. If only the problem title/ID is provided, politely ask for the complete statement or contest link. Never invent a different problem. 4. Output: Algorithm, Complexity, C++17 Code, Explanation. Use Markdown, speak politely using 'Sir', and do not invent code for unknown statements.";
-        detectedModeBadge = "🧠 Mode Detected: Competitive Programming\n\n";
-    }
+        if (isAlgoRequest) {
+            activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Algorithm Explanations. Describe what the algorithm does, how it works, and its time complexity in simple terms. Keep it under 5 sentences, Sir.";
+            detectedModeBadge = "🧠 Mode Detected: Algorithm Explanation\n\n";
+        } else if (isDebugging) {
+            activeInstruction = "You are J.A.R.V.I.S. Debugging Assistant. Locate the bug, explain why it occurred in simple terms, and provide the corrected code. Keep it crisp and polite, Sir.";
+            detectedModeBadge = "🧠 Mode Detected: Debugger\n\n";
+        } else if (isCP) {
+            activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. Output: Algorithm, Complexity, C++17 Code, Explanation. Use Markdown, speak politely using 'Sir'.";
+            detectedModeBadge = "🧠 Mode Detected: Competitive Programming\n\n";
+        }
 
-    for (let model of models) {
-        const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
-        const requestPayload = {
-            contents: [{
-                parts: [{ text: promptText }]
-            }],
-            systemInstruction: {
-                parts: [{ 
-                    text: activeInstruction 
-                }]
-            }
-        };
+        for (let model of models) {
+            const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+            const requestPayload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: activeInstruction }] }
+            };
 
-        try {
-            const response = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestPayload)
-            });
+            try {
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestPayload)
+                });
 
-            if (response.ok) {
-                const data = await response.json();
-                let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (responseText) {
-                    let buttonsConfig = null;
-                    if (isAlgoRequest) {
-                        let algoName = promptText.replace(/algorithm/gi, "").replace(/explain/gi, "").replace(/how does/gi, "").replace(/work/gi, "").replace(/\?/gi, "").trim();
-                        if (!algoName) algoName = "this";
-                        responseText = responseText + `\n\n*Sir, would you like me to generate and run code for this algorithm?*`;
-                        buttonsConfig = {
-                            algoName: algoName,
-                            list: [
-                                { text: "🐍 PYTHON", lang: "python" },
-                                { text: "⚙️ C++", lang: "cpp" },
-                                { text: "☕ JAVA", lang: "java" },
-                                { text: "⚡ JAVASCRIPT", lang: "javascript" }
-                            ]
-                        };
+                if (response.ok) {
+                    const data = await response.json();
+                    let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (responseText) {
+                        appendChatBubble('JARVIS', detectedModeBadge + responseText);
+                        speak(responseText);
+                        updateCoreState('IDLE');
+                        return;
                     }
-                    appendChatBubble('JARVIS', detectedModeBadge + responseText, buttonsConfig);
-                    speak(data.candidates?.[0]?.content?.parts?.[0]?.text);
-                    updateCoreState('IDLE');
-                    return;
                 }
-            } else {
-                const errDetails = await response.json();
-                lastError = errDetails.error?.message || `HTTP error ${response.status}`;
-                if (lastError.includes("API key not valid") || response.status === 401) {
-                    break;
-                }
-            }
-        } catch (err) {
-            lastError = err.message;
+            } catch (err) {}
         }
     }
 
-    console.error("Gemini API connection failure:", lastError);
-
-    // Intelligent Knowledge Fallback for all queries when Gemini API link is unreachable
+    // Universal Knowledge & Live Intelligence Engine
     const fallbackAnswer = await generateFallbackKnowledge(promptText);
     appendChatBubble('JARVIS', fallbackAnswer);
-    speak(fallbackAnswer.replace(/[*_#`]/g, ""));
+    speak(fallbackAnswer.replace(/[*_#`$]/g, ""));
     updateCoreState('IDLE');
 }
 
@@ -202,7 +208,7 @@ async function fetchOnlineIntelligence(query) {
         .replace(/^what is the definition of\s+/i, '')
         .replace(/^what is the meaning of\s+/i, '')
         .replace(/^what is the\s+/i, '')
-        .replace(/^what is\s+/i, '')
+        .replace(/^what is an?\s+/i, '')
         .replace(/^what are\s+/i, '')
         .replace(/^what does\s+/i, '')
         .replace(/^explain\s+/i, '')
@@ -211,6 +217,7 @@ async function fetchOnlineIntelligence(query) {
         .replace(/^meaning of\s+/i, '')
         .replace(/^who is\s+/i, '')
         .replace(/^who was\s+/i, '')
+        .replace(/,\s*no explanation.*$/i, '')
         .replace(/\?/g, '')
         .trim();
 
@@ -218,7 +225,7 @@ async function fetchOnlineIntelligence(query) {
 
     // 1. DuckDuckGo Instant Knowledge API
     try {
-        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
+        const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(cleanTopic)}&format=json`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2500);
         const res = await fetch(ddgUrl, { signal: controller.signal });
@@ -231,22 +238,29 @@ async function fetchOnlineIntelligence(query) {
         }
     } catch (e) {}
 
-    // 2. Wikipedia Encyclopedic REST API
+    // 2. Wikipedia Search Query + Summary
     try {
-        const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTopic)}`;
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanTopic)}&utf8=&format=json&origin=*`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
-        const res = await fetch(wikiUrl, { 
-            signal: controller.signal,
-            headers: { 'Accept': 'application/json' }
-        });
+        const sRes = await fetch(searchUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.extract && data.type !== 'disambiguation' && data.extract.length > 20) {
-                const sentences = data.extract.split(/(?<=[.!?])\s+/);
-                const shortExtract = sentences.slice(0, 3).join(' ');
-                return `${shortExtract}, Sir.`;
+        
+        if (sRes.ok) {
+            const sData = await sRes.json();
+            const results = sData.query?.search || [];
+            for (let item of results.slice(0, 3)) {
+                if (!item.title) continue;
+                const sumUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(item.title)}`;
+                const sumRes = await fetch(sumUrl, { headers: { 'Accept': 'application/json' } });
+                if (sumRes.ok) {
+                    const sumData = await sumRes.json();
+                    if (sumData.extract && sumData.type !== 'disambiguation' && sumData.extract.length > 20 && !sumData.extract.includes("may refer to:")) {
+                        const sentences = sumData.extract.split(/(?<=[.!?])\s+/);
+                        const shortExtract = sentences.slice(0, 3).join(' ');
+                        return `${shortExtract}, Sir.`;
+                    }
+                }
             }
         }
     } catch (e) {}
@@ -256,6 +270,7 @@ async function fetchOnlineIntelligence(query) {
 
 async function generateFallbackKnowledge(query) {
     const q = query.toLowerCase().trim();
+    const isNoExplanation = q.includes("no explanation") || q.includes("no explain");
 
     // 1. Greetings & Identity
     if (/\b(hello|hi|hey|greetings|good morning|good evening|good afternoon)\b/i.test(q)) {
@@ -277,29 +292,23 @@ async function generateFallbackKnowledge(query) {
         return "I can answer questions across science, mathematics, coding, and history, generate 4K AI images, execute local system automation, control media playback, and run code in our localized interpreter, Sir!";
     }
 
-    // 2. City Knowledge & Atmospheric Triggers
-    if (/\b(delhi|new delhi)\b/i.test(q)) {
-        if (typeof checkWeather === 'function') checkWeather("Delhi");
-        return "Delhi (New Delhi) is the capital territory of India, renowned for its rich history, iconic landmarks (Red Fort, Qutub Minar, India Gate), and vibrant cultural heritage, Sir.";
+    // 2. Stark Industries & Iron Man Lore
+    if (/\b(iron\s*man|ironman|tony\s*stark)\b/i.test(q)) {
+        return "Iron Man is the superhero persona of Anthony Edward 'Tony' Stark—genius billionaire, industrialist, and founder of the Avengers. He engineered high-tech powered armor suits powered by the Arc Reactor to protect global security, Sir.";
     }
-    if (/\bmumbai\b/i.test(q)) {
-        if (typeof checkWeather === 'function') checkWeather("Mumbai");
-        return "Mumbai is the financial capital of India, famous for the Gateway of India, Marine Drive, and the Bollywood film industry, Sir.";
-    }
-    if (/\blondon\b/i.test(q)) {
-        if (typeof checkWeather === 'function') checkWeather("London");
-        return "London is the capital city of the United Kingdom, famous for Big Ben, the Tower of London, and its historic global prominence, Sir.";
-    }
-    if (/\btokyo\b/i.test(q)) {
-        if (typeof checkWeather === 'function') checkWeather("Tokyo");
-        return "Tokyo is the capital of Japan, celebrated for its blend of ultramodern technology, ancient temples, and vibrant urban culture, Sir.";
-    }
-    if (/\bnew york\b/i.test(q)) {
-        if (typeof checkWeather === 'function') checkWeather("New York");
-        return "New York City is a major global hub for international finance, diplomacy, culture, and architecture, Sir.";
+    if (/\barc\s*reactor\b/i.test(q)) {
+        return "The Arc Reactor is a clean fusion energy core invented by Howard Stark and miniaturized by Tony Stark to power his life-support electromagnets and high-output Iron Man armor systems, Sir.";
     }
 
-    // 3. Physics & Mechanics
+    // 3. Application & Shortcut Controls (YouTube, Browser, OS)
+    if (q.includes("youtube playback speed") || q.includes("playback speed control") || q.includes("youtube speed")) {
+        return "On YouTube, you can control playback speed using keyboard shortcuts: 1. Press **Shift + >** (period) to speed up video (up to 2x). 2. Press **Shift + <** (comma) to slow down video. 3. Or click the Settings Gear icon ⚙️ on the video player and select **Playback speed**, Sir.";
+    }
+    if (/\b(design.*animation|animation.*design|what is design)\b/i.test(q)) {
+        return "Design is the systematic creation of functional and visual systems. In digital media and animation, design orchestrates layout, keyframe timing, physics easing, and visual hierarchy to communicate information and bring interfaces to life, Sir.";
+    }
+
+    // 4. Physics & Mechanics
     if (/\bdynamics\b/i.test(q)) {
         return "Dynamics is the branch of classical mechanics concerned with the study of forces and torques and their effect on the motion of physical bodies, governed by Newton's Laws of Motion, Sir.";
     }
@@ -309,11 +318,20 @@ async function generateFallbackKnowledge(query) {
     if (q === "formula" || q === "what is formula" || q === "what is a formula" || q === "define formula") {
         return "In science and mathematics, a Formula is a concise symbolic representation or rule (such as F = ma or E = mc²) used to state relationships between physical quantities or compute mathematical values, Sir.";
     }
-    if (q.includes("photosynthesis")) {
-        return "Photosynthesis is the biological process by which autotrophic organisms (such as plants, algae, and cyanobacteria) convert light energy from sunlight into chemical energy in the form of glucose, releasing oxygen as a byproduct. Chemical equation: **6CO₂ + 6H₂O + Light Energy ➔ C₆H₁₂O₆ + 6O₂**, Sir.";
+    if (q.includes("kinetic energy")) {
+        if (isNoExplanation) return "Kinetic Energy Formula: **KE = ½ m v²** (where $m$ = mass, $v$ = velocity), Sir.";
+        return "Kinetic Energy ($KE$) is the energy an object possesses due to its motion: **KE = ½ m v²**, where $m$ is mass and $v$ is velocity, measured in Joules (J), Sir.";
+    }
+    if (q.includes("potential energy")) {
+        if (isNoExplanation) return "Potential Energy Formula: **PE = m g h** (where $m$ = mass, $g$ = 9.8 m/s², $h$ = height), Sir.";
+        return "Gravitational Potential Energy ($PE$) is the energy stored in an object due to its position: **PE = m × g × h**, where $m$ is mass, $g$ is gravity (~9.8 m/s² on Earth), and $h$ is height in meters, Sir.";
     }
     if (q.includes("force formula") || q.includes("formula of force") || q.includes("formula for force") || q === "force" || q.includes("what is force")) {
+        if (isNoExplanation) return "Force Formula: **F = m × a** (Force = mass × acceleration, measured in Newtons), Sir.";
         return "According to Newton's Second Law of Motion, Force ($F$) is calculated as mass ($m$) multiplied by acceleration ($a$): **F = m × a**. In the SI system, force is measured in Newtons (N), where 1 N = 1 kg·m/s², Sir.";
+    }
+    if (q.includes("photosynthesis")) {
+        return "Photosynthesis is the biological process by which autotrophic organisms (such as plants, algae, and cyanobacteria) convert light energy from sunlight into chemical energy in the form of glucose, releasing oxygen as a byproduct. Chemical equation: **6CO₂ + 6H₂O + Light Energy ➔ C₆H₁₂O₆ + 6O₂**, Sir.";
     }
     if (q.includes("newton's law") || q.includes("newtons law") || q.includes("laws of motion")) {
         return "Newton's Three Laws of Motion: 1. **Inertia**: An object remains at rest or in uniform motion unless acted upon by a net external force. 2. **Force**: F = m × a. 3. **Action-Reaction**: For every action, there is an equal and opposite reaction, Sir.";
@@ -326,12 +344,6 @@ async function generateFallbackKnowledge(query) {
     }
     if (q.includes("ohm's law") || q.includes("ohms law") || q.includes("ohm law")) {
         return "Ohm's Law states that the current ($I$) flowing through a conductor between two points is directly proportional to voltage ($V$) and inversely proportional to resistance ($R$): **V = I × R** (Voltage = Current × Resistance), Sir.";
-    }
-    if (q.includes("kinetic energy")) {
-        return "Kinetic Energy ($KE$) is the energy an object possesses due to its motion: **KE = ½ m v²**, where $m$ is mass and $v$ is velocity, measured in Joules (J), Sir.";
-    }
-    if (q.includes("potential energy")) {
-        return "Gravitational Potential Energy ($PE$) is the energy stored in an object due to its position: **PE = m × g × h**, where $m$ is mass, $g$ is gravity (~9.8 m/s² on Earth), and $h$ is height in meters, Sir.";
     }
     if (q.includes("work formula") || q.includes("formula of work") || q.includes("what is work in physics")) {
         return "Work ($W$) in physics is the measure of energy transfer when an object is moved over a distance by an external force: **W = F × d × cos(θ)**, measured in Joules (J), Sir.";
@@ -364,7 +376,7 @@ async function generateFallbackKnowledge(query) {
         return "Thermodynamics is the branch of physics that deals with heat, work, and temperature. The First Law states energy cannot be created or destroyed; the Second Law states entropy of an isolated system always increases, Sir.";
     }
 
-    // 4. Biology, Chemistry & Medicine
+    // 5. Biology, Chemistry & Medicine
     if (q.includes("mitochondria") || q.includes("mitochondrion")) {
         return "The Mitochondria is the organelle known as the 'powerhouse of the cell', responsible for generating adenosine triphosphate (ATP) through cellular respiration to fuel biochemical reactions, Sir.";
     }
@@ -387,7 +399,7 @@ async function generateFallbackKnowledge(query) {
         return "The chemical formula for water is **H₂O**, consisting of two Hydrogen atoms covalently bonded to one Oxygen atom, Sir.";
     }
 
-    // 5. Mathematics & Geometry
+    // 6. Mathematics & Geometry
     if (q.includes("pythagorean theorem") || q.includes("pythagoras theorem") || q.includes("pythagoras")) {
         return "The Pythagorean Theorem states that in any right-angled triangle, the square of the hypotenuse ($c$) equals the sum of the squares of the other two sides: **a² + b² = c²**, Sir.";
     }
@@ -397,11 +409,8 @@ async function generateFallbackKnowledge(query) {
     if (q.includes("quadratic formula") || q.includes("quadratic equation")) {
         return "The quadratic formula solves $ax² + bx + c = 0$ as: **x = (-b ± √(b² - 4ac)) / (2a)**, Sir.";
     }
-    if (q.includes("mathematics") || q.includes("maths") || q.includes("math")) {
-        return "Mathematics is the science of numbers, quantity, structure, space, and change, providing the foundational architecture for logic, engineering, physics, and computer science, Sir.";
-    }
 
-    // 6. Computer Science & AI
+    // 7. Computer Science & AI
     if (q.includes("artificial intelligence") || q === "ai" || q.includes("what is ai")) {
         return "Artificial Intelligence (AI) is the discipline of building software systems and models capable of performing tasks requiring human cognition—including natural language processing, visual perception, decision-making, and automated problem solving, Sir.";
     }
@@ -423,63 +432,20 @@ async function generateFallbackKnowledge(query) {
     if (q.includes("recursion")) {
         return "Recursion is a programming paradigm where a function invokes itself to resolve smaller subproblems until encountering a base termination case, Sir.";
     }
-    if (q.includes("stack")) {
-        return "A Stack is a linear data structure following the Last-In, First-Out (LIFO) protocol, utilized in function call stacks and syntax parsing, Sir.";
-    }
-    if (q.includes("queue")) {
-        return "A Queue is a linear data structure following the First-In, First-Out (FIFO) protocol, utilized in breadth-first traversal and asynchronous task dispatching, Sir.";
-    }
     if (q.includes("blockchain")) {
-        return "Blockchain is a cryptographically secured, decentralized, distributed digital ledger that records immutable transactions across a peer-to-peer network, Sir.";
+        return "Blockchain is a cryptographically secured, decentralized, distributed digital ledger that records immutable transactions across a peer-peer network, Sir.";
     }
 
-    // 7. General Academic Domains
-    if (q.includes("physics")) {
-        return "Physics is the fundamental natural science studying matter, energy, space, time, and the universal forces governing the cosmos, Sir.";
-    }
-    if (q.includes("chemistry")) {
-        return "Chemistry is the science of matter, exploring the structure, properties, composition, and transformations of atoms and molecular compounds, Sir.";
-    }
-    if (q.includes("biology")) {
-        return "Biology is the scientific study of living organisms, their cellular physiology, genetic mechanics, evolution, and ecological interactions, Sir.";
-    }
-    if (q.includes("history")) {
-        return "History is the systematic study and documentation of past human civilizations, sociocultural developments, and historical eras, Sir.";
-    }
-    if (q.includes("economics")) {
-        return "Economics is the social science analyzing production, distribution, and consumption of goods, capital, and financial systems, Sir.";
-    }
-
-    // 8. User Name / Introduction Handling
-    const nameMatch = q.match(/(?:i am|my name is|mera naam|naam)\s+([a-z\s]+)/i);
-    if (nameMatch && !q.includes("what") && !q.includes("who")) {
-        const rawName = nameMatch[1].replace(/gupta|kumar|sharma|singh|verma/gi, m => m).trim();
-        if (rawName && rawName.length > 1) {
-            const formattedName = rawName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-            const userObj = {
-                username: rawName.toLowerCase().replace(/\s+/g, ''),
-                fullname: formattedName,
-                role: "Primary User // Administrator",
-                avatar: "assets/images/avatar.png"
-            };
-            try {
-                localStorage.setItem('jarvis_user', JSON.stringify(userObj));
-                if (typeof loadUserProfile === 'function') loadUserProfile(userObj);
-            } catch(e) {}
-            return `Pleasure to meet you, ${formattedName}! I have updated your administrator profile on the Stark Mainframe. How may I assist you today, Sir?`;
-        }
-    }
-
-    // 9. Live Online Intelligence Engine (DuckDuckGo + Wikipedia)
+    // 8. Live Online Intelligence Engine (DuckDuckGo + Wikipedia Search)
     const onlineAnswer = await fetchOnlineIntelligence(query);
     if (onlineAnswer) {
         return onlineAnswer;
     }
 
-    // 10. Fallback with Guidance
+    // 9. Fallback with Guidance
     const topic = query.replace(/^what is\s+/i, '').replace(/^explain\s+/i, '').replace(/\?/g, '').trim();
     const formattedTopic = (topic || query).charAt(0).toUpperCase() + (topic || query).slice(1);
-    return `I have cataloged your query regarding **${formattedTopic}**, Sir. For real-time unrestricted generative intelligence across any topic (like Gemini or ChatGPT), you can also link your free Gemini API key in Settings (⚙️).`;
+    return `I have cataloged your query regarding **${formattedTopic}**, Sir. For unrestricted real-time generative conversation across any topic (like Gemini or ChatGPT), you can also link your free Gemini API key in Settings (⚙️).`;
 }
 
 async function triggerCodeAutomation(promptText, language) {
@@ -513,12 +479,6 @@ async function triggerCodeAutomation(promptText, language) {
                 updateCoreState('IDLE');
                 return;
             }
-        } else {
-            const data = await response.json().catch(() => ({ message: `HTTP status ${response.status}` }));
-            appendChatBubble('JARVIS', `❌ **Automation Server Error**: ${data.message}`);
-            speak("Sir, the local execution server returned an error status.");
-            updateCoreState('IDLE');
-            return;
         }
     } catch (err) {
         console.error("Code Interpreter automation failure:", err);
