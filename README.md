@@ -93,7 +93,7 @@ JARVIS-AI/
 │
 ├── backend/
 │   ├── server.py                   # Flask API entry point (Port 5000)
-│   ├── config.py
+│   ├── server_config.py
 │   ├── api/                        # REST Blueprints (Auth, Chat, System, Weather, AI, Files, Code)
 │   ├── automation/                 # OS automation, media & hardware telemetry
 │   ├── database/                   # Chat history database manager
@@ -161,20 +161,70 @@ JARVIS-AI/
 └── package.json                    # Project metadata & npm scripts
 ```
 
-### 2. Run a Local Server
-Due to browser security protocols, the **Web Speech Recognition API** requires hosting on a secure origin or `localhost` to allow microphone permissions.
+---
 
-Run a lightweight static server using Node.js:
-```bash
-# Start a quick local web server using npx
-npx http-server -p 8080
+## ⚡ Quickstart & Virtual Environment Setup
+
+### 1. Create and Activate `.venv`
+
+#### 🪟 Windows (PowerShell)
+```powershell
+# 1. Create Python 3.12 Virtual Environment
+py -3.12 -m venv .venv
+
+# 2. Activate Virtual Environment
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install Dependencies
+pip install -r requirements.txt
 ```
-Alternatively, if you use VS Code, you can click **Go Live** using the *Live Server* extension.
 
-### 3. Access J.A.R.V.I.S.
-Open your browser and navigate to:
-```url
-http://localhost:8080
+#### 🪟 Windows (Command Prompt)
+```cmd
+# 1. Create Virtual Environment
+py -3.12 -m venv .venv
+
+# 2. Activate Virtual Environment
+.\.venv\Scripts\activate.bat
+
+# 3. Install Dependencies
+pip install -r requirements.txt
+```
+
+#### 🐧 Linux / 🍎 macOS
+```bash
+# 1. Create Virtual Environment
+python3 -m venv .venv
+
+# 2. Activate Virtual Environment
+source .venv/bin/activate
+
+# 3. Install Dependencies
+pip install -r requirements.txt
+```
+
+---
+
+## 🚀 Launching J.A.R.V.I.S.
+
+### 🌟 Unified Dual-Server Launcher (Recommended)
+With your virtual environment active, run:
+```powershell
+python .\run_dashboard.py
+```
+This automatically initializes:
+* ⚙️ **Flask REST API Service**: `http://127.0.0.1:5000`
+* 🖥️ **Tactical Glassmorphic Web HUD**: `http://127.0.0.1:8080` (or `8081`)
+* 🌐 **Auto-opens** your default browser directly into the HUD.
+
+### 🎙️ Standalone Multimodal Live Audio Client (PyQt6 Desktop)
+```powershell
+python main.py
+```
+
+### 🧪 Run Automated Tests
+```powershell
+pytest
 ```
 
 ---
