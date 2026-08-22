@@ -189,86 +189,229 @@ async function queryGeminiAPI(promptText) {
     console.error("Gemini API connection failure:", lastError);
 
     // Intelligent Knowledge Fallback for all queries when Gemini API link is unreachable
-    const fallbackAnswer = generateFallbackKnowledge(promptText);
+    const fallbackAnswer = await generateFallbackKnowledge(promptText);
     appendChatBubble('JARVIS', fallbackAnswer);
     speak(fallbackAnswer.replace(/[*_#`]/g, ""));
     updateCoreState('IDLE');
 }
 
-function generateFallbackKnowledge(query) {
+async function fetchWikipediaSummary(topic) {
+    if (!topic || topic.length < 2) return null;
+    try {
+        const cleanTitle = topic.replace(/[?.,!]/g, '').trim();
+        const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanTitle)}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        
+        const res = await fetch(url, { 
+            signal: controller.signal,
+            headers: { 'Accept': 'application/json' }
+        });
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.extract && data.type !== 'disambiguation') {
+                // Return first 2-3 sentences for clean speech & display
+                const sentences = data.extract.split(/(?<=[.!?])\s+/);
+                const shortExtract = sentences.slice(0, 3).join(' ');
+                return `${shortExtract} (Source: Encyclopedic Archives), Sir.`;
+            }
+        }
+    } catch (e) {
+        // Network or timeout failure
+    }
+    return null;
+}
+
+async function generateFallbackKnowledge(query) {
     const q = query.toLowerCase().trim();
 
-    // Greetings & Identity (Using word boundary regex so 'delhi' does not match 'hi')
-    if (/\b(hello|hi|hey|greetings)\b/i.test(q) || q.includes("how are you")) {
+    // 1. Greetings & Identity
+    if (/\b(hello|hi|hey|greetings|good morning|good evening|good afternoon)\b/i.test(q)) {
         return "Hello Sir! I am fully operational and ready to assist you. Systems are running smoothly.";
     }
-    
-    // City Knowledge & Atmospheric Data
-    if (q === "delhi" || q.includes("delhi")) {
-        if (typeof checkWeather === 'function') checkWeather("Delhi");
-        return "Delhi (New Delhi) is the capital territory of India, renowned for its rich history, iconic landmarks (Red Fort, Qutub Minar, India Gate), and vibrant cultural heritage, Sir.";
+    if (q.includes("how are you")) {
+        return "All internal diagnostics and core telemetry are operating at peak performance, Sir. How may I assist you today?";
     }
-    if (q === "mumbai" || q.includes("mumbai")) {
-        if (typeof checkWeather === 'function') checkWeather("Mumbai");
-        return "Mumbai is the financial hub and largest city of India, famous for the Gateway of India, Marine Drive, and the Bollywood film industry, Sir.";
-    }
-    if (q === "london" || q.includes("london")) {
-        if (typeof checkWeather === 'function') checkWeather("London");
-        return "London is the capital city of the United Kingdom, famous for Big Ben, the Tower of London, and its historic global prominence, Sir.";
-    }
-    if (q === "tokyo" || q.includes("tokyo")) {
-        if (typeof checkWeather === 'function') checkWeather("Tokyo");
-        return "Tokyo is the capital of Japan, celebrated for its blend of ultramodern technology, ancient temples, and vibrant urban culture, Sir.";
-    }
-    if (q.includes("namaste") || q.includes("kaise ho") || q.includes("kaise hain") || q.includes("kya haal hai")) {
-        return "Namaste Sir! Main bilkul theek hoon. Stark System Diagnostics normal hain. Main aapki kya sahayata kar sakta hoon?";
+    if (q.includes("who are you") || q.includes("your name") || q.includes("what are you") || q.includes("what is your name")) {
+        return "I am J.A.R.V.I.S. (Just A Rather Very Intelligent System), your advanced automated AI assistant and Stark Mainframe coordinator, Sir.";
     }
     if (q.includes("tum kaun ho") || q.includes("aap kaun ho") || q.includes("kaun ho tum")) {
         return "Main J.A.R.V.I.S. (Just A Rather Very Intelligent System) hoon, aapka advanced AI assistant aur Stark Mainframe coordinator, Sir.";
     }
-    if (q.includes("kya kar sakte ho") || q.includes("tum kya kar sakte ho")) {
-        return "Main aapki har sawaal ka jawab de sakta hoon, coding kar sakta hoon, AI images generate kar sakta hoon, weather check kar sakta hoon aur system commands execute kar sakta hoon, Sir!";
+    if (q.includes("namaste") || q.includes("kaise ho") || q.includes("kaise hain") || q.includes("kya haal hai")) {
+        return "Namaste Sir! Main bilkul theek hoon. Stark System Diagnostics normal hain. Main aapki kya sahayata kar sakta hoon?";
+    }
+    if (q.includes("kya kar sakte ho") || q.includes("tum kya kar sakte ho") || q.includes("what can you do")) {
+        return "I can answer questions across science, mathematics, coding, and history, generate 4K AI images, execute local system automation, control media playback, and run code in our localized interpreter, Sir!";
     }
 
-    // Subject & Academic Knowledge Base
-    if (q.includes("mathematics") || q.includes("maths") || q.includes("math")) {
-        return "Mathematics is the abstract science of numbers, quantity, structure, space, and change. It provides the foundational framework for logic, physics, engineering, and computer science, Sir.";
+    // 2. City Knowledge & Atmospheric Triggers
+    if (/\b(delhi|new delhi)\b/i.test(q)) {
+        if (typeof checkWeather === 'function') checkWeather("Delhi");
+        return "Delhi (New Delhi) is the capital territory of India, renowned for its rich history, iconic landmarks (Red Fort, Qutub Minar, India Gate), and vibrant cultural heritage, Sir.";
     }
-    if (q.includes("physics")) {
-        return "Physics is the natural science that studies matter, motion, energy, force, space, and time, exploring fundamental laws from subatomic particles to the cosmos, Sir.";
+    if (/\bmumbai\b/i.test(q)) {
+        if (typeof checkWeather === 'function') checkWeather("Mumbai");
+        return "Mumbai is the financial capital of India, famous for the Gateway of India, Marine Drive, and the Bollywood film industry, Sir.";
     }
-    if (q.includes("chemistry")) {
-        return "Chemistry is the scientific discipline that studies elements, compounds, atoms, molecules, and chemical reactions that transform matter, Sir.";
+    if (/\blondon\b/i.test(q)) {
+        if (typeof checkWeather === 'function') checkWeather("London");
+        return "London is the capital city of the United Kingdom, famous for Big Ben, the Tower of London, and its historic global prominence, Sir.";
     }
-    if (q.includes("biology")) {
-        return "Biology is the scientific study of life and living organisms, covering their cellular structure, genetics, physiological mechanisms, and evolution, Sir.";
+    if (/\btokyo\b/i.test(q)) {
+        if (typeof checkWeather === 'function') checkWeather("Tokyo");
+        return "Tokyo is the capital of Japan, celebrated for its blend of ultramodern technology, ancient temples, and vibrant urban culture, Sir.";
     }
-    if (q.includes("history")) {
-        return "History is the systematic study and documentation of the human past, analyzing civilizations, historical events, and cultural transformations over time, Sir.";
+    if (/\bnew york\b/i.test(q)) {
+        if (typeof checkWeather === 'function') checkWeather("New York");
+        return "New York City is a major global hub for international finance, diplomacy, culture, and architecture, Sir.";
     }
-    if (q.includes("geography")) {
-        return "Geography is the study of Earth's landscapes, environments, climates, and the relationships between people and their natural surroundings, Sir.";
+
+    // 3. Physics & Fundamental Scientific Formulas
+    if (q.includes("photosynthesis")) {
+        return "Photosynthesis is the biological process by which autotrophic organisms (such as plants, algae, and cyanobacteria) convert light energy from sunlight into chemical energy in the form of glucose, releasing oxygen as a byproduct. Chemical equation: **6CO₂ + 6H₂O + Light Energy ➔ C₆H₁₂O₆ + 6O₂**, Sir.";
     }
-    if (q.includes("computer science") || q.includes("coding")) {
-        return "Computer Science is the study of computation, algorithmic problem solving, software engineering, artificial intelligence, and system architecture, Sir.";
+    if (q.includes("force formula") || q.includes("formula of force") || q.includes("formula for force") || q === "force" || q.includes("what is force")) {
+        return "According to Newton's Second Law of Motion, Force ($F$) is calculated as mass ($m$) multiplied by acceleration ($a$): **F = m × a**. In the SI system, force is measured in Newtons (N), where 1 N = 1 kg·m/s², Sir.";
     }
-    if (q.includes("economics")) {
-        return "Economics is the social science that analyzes the production, distribution, and consumption of goods, services, and market financial systems, Sir.";
+    if (q.includes("newton's law") || q.includes("newtons law") || q.includes("laws of motion")) {
+        return "Newton's Three Laws of Motion: 1. **Inertia**: An object remains at rest or in uniform motion unless acted upon by a net external force. 2. **Force**: F = m × a. 3. **Action-Reaction**: For every action, there is an equal and opposite reaction, Sir.";
     }
-    if (q.includes("who are you") || q.includes("your name") || q.includes("what are you")) {
-        return "I am J.A.R.V.I.S. (Just A Rather Very Intelligent System), your advanced automated AI assistant and Stark Mainframe coordinator, Sir.";
+    if (q.includes("speed of light") || q.includes("velocity of light")) {
+        return "The speed of light in a vacuum is exactly **299,792,458 meters per second** (~3.0 × 10⁸ m/s, or approximately 186,282 miles per second), denoted by the universal constant $c$, Sir.";
     }
-    if (q.includes("gravity")) {
-        return "Gravity (Gurutvakarshan) is the fundamental force of attraction that pulls objects with mass toward one another, Sir.";
+    if (q.includes("e=mc") || q.includes("e = mc") || q.includes("einstein formula") || q.includes("mass energy")) {
+        return "Einstein's mass-energy equivalence equation is **E = mc²**, stating that energy ($E$) equals mass ($m$) multiplied by the speed of light squared ($c^2$). It demonstrates that mass and energy are interchangeable, Sir.";
+    }
+    if (q.includes("ohm's law") || q.includes("ohms law") || q.includes("ohm law")) {
+        return "Ohm's Law states that the current ($I$) flowing through a conductor between two points is directly proportional to voltage ($V$) and inversely proportional to resistance ($R$): **V = I × R** (Voltage = Current × Resistance), Sir.";
+    }
+    if (q.includes("kinetic energy")) {
+        return "Kinetic Energy ($KE$) is the energy an object possesses due to its motion: **KE = ½ m v²**, where $m$ is mass and $v$ is velocity, measured in Joules (J), Sir.";
+    }
+    if (q.includes("potential energy")) {
+        return "Gravitational Potential Energy ($PE$) is the energy stored in an object due to its position: **PE = m × g × h**, where $m$ is mass, $g$ is gravity (~9.8 m/s² on Earth), and $h$ is height in meters, Sir.";
+    }
+    if (q.includes("work formula") || q.includes("formula of work") || q.includes("what is work in physics")) {
+        return "Work ($W$) in physics is the measure of energy transfer when an object is moved over a distance by an external force: **W = F × d × cos(θ)**, measured in Joules (J), Sir.";
+    }
+    if (q.includes("power formula") || q.includes("formula of power")) {
+        return "Power ($P$) is the rate at which work is performed or energy is transferred over time: **P = W / t** (Work / Time) or in electrical systems **P = V × I** (Voltage × Current), measured in Watts (W), Sir.";
+    }
+    if (q.includes("momentum")) {
+        return "Linear Momentum ($p$) is the product of an object's mass and its velocity: **p = m × v**, measured in kg·m/s, Sir.";
+    }
+    if (q.includes("acceleration")) {
+        return "Acceleration ($a$) is the rate of change of velocity with respect to time: **a = (v - u) / t**, where $v$ is final velocity, $u$ is initial velocity, and $t$ is time (measured in m/s²), Sir.";
+    }
+    if (q.includes("density formula") || q.includes("formula of density")) {
+        return "Density ($ρ$) is mass per unit volume: **ρ = m / V**, measured in kg/m³ or g/cm³, Sir.";
+    }
+    if (q.includes("pressure formula") || q.includes("formula of pressure")) {
+        return "Pressure ($P$) is defined as force applied perpendicular to a surface per unit area: **P = F / A**, measured in Pascals (Pa), Sir.";
+    }
+    if (q.includes("gravity") || q.includes("gravitation")) {
+        return "Gravity is the universal force of attraction between objects with mass. Newton's Law of Universal Gravitation states **F = G(m₁m₂)/r²**, where $G$ is the gravitational constant ($6.674×10⁻¹¹ N·m²/kg²$), Sir.";
     }
     if (q.includes("black hole")) {
-        return "A black hole is a region of space where gravity is so strong that nothing—not even light—can escape, Sir.";
+        return "A Black Hole is an astronomically dense celestial body where gravity is so strong that not even electromagnetic radiation like light can escape past its event horizon, Sir.";
     }
-    if (q.includes("dna") || q.includes("rna")) {
-        return "DNA (Deoxyribonucleic Acid) is the hereditary molecule that encodes genetic instructions in living organisms, Sir.";
+    if (q.includes("quantum")) {
+        return "Quantum Mechanics is the fundamental branch of physics describing matter and energy at atomic and subatomic scales, where physical properties exist in discrete packets called quanta, Sir.";
+    }
+    if (q.includes("thermodynamics")) {
+        return "Thermodynamics is the branch of physics that deals with heat, work, and temperature. The First Law states energy cannot be created or destroyed; the Second Law states entropy of an isolated system always increases, Sir.";
     }
 
-    // 1. User Name & Introduction Handling
+    // 4. Biology, Chemistry & Medicine
+    if (q.includes("mitochondria") || q.includes("mitochondrion")) {
+        return "The Mitochondria is the organelle known as the 'powerhouse of the cell', responsible for generating adenosine triphosphate (ATP) through cellular respiration to fuel biochemical reactions, Sir.";
+    }
+    if (q.includes("cellular respiration")) {
+        return "Cellular Respiration is the metabolic pathway that breaks down glucose in the presence of oxygen to produce ATP, water, and carbon dioxide: **C₆H₁₂O₆ + 6O₂ ➔ 6CO₂ + 6H₂O + 36-38 ATP**, Sir.";
+    }
+    if (q.includes("dna") || q.includes("deoxyribonucleic")) {
+        return "DNA (Deoxyribonucleic Acid) is the double-helix molecule carrying genetic instructions for the development, functioning, growth, and reproduction of all known organisms, Sir.";
+    }
+    if (q.includes("rna") || q.includes("ribonucleic")) {
+        return "RNA (Ribonucleic Acid) is a single-stranded nucleic acid essential in gene expression, coding, decoding, and translating genetic messages into proteins, Sir.";
+    }
+    if (q.includes("atom")) {
+        return "An Atom is the fundamental unit of chemical elements, composed of a dense central nucleus of positively charged protons and neutral neutrons, surrounded by a cloud of negatively charged electrons, Sir.";
+    }
+    if (q.includes("periodic table")) {
+        return "The Periodic Table arranges all 118 known chemical elements in order of increasing atomic number, grouping elements with similar chemical properties together, Sir.";
+    }
+    if (q.includes("water formula") || q.includes("formula of water")) {
+        return "The chemical formula for water is **H₂O**, consisting of two Hydrogen atoms covalently bonded to one Oxygen atom, Sir.";
+    }
+
+    // 5. Mathematics & Geometry
+    if (q.includes("pythagorean theorem") || q.includes("pythagoras theorem") || q.includes("pythagoras")) {
+        return "The Pythagorean Theorem states that in any right-angled triangle, the square of the hypotenuse ($c$) equals the sum of the squares of the other two sides: **a² + b² = c²**, Sir.";
+    }
+    if (q.includes("pi") || q.includes("value of pi")) {
+        return "Pi ($\pi$) is the mathematical constant representing the ratio of a circle's circumference to its diameter, approximately equal to **3.1415926535...** (or 22/7), Sir.";
+    }
+    if (q.includes("quadratic formula") || q.includes("quadratic equation")) {
+        return "The quadratic formula solves $ax² + bx + c = 0$ as: **x = (-b ± √(b² - 4ac)) / (2a)**, Sir.";
+    }
+    if (q.includes("mathematics") || q.includes("maths") || q.includes("math")) {
+        return "Mathematics is the science of numbers, quantity, structure, space, and change, providing the foundational architecture for logic, engineering, physics, and computer science, Sir.";
+    }
+
+    // 6. Computer Science & AI
+    if (q.includes("artificial intelligence") || q === "ai" || q.includes("what is ai")) {
+        return "Artificial Intelligence (AI) is the discipline of building software systems and models capable of performing tasks requiring human cognition—including natural language processing, visual perception, decision-making, and automated problem solving, Sir.";
+    }
+    if (q.includes("machine learning")) {
+        return "Machine Learning (ML) is a subset of AI where computational models learn patterns from training data to make predictions and optimize performance without manual rule-based programming, Sir.";
+    }
+    if (q.includes("deep learning") || q.includes("neural network")) {
+        return "Deep Learning uses multi-layered Artificial Neural Networks inspired by biological brains to extract high-level feature representations from raw datasets (images, audio, text), Sir.";
+    }
+    if (q.includes("binary search")) {
+        return "Binary Search is an efficient $O(\\log n)$ divide-and-conquer algorithm that finds target values within sorted arrays by repeatedly halving the search interval, Sir.";
+    }
+    if (q.includes("dynamic programming")) {
+        return "Dynamic Programming is an optimization technique that solves complex problems by breaking them down into overlapping subproblems and memoizing intermediate solutions to achieve polynomial time complexity, Sir.";
+    }
+    if (q.includes("array")) {
+        return "An Array is a linear data structure storing homogenous data elements in contiguous memory slots, supporting $O(1)$ constant-time indexed lookups, Sir.";
+    }
+    if (q.includes("recursion")) {
+        return "Recursion is a programming paradigm where a function invokes itself to resolve smaller subproblems until encountering a base termination case, Sir.";
+    }
+    if (q.includes("stack")) {
+        return "A Stack is a linear data structure following the Last-In, First-Out (LIFO) protocol, utilized in function call stacks and syntax parsing, Sir.";
+    }
+    if (q.includes("queue")) {
+        return "A Queue is a linear data structure following the First-In, First-Out (FIFO) protocol, utilized in breadth-first traversal and asynchronous task dispatching, Sir.";
+    }
+    if (q.includes("blockchain")) {
+        return "Blockchain is a cryptographically secured, decentralized, distributed digital ledger that records immutable transactions across a peer-to-peer network, Sir.";
+    }
+
+    // 7. General Academic Domains
+    if (q.includes("physics")) {
+        return "Physics is the fundamental natural science studying matter, energy, space, time, and the universal forces governing the cosmos, Sir.";
+    }
+    if (q.includes("chemistry")) {
+        return "Chemistry is the science of matter, exploring the structure, properties, composition, and transformations of atoms and molecular compounds, Sir.";
+    }
+    if (q.includes("biology")) {
+        return "Biology is the scientific study of living organisms, their cellular physiology, genetic mechanics, evolution, and ecological interactions, Sir.";
+    }
+    if (q.includes("history")) {
+        return "History is the systematic study and documentation of past human civilizations, sociocultural developments, and historical eras, Sir.";
+    }
+    if (q.includes("economics")) {
+        return "Economics is the social science analyzing production, distribution, and consumption of goods, capital, and financial systems, Sir.";
+    }
+
+    // 8. User Name / Introduction Handling
     const nameMatch = q.match(/(?:i am|my name is|mera naam|naam)\s+([a-z\s]+)/i);
     if (nameMatch && !q.includes("what") && !q.includes("who")) {
         const rawName = nameMatch[1].replace(/gupta|kumar|sharma|singh|verma/gi, m => m).trim();
@@ -288,32 +431,32 @@ function generateFallbackKnowledge(query) {
         }
     }
 
-    // 2. Technical & Computer Science Definitions
-    if (q.includes("dynamic")) {
-        return "Dynamic programming is an algorithmic technique for solving optimization problems by breaking them down into simpler overlapping subproblems and storing their intermediate results to avoid redundant calculations, Sir.";
-    }
-    if (q.includes("array")) {
-        return "An Array is a linear data structure that stores elements of the same data type in contiguous memory locations, allowing O(1) constant-time indexed access, Sir.";
-    }
-    if (q.includes("recursion")) {
-        return "Recursion is a programming technique where a function calls itself to solve smaller instances of a problem until a terminating base case is reached, Sir.";
-    }
-    if (q.includes("stack")) {
-        return "A Stack is a linear data structure operating on a Last-In, First-Out (LIFO) protocol, commonly used for execution call stacks and expression parsing, Sir.";
-    }
-    if (q.includes("queue")) {
-        return "A Queue is a linear data structure operating on a First-In, First-Out (FIFO) protocol, essential for task scheduling and asynchronous message buffers, Sir.";
-    }
-    if (q.includes("pointer")) {
-        return "A Pointer is a variable that stores the direct memory address of another variable, enabling low-level memory manipulation in languages like C and C++, Sir.";
+    // 9. Live Wikipedia Summary Query Fallback
+    const cleanTopic = query
+        .replace(/^what is the formula of\s+/i, '')
+        .replace(/^what is the formula for\s+/i, '')
+        .replace(/^what is the\s+/i, '')
+        .replace(/^what is\s+/i, '')
+        .replace(/^what are\s+/i, '')
+        .replace(/^explain\s+/i, '')
+        .replace(/^tell me about\s+/i, '')
+        .replace(/^define\s+/i, '')
+        .replace(/^who is\s+/i, '')
+        .replace(/^who was\s+/i, '')
+        .replace(/\?/g, '')
+        .trim();
+
+    if (cleanTopic && cleanTopic.length >= 2) {
+        const wikiExtract = await fetchWikipediaSummary(cleanTopic);
+        if (wikiExtract) {
+            return wikiExtract;
+        }
     }
 
-    // 3. Dynamic Natural Fallback
-    const topic = query.replace(/^what is\s+/i, '').replace(/^what are\s+/i, '').replace(/^explain\s+/i, '').replace(/^tell me about\s+/i, '').replace(/\?/g, '').trim();
-    if (!topic) return "System operational, Sir. How can I assist you?";
-    
+    // 10. Fallback with Guidance
+    const topic = cleanTopic || query;
     const formattedTopic = topic.charAt(0).toUpperCase() + topic.slice(1);
-    return `Regarding ${formattedTopic}: I have indexed your inquiry into system registers. How else may I assist you, Sir?`;
+    return `I have cataloged your query regarding **${formattedTopic}**, Sir. For comprehensive real-time generative reasoning across any topic, you can connect your Gemini API key in Settings (⚙️).`;
 }
 
 async function triggerCodeAutomation(promptText, language) {
