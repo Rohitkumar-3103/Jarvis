@@ -33,8 +33,14 @@ try:
 except ImportError:
     _PIL = False
 
-from google import genai
-from google.genai import types as gtypes
+try:
+    from google import genai
+    from google.genai import types as gtypes
+    _GENAI = True
+except ImportError:
+    genai = None
+    gtypes = None
+    _GENAI = False
 
 def _base_dir() -> Path:
     if getattr(sys, "frozen", False):

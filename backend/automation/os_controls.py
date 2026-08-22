@@ -100,7 +100,10 @@ def execute_os_action(command: str) -> dict:
         return {"status": "success", "message": "Launching VS Code workspace."}
 
     elif "play music" in cmd or cmd.startswith("play ") or "play song" in cmd:
-        res = play_music(cmd)
+        import actions.music
+        import importlib
+        importlib.reload(actions.music)
+        res = actions.music.play_music(cmd)
         return res
 
     elif "stop music" in cmd or "pause music" in cmd:

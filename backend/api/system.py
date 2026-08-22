@@ -49,7 +49,10 @@ def run_system_command():
             })
             
         else:
-            result = execute_os_action(command)
+            import backend.automation.os_controls as osc
+            import importlib
+            importlib.reload(osc)
+            result = osc.execute_os_action(command)
             return jsonify(result)
             
     except Exception as e:
