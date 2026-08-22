@@ -6,7 +6,7 @@ import platform
 import subprocess
 import time
 import psutil
-from actions.music import play_random_track, control_playback
+from actions.music import play_music, play_random_track, control_playback
 
 def get_cpu_temp() -> float:
     try:
@@ -99,8 +99,8 @@ def execute_os_action(command: str) -> dict:
             os.system("code .")
         return {"status": "success", "message": "Launching VS Code workspace."}
 
-    elif "play music" in cmd:
-        res = play_random_track()
+    elif "play music" in cmd or cmd.startswith("play ") or "play song" in cmd:
+        res = play_music(cmd)
         return res
 
     elif "stop music" in cmd or "pause music" in cmd:

@@ -392,21 +392,27 @@ async function takeCommand(message) {
         updateCoreState('IDLE');
     }
     // 11. Music Controls
-    else if (query.includes('play music')) {
-        appendChatBubble('JARVIS', "Initializing local audio playback...");
-        speak("Playing music, Sir.");
-        sendLocalCommand('play music');
+    else if (query.includes('play music') || query.startsWith('play song') || (query.startsWith('play ') && !query.includes('video') && !query.includes('game') && !query.includes('youtube') && !query.includes('code'))) {
+        updateCoreState('THINKING');
+        const res = await sendLocalCommand(rawQuery);
+        if (res && res.status === 'success') {
+            appendChatBubble('JARVIS', `🎵 **Audio Playback Active**\n${res.message}`);
+            speak(res.message);
+        } else {
+            appendChatBubble('JARVIS', "🎵 Initializing local media playback...");
+            speak("Playing music, Sir.");
+        }
         updateCoreState('IDLE');
     }
     else if (query.includes('open music') || query.includes('music open') || query === 'music') {
-        appendChatBubble('JARVIS', "Opening local music/video directory...");
-        speak("Accessing local music and video storage, Sir.");
+        appendChatBubble('JARVIS', "📂 Opening local music and video storage...");
+        speak("Accessing local media storage, Sir.");
         sendLocalCommand('music');
         updateCoreState('IDLE');
     }
     else if (query.includes('stop music') || query.includes('mute music') || query.includes('pause music')) {
         appendChatBubble('JARVIS', "Pausing local audio playback...");
-        speak("Music stopped, Sir.");
+        speak("Music paused, Sir.");
         sendLocalCommand('stop music');
         updateCoreState('IDLE');
     }
