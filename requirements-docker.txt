@@ -1,0 +1,16 @@
+# J.A.R.V.I.S. Docker-Specific Dependencies
+# Excludes Windows-only voice and automation packages for clean Linux container builds
+
+flask
+flask-cors
+requests
+google-generativeai
+google-genai
+beautifulsoup4
+fastapi
+uvicorn[standard]
+cryptography
+python-multipart
+pillow
+numpy
+python-dotenv

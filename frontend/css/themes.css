@@ -1,0 +1,53 @@
+/* ==========================================================================
+   J.A.R.V.I.S. Sci-Fi HUD Themes Configuration - Version 3.0
+   ========================================================================== */
+
+/* 1. STARK CYAN (DEFAULT HUD) */
+[data-theme="cyan"], :root {
+    --theme-primary: var(--neon-cyan, #00f0ff);
+    --theme-glow: rgba(0, 240, 255, 0.4);
+    --border-color: rgba(0, 240, 255, 0.15);
+    --border-glow: rgba(0, 240, 255, 0.35);
+    --theme-hover-bg: rgba(0, 240, 255, 0.08);
+    --theme-text-shadow: 0 0 8px rgba(0, 240, 255, 0.45);
+}
+
+/* 2. AVENGER RED (IRON MAN MODE) */
+[data-theme="red"] {
+    --theme-primary: var(--neon-red, #ef4444);
+    --theme-glow: rgba(239, 68, 68, 0.45);
+    --border-color: rgba(239, 68, 68, 0.18);
+    --border-glow: rgba(239, 68, 68, 0.4);
+    --theme-hover-bg: rgba(239, 68, 68, 0.08);
+    --theme-text-shadow: 0 0 8px rgba(239, 68, 68, 0.45);
+}
+
+/* 3. WAKANDA PURPLE (VIBRANIUM MODE) */
+[data-theme="purple"] {
+    --theme-primary: var(--neon-purple, #ab46ff);
+    --theme-glow: rgba(171, 70, 255, 0.45);
+    --border-color: rgba(171, 70, 255, 0.18);
+    --border-glow: rgba(171, 70, 255, 0.4);
+    --theme-hover-bg: rgba(171, 70, 255, 0.08);
+    --theme-text-shadow: 0 0 8px rgba(171, 70, 255, 0.45);
+}
+
+/* 4. ASGARDIAN GOLD (THOR MODE) */
+[data-theme="gold"] {
+    --theme-primary: var(--neon-gold, #f59e0b);
+    --theme-glow: rgba(245, 158, 11, 0.45);
+    --border-color: rgba(245, 158, 11, 0.18);
+    --border-glow: rgba(245, 158, 11, 0.4);
+    --theme-hover-bg: rgba(245, 158, 11, 0.08);
+    --theme-text-shadow: 0 0 8px rgba(245, 158, 11, 0.45);
+}
+
+/* 5. GAMMA GREEN (HULK MODE) */
+[data-theme="green"] {
+    --theme-primary: var(--neon-green, #10b981);
+    --theme-glow: rgba(16, 185, 129, 0.45);
+    --border-color: rgba(16, 185, 129, 0.18);
+    --border-glow: rgba(16, 185, 129, 0.4);
+    --theme-hover-bg: rgba(16, 185, 129, 0.08);
+    --theme-text-shadow: 0 0 8px rgba(16, 185, 129, 0.45);
+}

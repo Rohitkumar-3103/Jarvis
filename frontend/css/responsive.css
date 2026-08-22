@@ -1,0 +1,67 @@
+/* ==========================================================================
+   J.A.R.V.I.S. Sci-Fi HUD Responsive View adjustments
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .grid-layout {
+        grid-template-columns: 280px 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+        overflow-y: auto;
+    }
+    
+    .right-column {
+        grid-column: span 2;
+    }
+    
+    .chat-panel {
+        height: 350px;
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+    
+    .left-column, .center-column, .right-column {
+        grid-column: span 1;
+    }
+    
+    .hud-header {
+        padding: 0 10px;
+    }
+    
+    .hud-title-display {
+        display: none;
+    }
+    
+    .core-rings {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .outer-ring { width: 160px; height: 160px; }
+    .middle-ring { width: 130px; height: 130px; }
+    .inner-ring { width: 100px; height: 100px; }
+}
+
+@media (max-width: 480px) {
+    .apps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .hud-dock {
+        height: auto;
+        padding: 10px 0;
+    }
+    
+    .dock-container {
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 12px;
+        padding: 8px;
+        gap: 6px;
+    }
+}

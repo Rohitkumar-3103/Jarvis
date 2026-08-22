@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. AI OS 3.0</title>
+
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="J.A.R.V.I.S. AI OS 3.0 - Stark Industries personal automation dashboard, featuring neural diagnostics, voice synapse connections, biometric locks, and integrated Gemini cognition.">
+    <link rel="shortcut icon" href="assets/images/avatar.png" type="image/x-icon">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css?v=3.7.0">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/lockscreen.css">
+    <link rel="stylesheet" href="css/chat.css?v=3.3.0">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/widgets.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Prism Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+
+    <style>
+        /* DASHBOARD SIDE MENU DRAWER STYLES (POSITIONED UNDER TOP-RIGHT MENU BUTTON) */
+        .dash-side-drawer {
+            position: fixed;
+            top: 58px;
+            right: 20px;
+            width: 340px;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+            z-index: 10000;
+            background: rgba(4, 10, 24, 0.98);
+            border: 1.5px solid var(--theme-primary, #00f0ff);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 240, 255, 0.35);
+            border-radius: 12px;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            padding: 1.2rem;
+            box-sizing: border-box;
+        }
+        .dash-side-drawer.open {
+            display: flex !important;
+        }
+        .dash-side-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            display: none;
+        }
+        .dash-side-backdrop.open {
+            display: block !important;
+        }
+        .dash-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #e5e7eb;
+            font-size: 0.88rem;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .dash-menu-item:hover {
+            background: rgba(0, 240, 255, 0.12);
+            border-color: rgba(0, 240, 255, 0.3);
+            color: var(--theme-primary, #00f0ff);
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Canvas & Overlays -->
+    <canvas id="particle-canvas"></canvas>
+    <div class="hud-grid-overlay"></div>
+
+    <!-- DASHBOARD SIDE MENU BACKDROP & DRAWER PANEL -->
+    <div id="dash-side-backdrop" class="dash-side-backdrop" onclick="closeDashboardSideMenu()"></div>
+
+    <aside id="dash-side-drawer" class="dash-side-drawer">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- DRAWER HEADER -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--theme-primary, #00f0ff); box-shadow: 0 0 10px var(--theme-primary, #00f0ff);"></span>
+                    <span style="font-family: var(--font-hud); font-size: 0.9rem; font-weight: 700; color: var(--theme-primary, #00f0ff); letter-spacing: 2px;">J.A.R.V.I.S. CONTROL</span>
+                </div>
+                <button style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer; transition: color 0.2s;" onclick="closeDashboardSideMenu()" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='#9ca3af'">&times;</button>
+            </div>
+
+            <!-- USER PROFILE WIDGET PANEL -->
+            <section class="hud-panel profile-panel" aria-label="User Profile" id="profile-widget" style="margin-bottom: 0; background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 10px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);">
+                <div class="panel-header" style="padding: 8px 12px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.15); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-user-gear" style="color: var(--theme-primary, #00f0ff);"></i>
+                    <h2 style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; margin: 0;">USER PROFILE</h2>
+                </div>
+                <div class="panel-body" style="display: flex; align-items: center; gap: 12px; padding: 12px;">
+                    <div class="profile-avatar-wrapper" style="position: relative; width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--theme-primary, #00f0ff); overflow: hidden; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); flex-shrink: 0;">
+                        <img src="assets/images/avatar.png" id="profile-avatar-img" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
+                        <span id="profile-full-name" style="font-family: var(--font-hud); font-size: 0.8rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TONY STARK</span>
+                        <span id="profile-username" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary, #94a3b8);">@ironman</span>
+                        <span id="profile-clearance" style="font-family: var(--font-mono); font-size: 0.58rem; color: #00ff66; letter-spacing: 0.5px; margin-top: 2px;">PRIMARY USER // ADMINISTRATOR</span>
+                    </div>
+                    <button class="hud-btn-mini" id="profile-logout-btn" title="Lock access / Logout" style="background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.4); color: #ff4b4b; cursor: pointer; padding: 6px 8px; border-radius: 4px; transition: all 0.2s; font-size: 0.8rem; flex-shrink: 0;">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SYSTEM STATUS BADGES -->
+            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; font-family: var(--font-mono); font-size: 0.72rem; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
+                    <span>SECURITY CLEARANCE</span>
+                    <span style="color: #00ff66; font-weight: bold;">LEVEL 4 APPROVED</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
+                    <span>MONGODB CLOUD</span>
+                    <span style="color: #00f0ff; font-weight: bold;">PROJECT A</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
+                    <span>GMAIL TRANSPORTER</span>
+                    <span style="color: #ffaa00; font-weight: bold;">CONNECTED</span>
+                </div>
+            </div>
+
+            <!-- NAVIGATION MENU ITEMS -->
+            <nav style="display: flex; flex-direction: column; gap: 6px;">
+                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu();">
+                    <i class="fa-solid fa-gauge-high" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
+                    <span>Core Dashboard</span>
+                </a>
+                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); if (typeof window.toggleChatPanel === 'function') window.toggleChatPanel();">
+                    <i class="fa-solid fa-comments" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
+                    <span>AI Neural Chat</span>
+                </a>
+                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); openAuthTerminalModal();">
+                    <i class="fa-solid fa-right-to-bracket" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
+                    <span>Auth Terminal (Sign In/Up)</span>
+                </a>
+                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); resetMainframeDatabase();">
+                    <i class="fa-solid fa-rotate-left" style="color: #ff4b4b; width: 20px; text-align: center;"></i>
+                    <span style="color: #ff4b4b;">Reset Mainframe Accounts</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- DRAWER FOOTER WITH LOGOUT -->
+        <div style="padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #6b7280; text-align: center;">J.A.R.V.I.S. OS v3.2 &copy; STARK INDUSTRIES</div>
+        </div>
+    </aside>
+
+    <!-- 1. STARTUP SYSTEM LOAD OVERLAY -->
+    <div class="startup-overlay" id="startup-overlay">
+        <div class="startup-terminal">
+            <div class="startup-header">██████████████████████████████</div>
+            <div class="stark-logo">STARK INDUSTRIES</div>
+            <div class="jarvis-version">J.A.R.V.I.S AI OS v3.2.0</div>
+            <div class="startup-logs" id="startup-logs">
+                <p class="log-line">> Initializing Core...</p>
+            </div>
+            <div class="startup-footer">██████████████████████████████</div>
+        </div>
+    </div>
+
+    <!-- 2. SYSTEM SECURITY AUTHENTICATION -->
+    <div class="lock-screen-overlay" id="lock-screen" style="display: none;">
+        <div class="lock-container">
+            <div class="lock-header">
+                <i class="fa-solid fa-user-shield security-icon-glow"></i>
+                <h2>SECURE SYSTEM AUTHENTICATION</h2>
+                <p>FACIAL SYNAPSE SCAN REQUIRED // LEVEL 4 CLEARANCE</p>
+            </div>
+            
+            <div class="scanner-box">
+                <div class="scanner-corner top-left"></div>
+                <div class="scanner-corner top-right"></div>
+                <div class="scanner-corner bottom-left"></div>
+                <div class="scanner-corner bottom-right"></div>
+                <div class="scanner-line"></div>
+                <div class="scanner-grid"></div>
+                
+                <svg class="face-wireframe-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                    <path class="face-path" d="M50,15 C32,15 28,30 28,50 C28,70 36,85 50,85 C64,85 72,70 72,50 C72,30 68,15 50,15 Z" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5" />
+                    <circle cx="40" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
+                    <circle cx="60" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
+                    <path d="M36,42 L44,42 M40,38 L40,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
+                    <path d="M56,42 L64,42 M60,38 L60,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
+                    <path d="M50,42 L50,58 L46,58" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
+                    <path d="M42,68 Q50,72 58,68" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
+                    <line x1="50" y1="15" x2="50" y2="85" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
+                    <line x1="28" y1="50" x2="72" y2="50" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
+                </svg>
+
+                <video id="lock-webcam" autoplay playsinline muted></video>
+                <div class="scanner-target"></div>
+                <div class="scanner-data-left">SYS_SCAN: 09</div>
+                <div class="scanner-data-right">MATCH: <span id="match-val-display">00%</span></div>
+                <div class="lock-status-display" id="lock-status">STANDBY // CLICK BELOW TO INITIALIZE</div>
+            </div>
+
+            <!-- PIN Pad Fallback -->
+            <div class="passcode-container" id="passcode-fallback" style="display: none;">
+                <p class="pin-hint-text">BIOMETRIC ERROR // INPUT MANUAL SECURITY VECTOR PIN:</p>
+                <div class="pin-display" id="pin-dots">
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                </div>
+                <div class="pin-pad">
+                    <button class="pin-key" data-key="1">1</button>
+                    <button class="pin-key" data-key="2">2</button>
+                    <button class="pin-key" data-key="3">3</button>
+                    <button class="pin-key" data-key="4">4</button>
+                    <button class="pin-key" data-key="5">5</button>
+                    <button class="pin-key" data-key="6">6</button>
+                    <button class="pin-key" data-key="7">7</button>
+                    <button class="pin-key" data-key="8">8</button>
+                    <button class="pin-key" data-key="9">9</button>
+                    <button class="pin-btn-clear" id="pin-clear">CLEAR</button>
+                    <button class="pin-key" data-key="0">0</button>
+                    <button class="pin-btn-bypass" id="pin-bypass">BYPASS</button>
+                </div>
+            </div>
+
+            <div class="lock-actions">
+                <button id="scan-trigger-btn" class="hud-btn primary">INITIATE FACE SCAN</button>
+                <button id="passcode-toggle-btn" class="hud-btn secondary">PIN ENTRY BYPASS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MAIN CORE DASHBOARD -->
+    <div class="dashboard-container" id="dashboard-container" style="display: none;">
+        <!-- Top Title Bar -->
+        <header class="hud-header">
+            <div class="hud-logo" onclick="openLogoZoomModal()" style="cursor: pointer;" title="Click to inspect High-Res Core Matrix">
+                <div class="logo-icon-wrapper" style="width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #030611; border: 1px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 12px rgba(0, 240, 255, 0.4); transition: all 0.3s ease;">
+                    <img src="assets/images/jarvis_logo.png" alt="J.A.R.V.I.S. Logo" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(1.1) contrast(1.1);">
+                </div>
+                <span class="logo-text">J.A.R.V.I.S. <span class="logo-version">v3.2.0</span></span>
+            </div>
+            <div class="hud-title-display">
+                <div class="scanline"></div>
+                <span class="hud-ticker" id="hud-ticker">MAIN CORE STATUS: ACTIVE // VOICE SYNAPSE: CONNECTED // COGNITIVE NET: STABLE</span>
+            </div>
+            <div class="hud-metrics" style="display: flex; align-items: center; gap: 18px;">
+                <div class="metric-item clock-widget">
+                    <span class="metric-value font-mono" id="hud-clock">00:00:00</span>
+                </div>
+                <div class="metric-item battery-widget" style="display: flex; align-items: center; gap: 8px;">
+                    <svg id="vertical-battery-svg" width="16" height="24" viewBox="0 0 16 24" style="filter: drop-shadow(0 0 6px rgba(0, 255, 102, 0.5)); transition: all 0.3s ease;">
+                        <!-- Top Cap -->
+                        <rect x="5" y="0" width="6" height="2.5" rx="1" fill="#00ff66" id="v-bat-cap" />
+                        <!-- Outer Shell -->
+                        <rect x="1" y="2.5" width="14" height="20.5" rx="3" fill="rgba(0,0,0,0.6)" stroke="#00ff66" stroke-width="1.5" id="v-bat-border" />
+                        <!-- Vertical Level Fill -->
+                        <rect x="2.5" y="4" width="11" height="17.5" rx="1.5" fill="#00ff66" id="v-bat-fill" />
+                        <!-- Charging Bolt -->
+                        <path id="v-bat-bolt" d="M9.5 5.5 L5 12.5 H8.5 L7.5 19.5 L12 12.5 H8.5 Z" fill="#ffffff" style="display: block;" />
+                    </svg>
+                    <span class="battery-value font-mono" id="header-battery-display" style="font-size: 0.88rem; font-weight: 700; color: #00f0ff; letter-spacing: 0.5px;">100%</span>
+                </div>
+                <button id="btn-dash-menu-toggle" class="hud-menu-btn-icon" onclick="openDashboardSideMenu()" style="background: #040d1a !important; border: 1.5px solid rgba(0, 240, 255, 0.6) !important; box-shadow: 0 0 14px rgba(0, 240, 255, 0.3), inset 0 0 8px rgba(0, 240, 255, 0.15) !important;" title="Open Side Menu">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 0 6px #00f0ff) drop-shadow(0 0 12px rgba(0,240,255,0.6));">
+                        <!-- Avatar Silhouette (Pure Neon Cyan) -->
+                        <circle cx="7" cy="7" r="4" fill="#00f0ff" />
+                        <path d="M1 19C1 15 3.5 13 7 13C10.5 13 13 15 13 19" fill="#00f0ff" />
+                        <!-- 4 Telemetry / Bio-Data Menu Lines (Pure Neon Cyan) -->
+                        <line x1="15" y1="6" x2="23" y2="6" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="15" y1="10" x2="23" y2="10" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="15" y1="14" x2="23" y2="14" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="15" y1="18" x2="23" y2="18" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Grid Workspace -->
+        <main class="grid-layout">
+            <!-- LEFT PANEL: User Profile, Diagnostics & Quick Apps -->
+            <div class="grid-column left-column">
+                <!-- Diagnostics Widget -->
+                <section class="hud-panel diagnostics-panel" aria-label="System Diagnostics">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <h2>CORE DIAGNOSTICS</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="diag-metric">
+                            <div class="diag-labels">
+                                <span>NEURAL PROCESSING (CPU)</span>
+                                <span id="cpu-percent">--%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar glow-blue" id="cpu-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="diag-metric">
+                            <div class="diag-labels">
+                                <span>COGNITIVE MEMORY (RAM)</span>
+                                <span id="ram-percent">--%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar glow-purple" id="ram-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="diag-metric">
+                            <div class="diag-labels">
+                                <span>THERMAL THRESHOLD</span>
+                                <span id="temp-val">--°C</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar glow-red" id="temp-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="diag-metric">
+                            <div class="diag-labels">
+                                <span>SYNAPTIC SPEED</span>
+                                <span id="speed-val">-- GHz</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar glow-cyan" id="speed-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="system-status-grid">
+                            <div class="status-card">
+                                <div class="status-card-title">LLM COGNITION</div>
+                                <div class="status-card-value text-cyan" id="llm-status">SIMULATED</div>
+                            </div>
+                            <div class="status-card">
+                                <div class="status-card-title">VOICE SYNAPSE</div>
+                                <div class="status-card-value text-green" id="tts-status">STANDBY</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Apps Widget -->
+                <section class="hud-panel apps-panel" aria-label="Quick Apps">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-cubes"></i>
+                        <h2>QUICK APPLICATIONS</h2>
+                    </div>
+                    <div class="panel-body apps-grid">
+                        <button class="app-card-btn" data-app="Google" title="Launch Google">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(66, 133, 244, 0.3));">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.22-.67-.35-1.37-.35-2.09s.13-1.43.35-2.09H2.18"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                            </svg>
+                            <span>Google</span>
+                        </button>
+                        <button class="app-card-btn" data-app="YouTube" title="Launch YouTube">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.3));">
+                                <path fill="#FF0000" d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.517 3.545 12 3.545 12 3.545s-7.516 0-9.387.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.871.507 9.388.507 9.388.507s7.517 0 9.389-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837z"/>
+                                <polygon fill="#FFFFFF" points="9.545 15.568 15.818 12 9.545 8.432"/>
+                            </svg>
+                            <span>YouTube</span>
+                        </button>
+                        <button class="app-card-btn" data-app="GitHub" title="Launch GitHub">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));">
+                                <path fill="#FFFFFF" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </button>
+                        <button class="app-card-btn" data-app="LinkedIn" title="Launch LinkedIn">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(0, 119, 181, 0.3));">
+                                <path fill="#0077B5" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75-1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                            <span>LinkedIn</span>
+                        </button>
+                        <button class="app-card-btn" data-app="Calculator" title="Launch Calculator">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.4));">
+                                <rect x="4" y="2" width="16" height="20" rx="3" fill="none" stroke="#00e5ff" stroke-width="2"/>
+                                <line x1="7" y1="6" x2="17" y2="6" stroke="#00e5ff" stroke-width="2"/>
+                                <circle cx="8" cy="11" r="1.5" fill="#00e5ff"/>
+                                <circle cx="12" cy="11" r="1.5" fill="#00e5ff"/>
+                                <circle cx="16" cy="11" r="1.5" fill="#00e5ff"/>
+                                <circle cx="8" cy="15" r="1.5" fill="#00e5ff"/>
+                                <circle cx="12" cy="15" r="1.5" fill="#00e5ff"/>
+                                <circle cx="16" cy="15" r="1.5" fill="#00e5ff"/>
+                                <circle cx="8" cy="19" r="1.5" fill="#00e5ff"/>
+                                <circle cx="12" cy="19" r="1.5" fill="#00e5ff"/>
+                                <circle cx="16" cy="19" r="1.5" fill="#00e5ff"/>
+                            </svg>
+                            <span>Calculator</span>
+                        </button>
+                        <button class="app-card-btn" data-app="Wikipedia" title="Search Wikipedia">
+                            <i class="fa-brands fa-wikipedia-w"></i>
+                            <span>Wikipedia</span>
+                        </button>
+                        <button class="app-card-btn" data-app="Gemini" title="Launch Gemini">
+                            <svg class="app-icon-svg" viewBox="0 0 24 24" width="24" height="24" style="margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(75, 144, 255, 0.4));">
+                                <defs>
+                                    <linearGradient id="gemini-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#ff4b4b"/>
+                                        <stop offset="35%" stop-color="#ffb03a"/>
+                                        <stop offset="70%" stop-color="#2196f3"/>
+                                        <stop offset="100%" stop-color="#00e676"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="url(#gemini-grad)"/>
+                            </svg>
+                            <span>Gemini</span>
+                        </button>
+                        <button class="app-card-btn" data-app="EdClub" title="Launch EdClub">
+                            <img class="app-icon-img" src="assets/images/edclub.png?v=3.2.4" alt="EdClub" style="width: 24px; height: 24px; margin-bottom: 8px; filter: drop-shadow(0 0 4px rgba(255, 146, 51, 0.4)); border-radius: 4px;">
+                            <span>EdClub</span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- CENTER PANEL: Arc Reactor Core & Input Bar -->
+            <div class="grid-column center-column">
+                <section class="hud-panel reactor-panel" aria-label="Arc Reactor Core">
+                    <div class="core-container">
+                        <!-- Animated Arc Reactor -->
+                        <div class="core-rings">
+                            <div class="outer-ring"></div>
+                            <div class="middle-ring"></div>
+                            <div class="inner-ring"></div>
+                            <div class="core-orb-wrapper" id="reactor-core-btn">
+                                <div class="core-orb-glow"></div>
+                                <div class="core-image-container">
+                                    <img src="assets/images/reactor.gif" alt="JARVIS Core" class="core-image" id="giphy-core">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equalizer / Wave Animation -->
+                        <div class="voice-wave-container" id="voice-wave-box">
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                        </div>
+
+                        <!-- AI Status indicators -->
+                        <div class="core-status">
+                            <h1 id="core-assistant-title">J.A.R.V.I.S.</h1>
+                            <p id="core-assistant-desc">System online. Awaiting directive...</p>
+                            <div class="status-led-container">
+                                <span class="status-led led-cyan" id="core-state-led"></span>
+                                <span class="status-text font-mono text-cyan" id="core-state-text">IDLE</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Command Bar Widget -->
+                <section class="command-bar-panel">
+                    <div class="input-controls-wrapper" style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                        <button class="mic-button" id="command-mic-trigger" title="Voice Synapse (Toggle STT)">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                        </button>
+                        <div class="text-input-container" style="flex-grow: 1;">
+                            <input type="text" id="text-input-field" placeholder="Type diagnostic command or query..." autocomplete="off">
+                            <button class="send-button" id="send-trigger" title="Transmit command">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- RIGHT PANEL: Comms log & Notifications -->
+            <div class="grid-column right-column">
+                <!-- AI Chat Log Widget -->
+                <section class="hud-panel chat-panel" aria-label="AI Communications Log">
+                    <div class="panel-header">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        <h2>COMMS LOG</h2>
+                        <div style="margin-left: auto; display: flex; gap: 8px; align-items: center;">
+                            <button id="toggle-chat-logs-btn" class="hud-btn-mini" title="Toggle Comms Log visibility" style="background: transparent; border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; transition: all 0.2s;">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button id="clear-logs-btn" class="hud-btn-mini" title="Purge database logs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body chat-body" id="chat-logs-container">
+                        <div class="chat-bubble jarvis-bubble">
+                            <div class="bubble-sender">JARVIS</div>
+                            <div class="bubble-text">System initializations fully complete. Level 4 secure node online. How may I assist you, Sir?</div>
+                            <div class="bubble-time" id="greeting-time">00:00</div>
+                            <button class="bubble-copy-btn" title="Copy response to clipboard" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('.bubble-text').textContent); const icon = this.querySelector('i'); icon.className = 'fa-solid fa-check text-green'; setTimeout(() => { icon.className = 'fa-regular fa-copy'; }, 1500);"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notifications & Events Widget -->
+                <section class="hud-panel notifications-panel" aria-label="System Notifications">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-bell"></i>
+                        <h2>SYSTEM LOG & NOTIFICATIONS</h2>
+                        <button id="toggle-sys-logs-btn" class="hud-btn-mini" title="Toggle System Log visibility" style="margin-left: auto; background: transparent; border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; transition: all 0.2s;">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="panel-body notification-list" id="notification-logs">
+                        <div class="notif-item">
+                            <span class="notif-time">17:05</span>
+                            <span class="notif-text text-green">[SYS] Secure link tunnel initialized successfully.</span>
+                        </div>
+                        <div class="notif-item">
+                            <span class="notif-time">17:05</span>
+                            <span class="notif-text text-cyan">[SYS] Core WMI telemetry engines ONLINE.</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- 4. BOTTOM FLOATING CONTROL DOCK -->
+        <footer class="hud-dock">
+            <div class="dock-container">
+                <button class="dock-item" id="dock-chat" title="Initiate Comms Link (Call / WhatsApp)">
+                    <i class="fa-solid fa-comments"></i>
+                </button>
+                <button class="dock-item" id="dock-web" title="Trigger Grounded Web Search">
+                    <i class="fa-solid fa-globe"></i>
+                </button>
+                <button class="dock-item" id="dock-files" title="Upload Datasets / Files">
+                    <i class="fa-solid fa-folder-open"></i>
+                </button>
+                <button class="dock-item" id="dock-screenshot" title="Capture Desktop Screen">
+                    <i class="fa-solid fa-desktop"></i>
+                </button>
+                <button class="dock-item" id="dock-camera" title="Capture Webcam Photo">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
+                <button class="dock-item" id="dock-music" title="Audio Player Controls">
+                    <i class="fa-solid fa-music"></i>
+                </button>
+
+                <button class="dock-item" id="dock-settings" title="System Parameters (Settings)">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+                <button class="dock-item" id="dock-lock" title="Secure Core Node (Lock)">
+                    <i class="fa-solid fa-lock"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- HOLOGRAM CALL MODULE -->
+    <div class="call-overlay" id="call-overlay">
+        <div class="call-card">
+            <div class="call-grid-effect"></div>
+            <div class="call-header">
+                <span class="call-mode-badge" id="call-mode-text">SECURE VOICE CONNECT</span>
+                <div class="call-timer" id="call-timer-display">00:00</div>
+            </div>
+            <div class="call-body">
+                <div class="call-participant-container">
+                    <div class="participant-glow-ring"></div>
+                    <div class="video-call-feeds" id="video-feeds-box" style="display: none;">
+                        <video id="call-video-user" autoplay playsinline muted></video>
+                        <div class="video-overlay-tint"></div>
+                        <div class="video-feed-label">USER FEED (SECURE)</div>
+                    </div>
+                    <div class="avatar-frame" id="avatar-frame-box">
+                        <img src="assets/images/avatar.png" alt="Participant" class="participant-avatar">
+                    </div>
+                    <div class="participant-name" id="call-target-name">Tony Stark</div>
+                    <div class="call-status-label" id="call-status-text">CONNECTING VIA SATELLITE...</div>
+                </div>
+            </div>
+            <div class="call-footer">
+                <button class="call-btn btn-mute" id="btn-call-mute" title="Mute Mic">
+                    <i class="fa-solid fa-microphone-slash"></i>
+                </button>
+                <button class="call-btn btn-video" id="btn-call-video" title="Enable Video Link">
+                    <i class="fa-solid fa-video"></i>
+                </button>
+                <button class="call-btn btn-end" id="btn-call-end" title="Terminate Link">
+                    <i class="fa-solid fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SYSTEM CONFIGURATION PANEL -->
+    <div class="settings-modal-overlay" id="settings-overlay">
+        <div class="settings-modal">
+            <div class="settings-header">
+                <h2>SYSTEM CONFIGURATIONS</h2>
+                <button class="close-modal-btn" id="close-settings-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-section">
+                    <h3>Cognitive Connect Settings</h3>
+                    <div class="settings-row">
+                        <label for="settings-api-key">Gemini Developer API Key</label>
+                        <input type="password" id="settings-api-key" placeholder="AI Studio Key (AI_KEY)...">
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Security Protocols</h3>
+                    <div class="settings-row">
+                        <label class="switch-container">
+                            <input type="checkbox" id="settings-facelock-toggle">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span>Activate Biometric Face Authentication on Startup</span>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Core HUD Customizations</h3>
+
+                    <div class="settings-row">
+                        <label for="settings-voice-select">TTS Voice Synthesis Engine</label>
+                        <select id="settings-voice-select">
+                            <option value="default">System Default Synthesis</option>
+                        </select>
+                    </div>
+                    <div class="settings-row" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+                        <label for="settings-voice-volume">TTS Output Volume (<span id="voice-volume-val-display" style="color: var(--theme-primary); font-family: var(--font-mono);">100%</span>)</label>
+                        <input type="range" id="settings-voice-volume" min="0" max="1" step="0.05" value="1.0" style="accent-color: var(--theme-primary); cursor: pointer; width: 140px;" oninput="document.getElementById('voice-volume-val-display').textContent = Math.round(this.value * 100) + '%'; voiceVolume = parseFloat(this.value); localStorage.setItem('jarvis_voice_volume', this.value);">
+                    </div>
+                    <div class="settings-row" style="flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                            <label style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">UI COLOUR &mdash; drag the handle</label>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="color-picker-auto-btn" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'; this.style.borderColor='var(--theme-primary)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)';" onmouseout="if (!window.isAutoColorCycling) { this.style.background='rgba(0, 240, 255, 0.05)'; this.style.borderColor='rgba(0, 240, 255, 0.25)'; this.style.boxShadow='0 0 5px rgba(0, 240, 255, 0.05)'; }" title="Toggle Auto Color Cycling Mode">AUTO</button>
+                                <button id="color-picker-default-btn" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'; this.style.borderColor='var(--theme-primary)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.05)'; this.style.borderColor='rgba(0, 240, 255, 0.25)'; this.style.boxShadow='0 0 5px rgba(0, 240, 255, 0.05)';" title="Reset to default Cyan">DEFAULT</button>
+                            </div>
+                        </div>
+                        
+                        <div id="color-wheel-wrapper" style="position: relative; width: 160px; height: 160px; margin: 15px auto; display: flex; align-items: center; justify-content: center; cursor: crosshair;">
+                            <div id="color-wheel-ring" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);"></div>
+                            <div style="position: absolute; width: 75%; height: 75%; border-radius: 50%; background: #060e1d; display: flex; align-items: center; justify-content: center;">
+                                <div id="color-wheel-preview" style="width: 50%; height: 50%; border-radius: 50%; background: var(--theme-primary); box-shadow: 0 0 15px var(--theme-primary); transition: background 0.1s, box-shadow 0.1s;"></div>
+                            </div>
+                            <div id="color-wheel-handle" style="position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #ffffff; border: 2px solid #000000; box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); top: 50%; left: 50%; margin-top: -7px; margin-left: -7px; cursor: pointer; pointer-events: none; transform: translate(60px, 0px);"></div>
+                        </div>
+                        
+                        <div style="width: 100%;">
+                            <input type="text" id="color-picker-hex-input" class="settings-input" style="width: 100%; text-align: left; font-family: var(--font-mono); font-size: 0.8rem; box-sizing: border-box;" value="#00f0ff" maxlength="7" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button class="hud-btn secondary" id="btn-import-settings">Import Config</button>
+                <button class="hud-btn secondary" id="btn-export-settings">Export Config</button>
+                <button class="hud-btn primary" id="btn-save-settings">Commit Parameters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload modal -->
+    <div class="settings-modal-overlay" id="file-overlay">
+        <div class="settings-modal" style="max-width: 450px;">
+            <div class="settings-header">
+                <h2>DATASET DISK UPLOAD</h2>
+                <button class="close-modal-btn" id="close-file-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body">
+                <div class="drag-drop-zone" id="file-drop-zone">
+                    <i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
+                    <p>DRAG AND DROP OR CLICK TO BROWSE FILE</p>
+                    <input type="file" id="file-uploader" style="display: none;">
+                </div>
+                <div class="uploaded-files-list" id="uploaded-files"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Code Viewer Modal -->
+    <div class="settings-modal-overlay" id="code-zoom-overlay" style="display: none; z-index: 10001; background: rgba(2, 5, 12, 0.95); backdrop-filter: blur(10px);">
+        <div class="settings-modal" style="max-width: 90%; width: 1200px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.3); box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);">
+            <div class="settings-header" style="padding: 12px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.15); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--theme-primary); text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);"><i class="fa-solid fa-code" style="margin-right: 8px;"></i>J.A.R.V.I.S. SECURE CODE VIEWER</h2>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="code-zoom-copy-btn" id="code-zoom-copy" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.95rem; transition: all 0.2s;" title="Copy code"><i class="fa-regular fa-copy"></i></button>
+                    <button class="close-modal-btn" id="close-zoom-btn" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.1rem;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="settings-body" style="flex: 1; padding: 20px; overflow: hidden; background: #02050c; display: flex; flex-direction: column;">
+                <div style="flex: 1; width: 100%; overflow: auto; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 4px; background: #040914; box-shadow: inset 0 0 15px rgba(0,0,0,0.9);">
+                    <pre class="language-plaintext" id="code-zoom-pre" style="margin: 0 !important; padding: 20px !important; background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important;"><code class="language-plaintext" id="code-zoom-code"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Holographic Prompt/Confirm Overlay Dialog -->
+    <div class="settings-modal-overlay" id="custom-prompt-overlay" style="display: none; z-index: 10000;">
+        <div class="settings-modal" style="max-width: 400px; animation: modal-slide-down 0.4s ease;">
+            <div class="settings-header">
+                <h2 id="custom-prompt-title">SYSTEM INQUIRY</h2>
+            </div>
+            <div class="settings-body" style="padding: 20px;">
+                <p id="custom-prompt-message" style="margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary);"></p>
+                <div id="custom-prompt-input-container">
+                    <input type="text" id="custom-prompt-input" class="settings-input" style="width: 100%; box-sizing: border-box; margin-bottom: 5px;" autocomplete="off">
+                </div>
+                <div class="settings-actions" style="justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                    <button class="hud-btn secondary" id="custom-prompt-btn-cancel">CANCEL</button>
+                    <button class="hud-btn primary" id="custom-prompt-btn-ok">CONFIRM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Holographic Logo Zoom Modal -->
+    <div class="settings-modal-overlay" id="logo-zoom-modal" onclick="if(event.target === this) closeLogoZoomModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.92); backdrop-filter: blur(12px);">
+        <div class="settings-modal" style="max-width: 520px; width: 90%; background: rgba(4, 10, 24, 0.98); border: 1.5px solid var(--theme-primary); box-shadow: 0 0 40px rgba(0, 240, 255, 0.4); border-radius: 12px; padding: 0; overflow: hidden;">
+            <div class="settings-header" style="padding: 14px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-family: var(--font-hud); font-size: 0.9rem; color: var(--theme-primary); letter-spacing: 1.5px; margin: 0;"><i class="fa-solid fa-atom" style="margin-right: 8px;"></i>J.A.R.V.I.S. ARC REACTOR MATRIX</h2>
+                <button onclick="closeLogoZoomModal()" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='var(--text-primary)'"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body" style="padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: #020612;">
+                <div style="position: relative; width: 320px; height: 320px; border-radius: 50%; padding: 10px; background: radial-gradient(circle, rgba(0,240,255,0.15) 0%, rgba(0,0,0,0.8) 70%); border: 2px solid rgba(0, 240, 255, 0.4); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.2); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img src="assets/images/jarvis_logo.png" alt="High Res Logo" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0,240,255,0.8));">
+                </div>
+                <div style="width: 100%; background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary);">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">CORE ARCHITECTURE:</span><span>MARK VI ARC REACTOR</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">POWER OUTPUT:</span><span style="color: #00ff66;">3.0 GW // STABLE SYNAPSE</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">ELECTRON ORBITAL AURA:</span><span style="color: var(--neon-cyan);">ACTIVE // 100% FREQUENCY</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Scripts (Modular Structure) -->
+    <script src="js/utils.js?v=5.0.0" defer></script>
+    <script src="js/storage.js?v=5.0.0" defer></script>
+    <script src="js/animations.js?v=5.0.0" defer></script>
+    <script src="js/settings.js?v=5.0.0" defer></script>
+    <script src="js/lockscreen.js?v=5.0.0" defer></script>
+    <script src="js/chat.js?v=5.0.0" defer></script>
+    <script src="js/weather.js?v=5.0.0" defer></script>
+    <script src="js/dashboard.js?v=5.0.0" defer></script>
+    <script src="js/commands.js?v=5.0.0" defer></script>
+    <script src="js/ai.js?v=5.0.0" defer></script>
+    <script src="js/voice.js?v=5.0.0" defer></script>
+    <script src="js/app.js?v=5.0.0" defer></script>
+
+    <!-- HOLOGRAPHIC AUTH TERMINAL MODAL (PILOT AUTH TERMINAL INTEGRATED) -->
+    <div class="settings-modal-overlay" id="auth-terminal-modal" onclick="if(event.target === this) closeAuthTerminalModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">
+        <div class="settings-modal" style="max-width: 1020px; width: 95%; height: auto; max-height: 92vh; background: rgba(4, 10, 24, 0.98); border: 1.5px solid var(--theme-primary); box-shadow: 0 0 50px rgba(0, 240, 255, 0.45); border-radius: 14px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="settings-header" style="padding: 12px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <h2 style="font-family: var(--font-hud); font-size: 0.9rem; color: var(--theme-primary); letter-spacing: 1.5px; margin: 0;"><i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i>J.A.R.V.I.S. TACTICAL AUTHENTICATION TERMINAL</h2>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="auth.html" target="_blank" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--theme-primary); text-decoration: none; display: flex; align-items: center; gap: 6px; background: rgba(0,240,255,0.1); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.3);" title="Open standalone Auth Terminal in full window"><i class="fa-solid fa-up-right-from-square"></i> FULLSCREEN TERMINAL</a>
+                    <button onclick="closeAuthTerminalModal()" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='var(--text-primary)'"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="settings-body" style="padding: 0; height: 610px; overflow: hidden; background: #080808;">
+                <iframe src="auth.html" style="width: 100%; height: 610px; border: none; display: block;" id="auth-terminal-iframe" scrolling="auto"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openAuthTerminalModal() {
+            const modal = document.getElementById('auth-terminal-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAuthTerminalModal() {
+            const modal = document.getElementById('auth-terminal-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function toggleAuthModalTab(tab) {
+            const loginSec = document.getElementById('modal-login-section');
+            const regSec = document.getElementById('modal-register-section');
+            if (tab === 'register') {
+                if (loginSec) loginSec.style.display = 'none';
+                if (regSec) regSec.style.display = 'flex';
+            } else {
+                if (loginSec) loginSec.style.display = 'flex';
+                if (regSec) regSec.style.display = 'none';
+            }
+        }
+
+        async function submitModalAuthLogin() {
+            const u = document.getElementById('modal-auth-user').value.trim();
+            const p = document.getElementById('modal-auth-pass').value.trim();
+            if (!u || !p) {
+                alert("Please enter username and password.");
+                return;
+            }
+            const userObj = {
+                username: u,
+                fullname: u.charAt(0).toUpperCase() + u.slice(1),
+                role: "Primary User // Administrator",
+                avatar: "assets/images/avatar.png"
+            };
+            localStorage.setItem('jarvis_user', JSON.stringify(userObj));
+            if (typeof loadUserProfile === 'function') loadUserProfile(userObj);
+            closeAuthTerminalModal();
+            if (typeof speak === 'function') speak(`Authentication confirmed. Welcome back, ${userObj.fullname}.`);
+            alert(`Authentication Successful. Welcome ${userObj.fullname}!`);
+        }
+
+        async function submitModalAuthRegister() {
+            const fullname = document.getElementById('modal-reg-name').value.trim();
+            const username = document.getElementById('modal-reg-user').value.trim();
+            const email = document.getElementById('modal-reg-email').value.trim();
+            const password = document.getElementById('modal-reg-pass').value.trim();
+            if (!username || !password) {
+                alert("Please enter username and password to create account.");
+                return;
+            }
+            const newUser = {
+                username: username,
+                fullname: fullname || username,
+                email: email,
+                role: "Primary User // Administrator",
+                avatar: "assets/images/avatar.png"
+            };
+            localStorage.setItem('jarvis_user', JSON.stringify(newUser));
+            if (typeof loadUserProfile === 'function') loadUserProfile(newUser);
+            closeAuthTerminalModal();
+            if (typeof speak === 'function') speak(`Account created successfully. Welcome aboard, ${newUser.fullname}.`);
+            alert(`Account created successfully for ${newUser.fullname}!`);
+        }
+
+        function openLogoZoomModal() {
+            const modal = document.getElementById('logo-zoom-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeLogoZoomModal() {
+            const modal = document.getElementById('logo-zoom-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openDashboardSideMenu() {
+            const drawer = document.getElementById('dash-side-drawer');
+            const backdrop = document.getElementById('dash-side-backdrop');
+            if (!drawer) return;
+            const isCurrentlyOpen = drawer.classList.contains('open') || window.getComputedStyle(drawer).display === 'flex';
+            if (isCurrentlyOpen) {
+                closeDashboardSideMenu();
+            } else {
+                drawer.classList.add('open');
+                drawer.style.setProperty('display', 'flex', 'important');
+                if (backdrop) {
+                    backdrop.classList.add('open');
+                    backdrop.style.setProperty('display', 'block', 'important');
+                }
+            }
+        }
+
+        function closeDashboardSideMenu() {
+            const drawer = document.getElementById('dash-side-drawer');
+            const backdrop = document.getElementById('dash-side-backdrop');
+            if (drawer) {
+                drawer.classList.remove('open');
+                drawer.style.setProperty('display', 'none', 'important');
+            }
+            if (backdrop) {
+                backdrop.classList.remove('open');
+                backdrop.style.setProperty('display', 'none', 'important');
+            }
+        }
+
+        async function resetMainframeDatabase() {
+            if (confirm("Reset and clear all user accounts from the mainframe database?")) {
+                try {
+                    const res = await fetch('http://127.0.0.1:3000/api/auth/reset-accounts', { method: 'POST' });
+                    const data = await res.json();
+                    alert(data.message || "Mainframe database reset complete.");
+                } catch (err) {
+                    alert("Database reset command dispatched.");
+                }
+            }
+        }
+    </script>
+</body>
+</html>

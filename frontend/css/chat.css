@@ -1,0 +1,199 @@
+/* ==========================================================================
+   J.A.R.V.I.S. Sci-Fi HUD Chat bubble Styles
+   ========================================================================== */
+
+.chat-panel {
+    flex-grow: 1;
+}
+
+.chat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.chat-bubble {
+    padding: 10px 12px;
+    border-radius: 6px;
+    position: relative;
+    max-width: 88%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: bubble-fade-in 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes bubble-fade-in {
+    0% { opacity: 0; transform: translateY(8px) scale(0.97); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.bubble-sender {
+    font-family: var(--font-hud);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+}
+
+.bubble-text {
+    font-size: 0.82rem;
+    line-height: 1.35;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.bubble-time {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 4px;
+}
+
+/* Sender variations */
+.jarvis-bubble {
+    background: rgba(0, 240, 255, 0.04);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    align-self: flex-start !important;
+    margin-right: auto !important;
+    border-bottom-left-radius: 1px;
+}
+
+.jarvis-bubble .bubble-sender {
+    color: var(--theme-primary);
+}
+
+.jarvis-bubble .bubble-text {
+    color: var(--text-primary);
+}
+
+.user-bubble {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    align-self: flex-end !important;
+    margin-left: auto !important;
+    border-bottom-right-radius: 1px;
+}
+
+.user-bubble .bubble-sender {
+    color: var(--text-secondary);
+}
+
+.user-bubble .bubble-text {
+    color: var(--text-secondary);
+}
+
+/* Chat bubble copy button styles */
+.bubble-copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0.35; /* Always visible but subtle */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.chat-bubble:hover .bubble-copy-btn {
+    opacity: 0.75;
+}
+
+.bubble-copy-btn:hover {
+    color: var(--theme-primary) !important;
+    opacity: 1 !important;
+    transform: scale(1.15);
+    text-shadow: 0 0 6px var(--theme-primary);
+}
+
+.bubble-copy-btn:active {
+    transform: scale(0.9);
+}
+
+/* Prism Holographic Syntax Highlighting Overrides */
+pre[class*="language-"] {
+    background: #040914 !important;
+    border: 1px solid rgba(0, 240, 255, 0.2) !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+    margin: 10px 0 !important;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 12px rgba(0, 240, 255, 0.05) !important;
+    overflow-x: auto;
+}
+
+code[class*="language-"] {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    text-shadow: none !important;
+    color: #e0e0e0 !important;
+}
+
+/* Tweak Prism token colors to match futuristic cyan/green theme */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #5c6370 !important;
+    font-style: italic;
+}
+
+.token.keyword {
+    color: #00f0ff !important;
+    font-weight: bold;
+}
+
+.token.string,
+.token.char {
+    color: #00ff66 !important;
+}
+
+.token.function {
+    color: #ff9900 !important;
+}
+
+.token.number,
+.token.boolean {
+    color: #ff3366 !important;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+    color: #00f0ff !important;
+}
+
+/* Hover effects for individual code copy button */
+.code-copy-btn:hover {
+    color: var(--theme-primary) !important;
+    transform: scale(1.15);
+    text-shadow: 0 0 6px var(--theme-primary);
+}
+
+.code-copy-btn:active {
+    transform: scale(0.9);
+}
+
+/* Hover effects for individual code zoom button */
+.code-zoom-btn:hover,
+.code-zoom-copy-btn:hover {
+    color: var(--theme-primary) !important;
+    transform: scale(1.15);
+    text-shadow: 0 0 6px var(--theme-primary);
+}
+
+.code-zoom-btn:active,
+.code-zoom-copy-btn:active {
+    transform: scale(0.9);
+}

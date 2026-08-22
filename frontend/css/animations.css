@@ -1,0 +1,143 @@
+/* ==========================================================================
+   J.A.R.V.I.S. Sci-Fi HUD CSS Keyframe Animations
+   ========================================================================== */
+
+/* Outer Core Ring Rotator */
+.outer-ring {
+    animation: spin-clockwise 15s linear infinite;
+}
+
+.middle-ring {
+    animation: spin-counter-clockwise 10s linear infinite;
+}
+
+.inner-ring {
+    animation: spin-clockwise 6s linear infinite;
+}
+
+@keyframes spin-clockwise {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter-clockwise {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Reactor Orb Pulsing Core */
+.core-orb-wrapper {
+    animation: core-orb-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes core-orb-pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2), inset 0 0 10px rgba(0, 240, 255, 0.1);
+        transform: scale(0.98);
+    }
+    100% {
+        box-shadow: 0 0 25px var(--theme-glow), inset 0 0 15px var(--theme-glow);
+        transform: scale(1.02);
+    }
+}
+
+/* Audio Wave Equalizer Animation */
+.voice-wave-container {
+    display: none; /* activated when listening/speaking */
+    align-items: center;
+    gap: 3px;
+    height: 36px;
+    margin-top: 15px;
+}
+
+.wave-bar {
+    width: 3px;
+    height: 5px;
+    background-color: var(--theme-primary);
+    box-shadow: 0 0 6px var(--theme-primary);
+    border-radius: 2px;
+}
+
+.wave-bar:nth-child(even) {
+    animation: bounce-wave 0.5s ease-in-out infinite alternate;
+}
+
+.wave-bar:nth-child(odd) {
+    animation: bounce-wave 0.7s ease-in-out infinite alternate-reverse;
+}
+
+.wave-bar:nth-child(3n) { animation-delay: 0.15s; }
+.wave-bar:nth-child(4n) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5n) { animation-delay: 0.45s; }
+
+@keyframes bounce-wave {
+    0% { height: 5px; }
+    100% { height: 28px; }
+}
+
+/* Biometric Scanner sweep sweep */
+.scanner-line {
+    animation: scan-sweep 3s ease-in-out infinite;
+}
+
+@keyframes scan-sweep {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Call Pulsing Ring */
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 0.6; }
+    50% { transform: scale(1.1); opacity: 0.1; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Glowing text loop */
+.security-icon-glow {
+    animation: beacon-glow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes beacon-glow {
+    0% {
+        color: var(--neon-cyan);
+        filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.4));
+    }
+    100% {
+        color: var(--neon-red);
+        filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8));
+    }
+}
+
+/* Startup Typing Indicator */
+@keyframes cursor-blink {
+    50% { opacity: 0; }
+}
+
+.log-line::after {
+    content: " _";
+    animation: cursor-blink 0.8s infinite;
+}
+
+/* Click Ripple Effects */
+.click-ripple {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--theme-primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: scale(0.1);
+    opacity: 0.8;
+    box-shadow: 0 0 10px var(--theme-primary);
+    animation: ripple-out 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes ripple-out {
+    100% {
+        transform: scale(2.2);
+        opacity: 0;
+    }
+}

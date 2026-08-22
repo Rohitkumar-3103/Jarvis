@@ -1,0 +1,94 @@
+# ==========================================================================
+# J.A.R.V.I.S. AI OS - Git Ignore Rules
+# ==========================================================================
+
+# 1. Byte-compiled / optimized / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# 2. Virtual Environments & Packages
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 3. Environment Variables & Secret API Keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config/api_keys.json
+config/certificates/
+config/certs/*.pem
+config/certs/*.key
+config/certs/*.crt
+
+# 4. User Databases & Sensitive Local Data
+backend/data/users.json
+backend/database/chat_history.json
+chat_history_db.json
+memory/conversation.json
+
+# 5. Logs & Temporary Runtime Files
+logs/
+*.log
+temp/
+scratch/
+uploads/*
+!uploads/.gitkeep
+
+# 6. Test & Coverage Caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# 7. Node / Frontend Dependencies
+node_modules/
+.npm/
+
+# 8. Editor & IDE Settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# 9. OS Metadata Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 10. AI Agent Caches
+.gemini/

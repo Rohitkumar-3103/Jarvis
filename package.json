@@ -1,0 +1,8 @@
+{
+  "name": "jarvis-ai-os",
+  "version": "3.0.0",
+  "description": "Full Stack J.A.R.V.I.S. AI Assistant OS",
+  "scripts": {
+    "start": "python run_dashboard.py"
+  }
+}

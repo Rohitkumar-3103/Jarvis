@@ -1,0 +1,215 @@
+/* ==========================================================================
+   J.A.R.V.I.S. Sci-Fi HUD Configuration Modals
+   ========================================================================== */
+
+.settings-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(3, 5, 15, 0.75);
+    z-index: 1500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.settings-modal {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 520px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.settings-header {
+    background: rgba(0, 240, 255, 0.03);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-header h2 {
+    font-family: var(--font-hud);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text-primary);
+}
+
+.close-modal-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-modal-btn:hover {
+    color: var(--theme-primary);
+}
+
+.settings-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.settings-section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding-bottom: 14px;
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.settings-section h3 {
+    font-family: var(--font-hud);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--theme-primary);
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.settings-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.settings-row:last-child {
+    margin-bottom: 0;
+}
+
+.settings-row label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.settings-row input[type="text"],
+.settings-row input[type="password"],
+.settings-row select {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.settings-row input[type="text"]:focus,
+.settings-row input[type="password"]:focus,
+.settings-row select:focus {
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.1);
+}
+
+/* Switches sliders styling */
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.switch-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: .3s;
+    border-radius: 20px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-secondary);
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+    background-color: rgba(0, 240, 255, 0.08);
+    border-color: var(--theme-primary);
+}
+
+input:checked + .switch-slider:before {
+    transform: translateX(22px);
+    background-color: var(--theme-primary);
+    box-shadow: 0 0 6px var(--theme-primary);
+}
+
+.settings-row span {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+.settings-footer {
+    background: rgba(0, 240, 255, 0.03);
+    border-top: 1px solid var(--border-color);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Custom Modal Text Inputs */
+.settings-input {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(0, 240, 255, 0.18) !important;
+    border-radius: 4px !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-body) !important;
+    font-size: 0.8rem !important;
+    padding: 8px 12px !important;
+    outline: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.settings-input:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25) !important;
+}
+
+/* Bypass browser autofill light-blue background styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(4, 10, 25, 0.95) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}

@@ -1,0 +1,13 @@
+{
+    "users": {
+        "ironman": {
+            "username": "ironman",
+            "password": "a176eeb31e601c3877c87c2843a2f584968975269e369d5c86788b4c2f92d2a2",
+            "fullname": "Tony Stark",
+            "email": "tony@starkindustries.com",
+            "phone": "+1234567890",
+            "role": "Primary User // Administrator",
+            "avatar": "assets/images/avatar.png"
+        }
+    }
+}
