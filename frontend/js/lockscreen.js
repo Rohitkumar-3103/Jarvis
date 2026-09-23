@@ -61,11 +61,14 @@ function initializeLockScreen() {
 function loadUserProfile(user) {
     if (!user) return;
     if (profileWidget) profileWidget.style.display = 'block';
-    if (profileFullName) profileFullName.textContent = user.fullname.toUpperCase();
-    if (profileUsername) profileUsername.textContent = `@${user.username}`;
-    if (profileClearance) profileClearance.textContent = user.role.toUpperCase();
+    if (profileFullName) profileFullName.textContent = (user.fullname || user.username || '').toUpperCase();
+    if (profileUsername) profileUsername.textContent = `@${user.username || ''}`;
+    if (profileClearance) profileClearance.textContent = (user.role || 'TERMINAL USER').toUpperCase();
     if (profileAvatarImg && user.avatar) {
-        const cleanAvatar = user.avatar.replace(/^frontend\//, '');
+        let cleanAvatar = user.avatar;
+        if (!cleanAvatar.startsWith('data:') && cleanAvatar.startsWith('frontend/')) {
+            cleanAvatar = cleanAvatar.replace(/^frontend\//, '');
+        }
         profileAvatarImg.src = cleanAvatar;
     }
 }

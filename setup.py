@@ -14,8 +14,12 @@ setup(
     description="Full-stack AI assistant and tactical Sci-Fi Operating System",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Rohit Kumar",
+    author="Rohit Kumar Gupta",
     url="https://github.com/Rohitkumar-3103/Jarvis",
+    project_urls={
+        "LinkedIn": "https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/",
+        "Source": "https://github.com/Rohitkumar-3103/Jarvis",
+    },
     packages=find_packages(exclude=["tests*", "demo*", "screenshots*"]),
     include_package_data=True,
     python_requires=">=3.10",

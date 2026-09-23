@@ -34,8 +34,14 @@ function initSettingsForm() {
 
 function updateCognitionStatus() {
     if (!llmStatus) return;
-    if (geminiApiKey) {
+    if (geminiApiKey && (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))) {
+        llmStatus.textContent = "CHATGPT CORE";
+        llmStatus.className = "status-card-value text-green";
+    } else if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
         llmStatus.textContent = "GEMINI CORE";
+        llmStatus.className = "status-card-value text-purple";
+    } else if (geminiApiKey) {
+        llmStatus.textContent = "AI CONNECTED";
         llmStatus.className = "status-card-value text-purple";
     } else {
         llmStatus.textContent = "LOCAL_ROUTER";
@@ -70,14 +76,24 @@ if (saveSettingsBtn) {
     saveSettingsBtn.addEventListener('click', () => {
         geminiApiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
         localStorage.setItem('jarvis_gemini_api_key', geminiApiKey);
+        if (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-")) {
+            localStorage.setItem('jarvis_openai_key', geminiApiKey);
+            localStorage.setItem('jarvis_chatgpt_key', geminiApiKey);
+        }
 
         if (geminiApiKey) {
+            const syncPayload = (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))
+                ? { openai_api_key: geminiApiKey, chatgpt_key: geminiApiKey }
+                : { gemini_api_key: geminiApiKey };
+
             fetch(`${BACKEND_URL}/api/system/config`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gemini_api_key: geminiApiKey })
+                body: JSON.stringify(syncPayload)
             }).catch(err => console.warn("Failed to sync key to backend config:", err));
         }
+
+        updateCognitionStatus();
 
         if (modalVoiceSelect) {
             selectedVoiceName = modalVoiceSelect.value;

@@ -41,34 +41,19 @@ def client():
         mongo_col.delete_many({"username": {"$in": ["spiderman", "ironman_test"]}})
 
 def test_auth_default_admin(client):
-    """Test login with default admin credentials and OTP verification."""
+    """Test direct login with default admin credentials."""
     payload = {
         "username": "ironman",
         "password": "3000"
     }
-    # Step 1: Initiate login
     rv = client.post('/api/auth/login', json=payload)
     assert rv.status_code == 200
     json_data = rv.get_json()
-    assert json_data['status'] == 'otp_required'
-    
-    # Step 2: Extract code and verify OTP
-    username = "ironman"
-    assert username in pending_sessions
-    otp = pending_sessions[username]['otp']
-    
-    verify_payload = {
-        "username": username,
-        "otp": otp
-    }
-    rv_verify = client.post('/api/auth/verify-otp', json=verify_payload)
-    assert rv_verify.status_code == 200
-    verify_data = rv_verify.get_json()
-    assert verify_data['authorized'] is True
-    assert verify_data['user']['fullname'] == 'Tony Stark'
+    assert json_data['authorized'] is True
+    assert json_data['user']['fullname'] == 'Tony Stark'
 
 def test_auth_registration_and_login(client):
-    """Test user registration, duplicate checks, login, and verification flows."""
+    """Test user registration (with OTP verification), duplicate checks, and direct login flows."""
     reg_payload = {
         "username": "spiderman",
         "password": "webspider",
@@ -101,7 +86,7 @@ def test_auth_registration_and_login(client):
     rv_dup = client.post('/api/auth/register', json=reg_payload)
     assert rv_dup.status_code == 400
 
-    # Step 3: Login with new credentials (initiates 2FA OTP)
+    # Step 3: Login with registered credentials (direct instant access)
     login_payload = {
         "username": "spiderman",
         "password": "webspider"
@@ -109,20 +94,8 @@ def test_auth_registration_and_login(client):
     rv_login = client.post('/api/auth/login', json=login_payload)
     assert rv_login.status_code == 200
     login_data = rv_login.get_json()
-    assert login_data['status'] == 'otp_required'
-    
-    # Step 4: Verify login OTP code
-    assert username in pending_sessions
-    login_otp = pending_sessions[username]['otp']
-    
-    rv_verify_login = client.post('/api/auth/verify-otp', json={
-        "username": username,
-        "otp": login_otp
-    })
-    assert rv_verify_login.status_code == 200
-    verify_login_data = rv_verify_login.get_json()
-    assert verify_login_data['authorized'] is True
-    assert verify_login_data['user']['fullname'] == 'Peter Parker'
+    assert login_data['authorized'] is True
+    assert login_data['user']['fullname'] == 'Peter Parker'
 
     # Login with bad password
     bad_login_payload = {
@@ -131,3 +104,12 @@ def test_auth_registration_and_login(client):
     }
     rv_bad = client.post('/api/auth/login', json=bad_login_payload)
     assert rv_bad.status_code == 401
+
+def test_db_status_endpoint(client):
+    """Test database status endpoint returns valid JSON."""
+    rv = client.get('/api/auth/db-status')
+    assert rv.status_code == 200
+    data = rv.get_json()
+    assert "status" in data
+    assert "engine" in data
+    assert "total_users" in data

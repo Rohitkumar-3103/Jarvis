@@ -111,8 +111,8 @@
             width: 100%;
             max-width: 960px;
             height: 96vh;
-            max-height: 600px;
-            min-height: 540px;
+            max-height: 680px;
+            min-height: 560px;
             background-color: rgba(19, 19, 19, 0.9);
             border-radius: 18px;
             box-shadow: 0 0 50px rgba(var(--color-cyan-rgb), 0.15);
@@ -160,7 +160,7 @@
             align-items: stretch;
             justify-content: center;
             flex-direction: column;
-            padding: 1.2rem 3rem;
+            padding: 3.4rem 2.6rem 1.4rem 2.6rem;
             transition: all 0.2s 0.7s;
             overflow-y: auto;
             max-height: 100%;
@@ -178,18 +178,18 @@
         }
 
         .form-label {
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             font-weight: 500;
             color: #d1d5db;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             display: block;
         }
 
         .input-field {
             width: 100%;
             background-color: rgba(28, 27, 27, 0.75);
-            margin-bottom: 10px;
-            height: 44px;
+            margin-bottom: 8px;
+            height: 40px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -669,6 +669,26 @@
                         <div class="h-[1px] bg-white/15 flex-1"></div>
                     </div>
 
+                    <!-- IDENTITY PHOTO UPLOAD (AVATAR) -->
+                    <div class="flex items-center justify-between gap-3 mb-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 w-full cursor-pointer hover:border-[var(--color-cyan)]/50 transition-all" onclick="document.getElementById('reg-avatar-file-input').click()" title="Click to upload profile identity photo">
+                        <div class="flex items-center gap-2.5">
+                            <div class="relative w-9 h-9 rounded-full border border-[var(--color-cyan)] overflow-hidden shadow-md bg-black/60 flex items-center justify-center flex-shrink-0">
+                                <img id="reg-avatar-preview-img" src="assets/images/avatar.png" class="w-full h-full object-cover" alt="Identity Avatar" />
+                                <div class="absolute inset-0 bg-black/65 opacity-0 hover:opacity-100 flex items-center justify-center text-[8px] text-[var(--color-cyan)] transition-opacity">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <span class="text-xs font-semibold text-gray-200 flex items-center gap-1">
+                                    Identity Photo
+                                </span>
+                                <span class="text-[10px] font-mono text-gray-400">Click to upload custom picture</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-mono text-[var(--color-cyan)] border border-[var(--color-cyan)]/40 px-2 py-0.5 rounded-full hover:bg-[var(--color-cyan)]/10">Browse</span>
+                        <input type="file" id="reg-avatar-file-input" accept="image/*" class="hidden" onchange="handleRegisterAvatarSelect(event)" />
+                    </div>
+
                     <!-- FIRST NAME & LAST NAME GRID -->
                     <div class="grid grid-cols-2 gap-3 w-full">
                         <div>
@@ -1092,10 +1112,11 @@
         const sign_in_btn = document.querySelector("#sign-in-btn");
         const sign_up_btn = document.querySelector("#sign-up-btn");
         const container = document.querySelector(".auth-wrapper-container");
-        const BACKEND_URL = window.location.origin.includes('3000') ? '' : 'http://127.0.0.1:3000';
+        const BACKEND_URL = window.location.origin.includes('5000') ? '' : 'http://127.0.0.1:5000';
         let pendingUserSession = null;
         let activeOtpChannel = 'email';
         let otpTimerInterval = null;
+        let lastReceivedOtp = '';
 
         if (sign_up_btn && container) {
             sign_up_btn.addEventListener("click", () => container.classList.add("sign-up-mode"));
@@ -1201,11 +1222,25 @@
         if (otpInputsContainer) {
             const otpInputs = otpInputsContainer.querySelectorAll('.otp-input-box');
             otpInputs.forEach((input, index) => {
-                input.addEventListener('keyup', (e) => {
-                    if (e.key >= '0' && e.key <= '9') {
-                        if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
-                    } else if (e.key === 'Backspace') {
-                        if (index > 0) otpInputs[index - 1].focus();
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    if (val.length > 0) {
+                        e.target.value = val.slice(-1);
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        }
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    } else if (e.key === 'ArrowLeft' && index > 0) {
+                        otpInputs[index - 1].focus();
+                    } else if (e.key === 'ArrowRight' && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    } else if (e.key === 'Enter') {
+                        submitOtpVerification();
                     }
                 });
 
@@ -1226,6 +1261,16 @@
             const otpInputs = document.querySelectorAll('.otp-input-box');
             otpInputs.forEach(input => input.value = '');
             if (otpInputs[0]) otpInputs[0].focus();
+        }
+
+        function autofillOtp(code) {
+            if (!code) code = lastReceivedOtp;
+            if (!code || code.length !== 6) return;
+            const otpInputs = document.querySelectorAll('.otp-input-box');
+            code.split('').forEach((char, idx) => {
+                if (otpInputs[idx]) otpInputs[idx].value = char;
+            });
+            if (otpInputs[5]) otpInputs[5].focus();
         }
 
         function switchOtpChannel(channel) {
@@ -1259,7 +1304,7 @@
 
             if (statusMsg) {
                 statusMsg.textContent = `DISPATCHING OTP TO ${targetIdentifier.toUpperCase()}...`;
-                statusMsg.className = "font-mono text-xs text-center w-full text-[var(--color-cyan)]";
+                statusMsg.className = "font-mono text-xs text-center w-full text-[var(--color-cyan)] cursor-pointer";
                 statusMsg.classList.remove('hidden');
             }
 
@@ -1275,17 +1320,21 @@
                 const data = await res.json();
                 if (statusMsg) {
                     if (data.otp_code) {
-                        statusMsg.textContent = `PASSCODE [${data.otp_code}] SENT TO ${targetIdentifier.toUpperCase()}`;
+                        lastReceivedOtp = data.otp_code;
+                        statusMsg.innerHTML = `PASSCODE [<strong class="underline">${data.otp_code}</strong>] DISPATCHED &bull; <span class="text-xs text-[var(--color-cyan)] underline">CLICK TO AUTO-FILL</span>`;
+                        statusMsg.onclick = () => autofillOtp(data.otp_code);
                     } else {
                         statusMsg.textContent = data.message || `OTP sent to ${targetIdentifier}`;
+                        statusMsg.onclick = null;
                     }
-                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
+                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41] cursor-pointer";
                 }
             } catch (err) {
                 console.log('[OTP Transporter] Backend error:', err);
                 if (statusMsg) {
                     statusMsg.textContent = `ENTER YOUR 6-DIGIT SECURITY PASSCODE.`;
                     statusMsg.className = "font-mono text-xs text-center w-full text-[var(--color-cyan)]";
+                    statusMsg.onclick = null;
                 }
             }
         }
@@ -1302,13 +1351,15 @@
             const initialTarget = activeOtpChannel === 'phone' ? (defaultPhone || '+1234567890') : defaultEmail;
             
             if (preGeneratedOtp) {
+                lastReceivedOtp = preGeneratedOtp;
                 const statusMsg = document.getElementById('otp-status-msg');
                 const targetDesc = document.getElementById('otp-target-desc');
                 clearOtpInputs();
                 if (targetDesc) targetDesc.textContent = `Security passcode dispatched to ${initialTarget}`;
                 if (statusMsg) {
-                    statusMsg.textContent = `PASSCODE [${preGeneratedOtp}] DISPATCHED.`;
-                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41]";
+                    statusMsg.innerHTML = `PASSCODE [<strong class="underline">${preGeneratedOtp}</strong>] DISPATCHED &bull; <span class="text-xs text-[var(--color-cyan)] underline">CLICK TO AUTO-FILL</span>`;
+                    statusMsg.className = "font-mono text-xs text-center w-full text-[#00ff41] cursor-pointer";
+                    statusMsg.onclick = () => autofillOtp(preGeneratedOtp);
                     statusMsg.classList.remove('hidden');
                 }
                 startOtpCountdownTimer();
@@ -1384,7 +1435,13 @@
                 const res = await fetch(`${BACKEND_URL}/api/auth/verify-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: usernameKey, identifier: targetIdentifier, otp: enteredCode })
+                    body: JSON.stringify({ 
+                        username: usernameKey, 
+                        identifier: targetIdentifier, 
+                        email: pendingUserSession.email,
+                        phone: pendingUserSession.phone,
+                        otp: enteredCode 
+                    })
                 });
 
                 const data = await res.json();
@@ -1426,6 +1483,37 @@
             }
         }
 
+        let uploadedRegisterAvatar = 'assets/images/avatar.png';
+
+        function handleRegisterAvatarSelect(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 256;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    
+                    const minDim = Math.min(img.width, img.height);
+                    const sx = (img.width - minDim) / 2;
+                    const sy = (img.height - minDim) / 2;
+                    ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+                    uploadedRegisterAvatar = canvas.toDataURL('image/jpeg', 0.85);
+                    const preview = document.getElementById('reg-avatar-preview-img');
+                    if (preview) preview.src = uploadedRegisterAvatar;
+                    speak("Identity photo attached.");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         // SIGN UP FORM SUBMISSION -> DISPATCHES SECURE OTP
         const signupForm = document.getElementById('signup-form');
         if (signupForm) {
@@ -1439,19 +1527,34 @@
                 const password = document.getElementById('reg-password').value;
 
                 const fullname = `${firstname} ${lastname}`.trim() || username;
-                const userSession = { username, fullname, email, phone, role: "Terminal User" };
+                const userSession = { 
+                    username, 
+                    fullname, 
+                    email, 
+                    phone, 
+                    role: "Terminal User",
+                    avatar: uploadedRegisterAvatar
+                };
 
-                showMessage('signup-message', 'CONNECTING TO AUTH SERVER...', false);
+                showMessage('register-message', 'CONNECTING TO AUTH SERVER...', false);
 
                 try {
                     const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password, fullname, email, phone })
+                        body: JSON.stringify({ 
+                            username, 
+                            password, 
+                            fullname, 
+                            email, 
+                            phone,
+                            avatar: uploadedRegisterAvatar 
+                        })
                     });
                     const data = await res.json();
 
                     if (res.ok && data.status === 'otp_required') {
+                        showMessage('register-message', '', false);
                         openOtpModal(userSession, email, phone, data.otp_code);
                     } else if (res.ok && data.status === 'success') {
                         localStorage.setItem('jarvis_user', JSON.stringify(data.user || userSession));
@@ -1459,10 +1562,11 @@
                         speak("Registration completed. Welcome to Stark Systems.");
                         setTimeout(() => { window.location.href = 'http://127.0.0.1:8080/'; }, 800);
                     } else {
-                        showMessage('signup-message', data.message || 'REGISTRATION ERROR', true);
+                        showMessage('register-message', (data.message || 'REGISTRATION ERROR').toUpperCase(), true);
                         speak("Registration failed. " + (data.message || ""));
                     }
                 } catch (err) {
+                    showMessage('register-message', 'BACKEND NOT REACHABLE. VERIFYING LOCALLY...', true);
                     openOtpModal(userSession, email, phone);
                 }
             });

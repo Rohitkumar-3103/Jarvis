@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>J.A.R.V.I.S. AI OS v3.2.0 — Master Technical Blueprint & Project Specifications</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm 10mm 12mm 10mm;
+        @bottom-right {
+            content: "Page " counter(page);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7pt;
+            color: #64748b;
+        }
+        @bottom-left {
+            content: "STARK INDUSTRIES // J.A.R.V.I.S. AI OS v3.2.0 MASTER SPECIFICATION";
+            font-family: 'Orbitron', sans-serif;
+            font-size: 6.5pt;
+            color: #0ea5e9;
+            letter-spacing: 1px;
+        }
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #040812;
+        color: #e2e8f0;
+        font-size: 8pt;
+        line-height: 1.35;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .page {
+        page-break-after: always;
+        position: relative;
+        height: 275mm;
+        max-height: 275mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    .page:last-child {
+        page-break-after: avoid;
+    }
+
+    /* TYPOGRAPHY */
+    h1, h2, h3, h4 {
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 1.1px;
+    }
+
+    h1 {
+        font-size: 16pt;
+        font-weight: 900;
+        color: #00f0ff;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    h2 {
+        font-size: 10pt;
+        font-weight: 700;
+        color: #38bdf8;
+        border-bottom: 1.2px solid rgba(56, 189, 248, 0.35);
+        padding-bottom: 2px;
+        margin-top: 5pt;
+        margin-bottom: 4pt;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    h3 {
+        font-size: 8.5pt;
+        font-weight: 600;
+        color: #a5f3fc;
+        margin-top: 4pt;
+        margin-bottom: 2pt;
+    }
+
+    p {
+        margin-bottom: 3pt;
+        color: #cbd5e1;
+    }
+
+    code, pre {
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* COVER PAGE */
+    .cover-page {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 272mm;
+        border: 2px solid rgba(0, 240, 255, 0.35);
+        border-radius: 10px;
+        padding: 12mm 14mm;
+        background: radial-gradient(circle at 50% 25%, rgba(0, 240, 255, 0.15) 0%, rgba(4, 8, 18, 0.98) 72%);
+        box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.2);
+    }
+
+    .cover-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+        padding-bottom: 8px;
+    }
+
+    .stark-emblem {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10.5pt;
+        font-weight: 900;
+        color: #f59e0b;
+        letter-spacing: 2.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .sec-badge {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid #ef4444;
+        color: #fca5a5;
+        padding: 2px 8px;
+        font-size: 6.8pt;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        border-radius: 4px;
+        letter-spacing: 1px;
+    }
+
+    .cover-center {
+        text-align: center;
+        margin: 10mm 0;
+    }
+
+    .arc-reactor-svg {
+        width: 105px;
+        height: 105px;
+        margin: 0 auto 12px auto;
+    }
+
+    .cover-title {
+        font-size: 25pt;
+        font-weight: 900;
+        color: #00f0ff;
+        letter-spacing: 4px;
+        margin-bottom: 4px;
+        text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+    }
+
+    .cover-subtitle {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10pt;
+        color: #94a3b8;
+        letter-spacing: 2px;
+        margin-bottom: 14px;
+    }
+
+    .cover-tagline {
+        font-size: 8.5pt;
+        color: #cbd5e1;
+        max-width: 520px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    .cover-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-top: 6mm;
+    }
+
+    .meta-item {
+        font-size: 7.5pt;
+    }
+
+    .meta-label {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 6.5pt;
+        color: #38bdf8;
+        letter-spacing: 0.8px;
+    }
+
+    .meta-value {
+        font-family: 'JetBrains Mono', monospace;
+        color: #f1f5f9;
+        font-weight: 600;
+        margin-top: 1px;
+    }
+
+    .cover-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+        font-size: 6.8pt;
+        color: #64748b;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* CARDS & PANELS */
+    .card {
+        background: rgba(13, 20, 36, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 5px;
+        padding: 5px 7px;
+        display: block;
+        overflow: hidden;
+    }
+
+    .card-header {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 7.4pt;
+        font-weight: 700;
+        color: #00f0ff;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        margin-bottom: 4pt;
+    }
+
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        margin-bottom: 4pt;
+    }
+
+    /* TABLES */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 3pt 0 5pt 0;
+        font-size: 7.2pt;
+    }
+
+    th, td {
+        padding: 3.5px 5px;
+        text-align: left;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    th {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 6.8pt;
+        font-weight: 700;
+        color: #38bdf8;
+        background: rgba(15, 23, 42, 0.9);
+        border-bottom: 1.2px solid #0284c7;
+        letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) {
+        background: rgba(30, 41, 59, 0.3);
+    }
+
+    td code {
+        background: rgba(0, 240, 255, 0.08);
+        color: #67e8f9;
+        padding: 1px 3px;
+        border-radius: 3px;
+        font-size: 6.8pt;
+    }
+
+    /* BADGES */
+    .badge {
+        display: inline-block;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-size: 6.3pt;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .badge-cyan { background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.4); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+    /* STATE DOTS */
+    .state-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-right: 4px;
+    }
+    .dot-cyan { background: #00f0ff; box-shadow: 0 0 6px #00f0ff; }
+    .dot-red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+    .dot-purple { background: #c084fc; box-shadow: 0 0 6px #c084fc; }
+    .dot-amber { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+    .dot-green { background: #10b981; box-shadow: 0 0 6px #10b981; }
+    .dot-emerald { background: #00ff66; box-shadow: 0 0 6px #00ff66; }
+
+    /* CODE BOX */
+    .code-block {
+        background: #060a12;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 4px;
+        padding: 4px 6px;
+        font-size: 6.7pt;
+        color: #93c5fd;
+        margin: 3pt 0;
+        overflow-x: hidden;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    /* ARCHITECTURE DIAGRAM */
+    .arch-diagram {
+        background: rgba(10, 16, 28, 0.9);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 6px;
+        padding: 5px 7px;
+        margin: 3pt 0;
+    }
+
+    .flow-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+        margin: 2.5px 0;
+    }
+
+    .flow-node {
+        flex: 1;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 4px;
+        padding: 3px 5px;
+        text-align: center;
+    }
+
+    .flow-node.highlight {
+        border-color: #00f0ff;
+        box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+    }
+
+    .flow-arrow {
+        color: #00f0ff;
+        font-size: 7.5pt;
+        font-weight: bold;
+    }
+
+    .list-styled {
+        list-style: none;
+        padding-left: 0;
+        margin: 2px 0 0 0;
+    }
+
+    .list-styled li {
+        position: relative;
+        padding-left: 9px;
+        margin-bottom: 1.5px;
+        font-size: 7.1pt;
+        line-height: 1.28;
+        color: #cbd5e1;
+    }
+
+    .list-styled li::before {
+        content: "-";
+        position: absolute;
+        left: 0;
+        color: #00f0ff;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER PAGE -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-header">
+            <div class="stark-emblem">
+                <span>STARK INDUSTRIES</span>
+            </div>
+            <div class="sec-badge">CLEARANCE LEVEL 4 // CLASSIFIED</div>
+        </div>
+
+        <div class="cover-center">
+            <svg class="arc-reactor-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.6"/>
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.8"/>
+                <circle cx="50" cy="50" r="30" fill="none" stroke="#00f0ff" stroke-width="3" stroke-dasharray="10,5"/>
+                <circle cx="50" cy="50" r="20" fill="rgba(0, 240, 255, 0.15)" stroke="#00f0ff" stroke-width="2"/>
+                <polygon points="50,22 62,38 78,50 62,62 50,78 38,62 22,50 38,38" fill="none" stroke="#a5f3fc" stroke-width="1.5"/>
+                <circle cx="50" cy="50" r="10" fill="#00f0ff" opacity="0.85"/>
+                <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+            </svg>
+            <div class="cover-title">J.A.R.V.I.S.</div>
+            <div class="cover-subtitle">AI OPERATING SYSTEM // MARK XLVII</div>
+            <p class="cover-tagline">
+                Comprehensive Technical Specification & Blueprint: Multimodal Conversational AI, Bilingual Speech Synapse, Windows Desktop & Browser Automation, Real-Time Hardware Telemetry, Biometrics & Tactical Glassmorphic Web HUD.
+            </p>
+        </div>
+
+        <div>
+            <div class="cover-meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">SYSTEM VERSION</div>
+                    <div class="meta-value">v3.2.0 PRODUCTION STABLE</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">DEPLOYMENT PORTS</div>
+                    <div class="meta-value">Backend :5000 | Web HUD :8080</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">COGNITION PIPELINE</div>
+                    <div class="meta-value">Gemini 2.5/2.0 Flash + Local Knowledge</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">STORAGE & AUTH</div>
+                    <div class="meta-value">MongoDB Atlas + OpenCV Biometrics</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-footer">
+            <span>DOCUMENT REF: SPEC-JARVIS-3.2.0-MASTER</span>
+            <span>DATE: AUGUST 2026 // STARK CORP ARCHITECTURE TEAM</span>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2: EXECUTIVE SUMMARY & 21 CORE CAPABILITY PILLARS -->
+<div class="page">
+    <h2>1. Executive Summary & All 21 Core Capability Pillars</h2>
+    <p style="font-size: 7.5pt; margin-bottom: 3.5pt;">
+        <strong>J.A.R.V.I.S. (Just A Rather Very Intelligent System)</strong> is an automated full-stack AI OS inspired by the Stark Industries Mark XLVII interface. It bridges multimodal AI cognition, speech synthesis, real-time computer vision, OS automation, and cloud data stores into an integrated tactical HUD.
+    </p>
+
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">01</span> <i class="fa-solid fa-robot"></i> AI Assistant</div>
+            <p style="font-size: 6.7pt; margin: 0;">Context-aware conversational intelligence with persistent memory and Stark persona.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">02</span> <i class="fa-solid fa-microphone"></i> Voice Input (STT)</div>
+            <p style="font-size: 6.7pt; margin: 0;">Web Speech & offline Whisper/Vosk recognition in English (en-IN/en-US) & Hindi (hi-IN).</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">03</span> <i class="fa-solid fa-volume-high"></i> Text-to-Speech (TTS)</div>
+            <p style="font-size: 6.7pt; margin: 0;">Multi-engine TTS (WebSpeech, EdgeTTS) with automated Devanagari script routing.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">04</span> <i class="fa-solid fa-brain"></i> LLM / API Cognition</div>
+            <p style="font-size: 6.7pt; margin: 0;">Google Gemini 2.5/2.0 Flash failover with instant offline local knowledge fallback.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">05</span> <i class="fa-solid fa-desktop"></i> Desktop Automation</div>
+            <p style="font-size: 6.7pt; margin: 0;">Window controls (min/max/tile), system volume, workstation lock, sleep, reboot, shutdown.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">06</span> <i class="fa-solid fa-folder-open"></i> File & App Manager</div>
+            <p style="font-size: 6.7pt; margin: 0;">Launches VS Code, Chrome, Spotify, Calculator, plus safe file search & dataset disk upload.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">07</span> <i class="fa-solid fa-globe"></i> Browser Automation</div>
+            <p style="font-size: 6.7pt; margin: 0;">Playwright engine for web navigation, URL normalization, multi-tabs, and DOM parsing.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-red">08</span> <i class="fa-solid fa-play"></i> YouTube Controls</div>
+            <p style="font-size: 6.7pt; margin: 0;">Direct video search, automatic playback, volume/fullscreen, and transcript extraction.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">09</span> <i class="fa-solid fa-comments"></i> WhatsApp Messages</div>
+            <p style="font-size: 6.7pt; margin: 0;">Automated messaging via WhatsApp Web & Desktop with contact search and failsafes.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">10</span> <i class="fa-solid fa-camera"></i> Screen Vision & OCR</div>
+            <p style="font-size: 6.7pt; margin: 0;">High-speed screen capture (MSS), window inspection, and Gemini Vision reasoning.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">11</span> <i class="fa-solid fa-cloud-sun"></i> Weather Telemetry</div>
+            <p style="font-size: 6.7pt; margin: 0;">Live atmospheric telemetry via Open-Meteo REST service with top header scan & chat cards.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">12</span> <i class="fa-solid fa-gears"></i> Tool Sandbox Execution</div>
+            <p style="font-size: 6.7pt; margin: 0;">Dynamic tool dispatcher, isolated Python execution sandbox, and algorithm builder.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">13</span> <i class="fa-solid fa-puzzle-piece"></i> Modular Architecture</div>
+            <p style="font-size: 6.7pt; margin: 0;">Clean decoupled structure across frontend, backend, core, actions, and memory layers.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">14</span> <i class="fa-solid fa-atom"></i> Arc Reactor Visualizer</div>
+            <p style="font-size: 6.7pt; margin: 0;">Concentric multi-ring animated core with kinetic audio wave ripple effects.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">15</span> <i class="fa-solid fa-rotate"></i> 6 Assistant States</div>
+            <p style="font-size: 6.7pt; margin: 0;">Real-time transitions: Standby, Listening, Thinking, Tool Execution, Responding, Success.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">16</span> <i class="fa-solid fa-display"></i> Web-Based HUD (:8080)</div>
+            <p style="font-size: 6.7pt; margin: 0;">Single-page glassmorphic dashboard with live metrics, side drawer, and telemetry.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">17</span> <i class="fa-solid fa-shield-halved"></i> Biometrics & Auth</div>
+            <p style="font-size: 6.7pt; margin: 0;">OpenCV Haar Cascade face scan, PIN fallback (3000), and 2FA OTP auth terminal.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">18</span> <i class="fa-solid fa-floppy-disk"></i> Conversation Logs</div>
+            <p style="font-size: 6.7pt; margin: 0;">Persistent session logs via LocalStorage + SQLite/JSON hybrid store with PDF export.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">19</span> <i class="fa-solid fa-database"></i> MongoDB Hybrid Data</div>
+            <p style="font-size: 6.7pt; margin: 0;">Cloud MongoDB Atlas integration with automated local fallback to backend JSON stores.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">20</span> <i class="fa-solid fa-plug"></i> Flask REST APIs (:5000)</div>
+            <p style="font-size: 6.7pt; margin: 0;">CORS-enabled REST endpoints for system commands, AI, code, auth, chat, and weather.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">21</span> <i class="fa-solid fa-palette"></i> 360 Tactical Themes</div>
+            <p style="font-size: 6.7pt; margin: 0;">5 preset tactical themes (Cyan, Green, Red, Gold, Purple) + dynamic 360 color wheel.</p>
+        </div>
+    </div>
+
+    <h2>2. High-Level Architecture Runtime Pipeline</h2>
+    <div class="arch-diagram">
+        <div class="flow-row">
+            <div class="flow-node highlight">
+                <strong style="color: #00f0ff; font-size: 7pt;">HUMAN PERCEPTION (Web Speech / Clicks / Camera)</strong>
+            </div>
+            <div class="flow-arrow">&#8594;</div>
+            <div class="flow-node highlight">
+                <strong style="color: #38bdf8; font-size: 7pt;">TACTICAL WEB HUD (:8080) (Arc Reactor / Top Bar / Chat)</strong>
+            </div>
+        </div>
+        <div class="flow-row">
+            <div class="flow-arrow" style="width: 100%; text-align: center; font-size: 6.8pt;">&#8595; REST API & JSON Payload Bus (CORS Enabled)</div>
+        </div>
+        <div class="flow-row">
+            <div class="flow-node">
+                <strong style="color: #10b981; font-size: 7pt;">FLASK REST NODE (:5000)</strong><br>
+                <span style="font-size: 6.3pt; color: #94a3b8;">Auth / Telemetry / AI / Code / Chat / Weather</span>
+            </div>
+            <div class="flow-arrow">&#8594;</div>
+            <div class="flow-node">
+                <strong style="color: #c084fc; font-size: 7pt;">ACTIONS & AUTOMATION</strong><br>
+                <span style="font-size: 6.3pt; color: #94a3b8;">Desktop / Playwright / WhatsApp / YouTube / psutil</span>
+            </div>
+            <div class="flow-arrow">&#8594;</div>
+            <div class="flow-node">
+                <strong style="color: #f59e0b; font-size: 7pt;">DATA & CLOUD</strong><br>
+                <span style="font-size: 6.3pt; color: #94a3b8;">MongoDB / Gemini / Pollinations 4K / Open-Meteo</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 3: ARC REACTOR VISUALIZATION & ASSISTANT STATES -->
+<div class="page">
+    <h2>3. Arc Reactor HUD & Dynamic Assistant States</h2>
+    <p style="font-size: 7.4pt; margin-bottom: 3pt;">
+        The central synapse visualizer reacts dynamically across <strong>6 distinct operational states</strong>:
+    </p>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">STATE 01</span> <span class="state-dot dot-cyan"></span> Standby (Idle)</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> Rhythmic, slow pulsing cyan glow at 0.5Hz.</li>
+                <li><strong>System Meaning:</strong> Workstation is armed, listening daemon ready.</li>
+                <li><strong>Trigger:</strong> Startup completion or post-response rest.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-red">STATE 02</span> <span class="state-dot dot-red"></span> Listening</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> Active red/cyan audio wave frequency oscillation.</li>
+                <li><strong>System Meaning:</strong> Web Speech API active, receiving en-IN/hi-IN audio.</li>
+                <li><strong>Trigger:</strong> Arc Reactor click or floating microphone dock activation.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">STATE 03</span> <span class="state-dot dot-purple"></span> Thinking / Synapsing</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> Rapid concentric ring matrix rotation in violet/magenta.</li>
+                <li><strong>System Meaning:</strong> Google Gemini reasoning or local knowledge synthesis.</li>
+                <li><strong>Trigger:</strong> Query submission (voice or terminal text bar).</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">STATE 04</span> <span class="state-dot dot-amber"></span> Tool Execution</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> High-velocity orbital pulse with amber warning accents.</li>
+                <li><strong>System Meaning:</strong> Running Playwright, WhatsApp send, or Python sandbox.</li>
+                <li><strong>Trigger:</strong> Dispatching action via actions/ executor.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">STATE 05</span> <span class="state-dot dot-green"></span> Responding / Vocalizing</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> Kinetic emerald ripple waves synchronized with speech audio.</li>
+                <li><strong>System Meaning:</strong> SpeechSynthesisUtterance active; chat bubble streaming.</li>
+                <li><strong>Trigger:</strong> TTS playback of assistant answer.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">STATE 06</span> <span class="state-dot dot-emerald"></span> Success / Confirmation</div>
+            <ul class="list-styled">
+                <li><strong>Visual Core:</strong> Instantaneous bright emerald flash and chime.</li>
+                <li><strong>System Meaning:</strong> Target action completed successfully.</li>
+                <li><strong>Trigger:</strong> App opened, volume set, message dispatched, screenshot taken.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>4. Web-Based J.A.R.V.I.S. Tactical HUD (Port 8080)</h2>
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">HUD</span> Glassmorphic Dashboard</div>
+            <p style="font-size: 6.8pt; margin: 0;">Backdrop-filter blur, particle canvas field, digital HUD clock, battery metrics, top header atmospheric scan, and live system log stream.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">THEMES</span> 360 Theme Engine</div>
+            <p style="font-size: 6.8pt; margin: 0;">5 tactical presets (Cyan Matrix, Green Diagnostics, Red Combat, Gold Centurion, Purple Quantum) + custom continuous 360 color wheel.</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">CONTROL</span> Side Drawer Panel</div>
+            <p style="font-size: 6.8pt; margin: 0;">Slide-out drawer containing user profile, clearance level, cloud database status, project PDF download, and quick navigation shortcuts.</p>
+        </div>
+    </div>
+
+    <h2>5. Authentication, Biometrics & MongoDB Integration</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>SECURITY VECTOR</th>
+                <th>IMPLEMENTATION</th>
+                <th>ROLE & SPECIFICATION</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Optical Facial Scan</strong></td>
+                <td>OpenCV Haar Cascades (<code>POST /api/auth/face</code>)</td>
+                <td>Real-time in-memory webcam frame facial detection and biometric user verification.</td>
+            </tr>
+            <tr>
+                <td><strong>Passcode Fallback</strong></td>
+                <td>PIN Entry Mode</td>
+                <td>4-digit manual security PIN entry with default emergency bypass code (<code>3000</code>).</td>
+            </tr>
+            <tr>
+                <td><strong>2FA OTP Verification</strong></td>
+                <td>Hybrid Auth Flow (<code>POST /api/auth/verify-otp</code>)</td>
+                <td>6-digit numeric OTP generation & verification for new accounts and credential login.</td>
+            </tr>
+            <tr>
+                <td><strong>Tactical Auth Portal</strong></td>
+                <td><code>frontend/auth.html</code></td>
+                <td>Standalone WebGL GLSL shader portal with interactive pull-cord theme toggle and 5 swatches.</td>
+            </tr>
+            <tr>
+                <td><strong>MongoDB Hybrid Data</strong></td>
+                <td>MongoDB Atlas + JSON/SQLite Fallback</td>
+                <td>Cloud user profile persistence with local auto-failover to <code>backend/data/users.json</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>Conversation History</strong></td>
+                <td><code>/api/chat/history</code> + LocalStorage</td>
+                <td>Full chat log persistence with 1-click PDF export, log search, and history clearance.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGE 4: DETAILED MODULES, TOOLS & REST APIS -->
+<div class="page">
+    <h2>6. Native Tool & Automation Subsystems (`actions/`)</h2>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">01</span> <i class="fa-solid fa-globe"></i> Browser Automation (Playwright)</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>File:</strong> <code>actions/browser_control.py</code></p>
+            <ul class="list-styled">
+                <li>Automated Chrome/Edge headless and headful session management.</li>
+                <li>Intelligent URL normalization (e.g. "instagram" to "https://instagram.com").</li>
+                <li>DOM interaction: clicking, form filling, scroll management, link scraping.</li>
+                <li>Fast fallback to OS default browser via Python webbrowser.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-red">02</span> <i class="fa-solid fa-play"></i> YouTube Automation & Transcripts</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>File:</strong> <code>actions/youtube.py</code></p>
+            <ul class="list-styled">
+                <li>Direct video playback matching user query terms.</li>
+                <li>Video transcript extractor via youtube_transcript_api.</li>
+                <li>Controls: play, pause, seek, volume adjustment, fullscreen toggling.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">03</span> <i class="fa-solid fa-comments"></i> WhatsApp & Message Dispatch</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>File:</strong> <code>actions/messaging.py</code></p>
+            <ul class="list-styled">
+                <li>Automates WhatsApp Web & desktop client via PyAutoGUI.</li>
+                <li>Contact resolution: search contact, open conversation, type and paste message.</li>
+                <li>Encrypted email dispatch via SMTP integration.</li>
+                <li>PyAutoGUI failsafe protections and automated clipboard management.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-purple">04</span> <i class="fa-solid fa-camera"></i> Screen Processor & Vision</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>File:</strong> <code>actions/screen_processor.py</code></p>
+            <ul class="list-styled">
+                <li>Ultra-fast screen capture using mss and PIL.</li>
+                <li>Multimodal vision queries routed to Google Gemini Vision.</li>
+                <li>Webcam snapshot capture for facial presence verification.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-amber">05</span> <i class="fa-solid fa-desktop"></i> Windows Control & App Launcher</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>Files:</strong> <code>actions/open_app.py</code>, <code>desktop.py</code></p>
+            <ul class="list-styled">
+                <li>App launcher: VS Code, Chrome, Spotify, Calculator, Notepad, CMD, custom paths.</li>
+                <li>Window management: minimize, maximize, restore, close active window.</li>
+                <li>System volume control (mute, set percentage), screenshot capture, workstation lock.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">06</span> <i class="fa-solid fa-code"></i> Code Interpreter & Sandbox</div>
+            <p style="font-size: 6.8pt; margin-bottom: 1px;"><strong>File:</strong> <code>actions/code_helper.py</code></p>
+            <ul class="list-styled">
+                <li>Automated algorithm generator & LeetCode/Codeforces solver.</li>
+                <li>Secure Python subshell execution with 10-second timeout guard.</li>
+                <li>Prism.js syntax highlighting with 1-click Copy and Fullscreen Zoom.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>7. REST API Endpoints Specification (Port 5000)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>CATEGORY</th>
+                <th>METHOD</th>
+                <th>ENDPOINT</th>
+                <th>DESCRIPTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>System</strong></td>
+                <td><span class="badge badge-cyan">GET</span></td>
+                <td><code>/</code></td>
+                <td>Health check & version status report</td>
+            </tr>
+            <tr>
+                <td><strong>System</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/system/command</code></td>
+                <td>Hardware diagnostics (CPU/RAM/Temp/Speed) and OS actions</td>
+            </tr>
+            <tr>
+                <td><strong>System</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/system/shell</code></td>
+                <td>Execute sandboxed shell commands with 10s timeout</td>
+            </tr>
+            <tr>
+                <td><strong>AI</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/ai/generate</code></td>
+                <td>Server-side Google Gemini multi-model routing</td>
+            </tr>
+            <tr>
+                <td><strong>Code</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/code/helper</code></td>
+                <td>Code generation, explanation, and sandbox execution</td>
+            </tr>
+            <tr>
+                <td><strong>Auth</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/auth/face</code></td>
+                <td>OpenCV Haar Cascade facial biometric verification</td>
+            </tr>
+            <tr>
+                <td><strong>Auth</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/auth/verify-otp</code></td>
+                <td>Verify 6-digit OTP and complete authorization</td>
+            </tr>
+            <tr>
+                <td><strong>Chat</strong></td>
+                <td><span class="badge badge-cyan">GET / POST / DEL</span></td>
+                <td><code>/api/chat/history</code></td>
+                <td>Retrieve, append, or clear conversation logs</td>
+            </tr>
+            <tr>
+                <td><strong>Weather</strong></td>
+                <td><span class="badge badge-cyan">GET</span></td>
+                <td><code>/api/weather</code></td>
+                <td>Live Open-Meteo temperature, atmospheric conditions, and humidity</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- PAGE 5: REPOSITORY STRUCTURE & QUICKSTART GUIDE -->
+<div class="page">
+    <h2>8. Modular Repository Architecture</h2>
+    <div class="code-block">JARVIS-AI-OS/
+├── backend/                       # Python Flask API Microservices (Port 5000)
+│   ├── api/                       # REST Blueprints (ai, auth, calls, chat, code, files, system, weather)
+│   ├── automation/                # Native OS automation, media playback & hardware telemetry
+│   ├── data/                      # Local user database records
+│   ├── database/                  # SQLite/JSON chat history manager
+│   ├── config.py                  # Backend server configuration
+│   └── server.py                  # Primary Flask backend server entry point
+├── frontend/                      # Web HUD & Tactical Interface (Port 8080)
+│   ├── index.html                 # Main HUD Dashboard (Arc Reactor, Chat Feed, Side Drawer)
+│   ├── auth.html                  # Standalone Tactical Intelligence Biometric Auth Terminal
+│   ├── css/                       # Modular CSS (style, dashboard, chat, lockscreen, themes, animations)
+│   ├── js/                        # Frontend JS (ai, voice, commands, dashboard, settings, utils, chat, weather)
+│   └── assets/                    # HUD icons, Arc Reactor SVGs, avatar images, sounds
+├── core/                          # Multimodal Live Engines (STT, TTS, LLM Orchestration)
+│   ├── llm.py                     # LLM orchestration client (Gemini, Ollama, OpenAI)
+│   ├── prompt.txt                 # Master system prompt definitions
+│   ├── stt.py                     # Offline Whisper & Vosk Speech-to-Text
+│   └── tts.py                     # EdgeTTS, Kokoro, ElevenLabs Text-to-Speech
+├── actions/                       # Native Agent Tool Handlers
+│   ├── browser_control.py         # Playwright browser automation
+│   ├── youtube.py                 # YouTube streaming & transcript extractor
+│   ├── messaging.py               # WhatsApp Web/Desktop & email automation
+│   ├── screen_processor.py        # Screen capture OCR & vision analysis
+│   ├── open_app.py                # Application & URI launcher
+│   ├── computer_control.py        # System control & process supervisor
+│   ├── system_monitor.py          # Real-time hardware telemetry (psutil)
+│   ├── weather.py                 # Weather data provider (Open-Meteo)
+│   └── code_helper.py             # Competitive programming sandbox
+├── memory/                        # Context & Configuration Management (User Profile, Memory Persistence)
+├── config/                        # Shared Configuration & API key blueprints (api_keys.json.example)
+├── docs/                          # Comprehensive Technical Documentation (Architecture, APIs, Design)
+├── tests/                         # Automated Unit & Integration Tests (AI, API, Auth, Backend, Voice)
+├── run_dashboard.py               # Unified Full-Stack Launcher (Port 5000 + Port 8080)
+├── main.py                        # Live Gemini Multimodal Audio Desktop Client
+├── ui.py                          # PyQt6 Sci-Fi Desktop Client UI
+├── requirements.txt               # Python package dependencies
+└── package.json                   # Project metadata & npm scripts</div>
+
+    <h2>9. Installation, Quickstart & Launch Guide</h2>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="badge badge-cyan">STEP 1</span> Prerequisites</div>
+            <p style="font-size: 6.8pt; margin: 0;">Windows 10/11, Python 3.12+ (or 3.10+), modern browser (Chrome, Edge, Brave).</p>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="badge badge-green">STEP 2</span> Dependencies</div>
+            <div class="code-block" style="margin: 1pt 0; padding: 2px 4px;">pip install -r requirements.txt</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 3pt;">
+        <div class="card-header"><span class="badge badge-amber">STEP 3</span> Single-Command Full-Stack Launch</div>
+        <p style="font-size: 6.8pt; margin-bottom: 1.5pt;">Starts the Flask backend on <strong>Port 5000</strong> and the Tactical Web HUD on <strong>Port 8080</strong> simultaneously:</p>
+        <div class="code-block" style="margin: 1pt 0; padding: 2px 4px;">py -3.12 run_dashboard.py
+# Or standard launcher:
+python run_dashboard.py</div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><span class="badge badge-purple">STEP 4</span> Access Operating System in Browser</div>
+        <p style="font-size: 6.8pt; margin: 0;">Open <strong><code>http://127.0.0.1:8080</code></strong>. Enter your Gemini API key in Settings or immediately use the built-in offline fallback engine.</p>
+    </div>
+
+    <div style="margin-top: 4mm; border-top: 1px solid rgba(0, 240, 255, 0.3); padding-top: 3px; display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 6.2pt; color: #64748b;">
+        <span>STARK INDUSTRIES AI DIVISION // ALL RIGHTS RESERVED</span>
+        <span>J.A.R.V.I.S. OS v3.2.0 MASTER BLUEPRINT SPECIFICATION</span>
+    </div>
+</div>
+
+</body>
+</html>

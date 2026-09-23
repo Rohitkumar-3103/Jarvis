@@ -31,9 +31,10 @@ J.A.R.V.I.S. features bilingual understanding (English & Hindi / Hinglish). You 
 ### 💻 System & OS Automation
 | Voice Command | Action Executed |
 | :--- | :--- |
-| *"Open Chrome"* / *"Open VS Code"* | Launches the application instantly |
+| *"Open Chrome"* / *"Open VS Code"* / *"Open Terminal"* | Launches the application / terminal console instantly |
 | *"Volume up"* / *"Volume down"* / *"Mute audio"* | Adjusts Windows system master volume |
 | *"Take screenshot"* | Captures screenshot and saves to `temp/` |
+| *"Terminal <command>"* / *"Run command <cmd>"* | Executes shell command and prints formatted stdout/stderr |
 | *"Lock computer"* / *"Lock workstation"* | Engages Windows Workstation Lock |
 | *"System diagnostics"* / *"Check CPU"* | Returns live CPU load, RAM usage, and temperature |
 | *"Shutdown system"* / *"Restart system"* | Initiates controlled OS shutdown/restart |

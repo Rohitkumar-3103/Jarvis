@@ -33,12 +33,18 @@ ACRONYMS = {
     "SQL": "The full form of **SQL** is **Structured Query Language**, domain-specific language for managing relational databases, Sir."
 }
 
-def _get_api_key():
+def _get_api_keys():
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_KEY") or ""
     try:
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            return json.load(f).get("gemini_api_key", "")
+        if os.path.exists(CONFIG_PATH):
+            with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                gemini_key = d.get("gemini_api_key") or gemini_key
+                openai_key = d.get("openai_api_key") or d.get("chatgpt_key") or openai_key
     except Exception:
-        return ""
+        pass
+    return gemini_key, openai_key
 
 def _evaluate_acronym(prompt: str):
     p_lower = prompt.lower()
@@ -121,28 +127,61 @@ def gen_response():
         if acronym_res:
             return jsonify({"status": "success", "response": acronym_res})
 
-        key = client_key or _get_api_key()
+        gemini_key, openai_key = _get_api_keys()
         
-        # 3. If Gemini API Key exists, query Google Gemini REST endpoints
-        if key and key.startswith("AIzaSy"):
-            cp_keywords = ["problem", "codeforces", "codechef", "leetcode", "atcoder", "hackerrank", "uva", "spoj", "sample input", "constraints", "write c++", "solve"]
-            coding_keywords = ["code", "python", "javascript", "c++", "java", "html", "css", "function", "programming", "compile", "debug", "script", "regex"]
-            
-            system_instruction = "You are J.A.R.V.I.S., the legendary advanced AI system. You fluently understand and respond in both English and Hindi (Hinglish). Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max)."
-            badge = ""
-            
-            prompt_lower = prompt.lower()
-            if any(k in prompt_lower for k in cp_keywords):
-                system_instruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. Output: Algorithm, Complexity, C++17 Code, Explanation. Speak politely using 'Sir'."
-                badge = "🧠 Mode Detected: Competitive Programming\n\n"
-            elif any(k in prompt_lower for k in coding_keywords):
-                system_instruction = "You are J.A.R.V.I.S. Coding Assistant. Write clean, modular, and well-commented code. Address edge cases and follow language best practices. Keep the explanation crisp and speak politely using 'Sir'."
-                badge = "🧠 Mode Detected: General Coding\n\n"
+        # Build prompt instructions
+        cp_keywords = ["problem", "codeforces", "codechef", "leetcode", "atcoder", "hackerrank", "uva", "spoj", "sample input", "constraints", "write c++", "solve"]
+        coding_keywords = ["code", "python", "javascript", "c++", "java", "html", "css", "function", "programming", "compile", "debug", "script", "regex"]
+        
+        system_instruction = "You are J.A.R.V.I.S., the legendary advanced AI system. You fluently understand and respond in both English and Hindi (Hinglish). Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max)."
+        badge = ""
+        
+        prompt_lower = prompt.lower()
+        if any(k in prompt_lower for k in cp_keywords):
+            system_instruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. Output: Algorithm, Complexity, C++17 Code, Explanation. Speak politely using 'Sir'."
+            badge = "🧠 Mode Detected: Competitive Programming\n\n"
+        elif any(k in prompt_lower for k in coding_keywords):
+            system_instruction = "You are J.A.R.V.I.S. Coding Assistant. Write clean, modular, and well-commented code. Address edge cases and follow language best practices. Keep the explanation crisp and speak politely using 'Sir'."
+            badge = "🧠 Mode Detected: General Coding\n\n"
 
+        # Determine which key to prioritize
+        active_gemini_key = client_key if (client_key and client_key.startswith("AIzaSy")) else (gemini_key if gemini_key.startswith("AIzaSy") else "")
+        active_openai_key = client_key if (client_key and (client_key.startswith("sk-") or "proj-" in client_key)) else (openai_key if (openai_key.startswith("sk-") or "proj-" in openai_key) else "")
+
+        # 3. Prioritize OpenAI / ChatGPT API as Primary Cognitive Engine
+        if active_openai_key:
+            openai_url = "https://api.openai.com/v1/chat/completions"
+            openai_payload = {
+                "model": "gpt-4o-mini",
+                "messages": [
+                    {"role": "system", "content": system_instruction},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 400
+            }
+            openai_headers = {
+                "Authorization": f"Bearer {active_openai_key}",
+                "Content-Type": "application/json"
+            }
+            try:
+                res = requests.post(openai_url, headers=openai_headers, json=openai_payload, timeout=10)
+                if res.status_code == 200:
+                    choices = res.json().get("choices", [])
+                    if choices:
+                        content = choices[0].get("message", {}).get("content", "")
+                        if content:
+                            return jsonify({"status": "success", "response": badge + content})
+                else:
+                    err_info = res.json().get("error", {})
+                    print(f"[OpenAI Core] Notice {res.status_code}: {err_info.get('message', res.text)}")
+            except Exception as e:
+                print(f"[OpenAI Core Error]: {e}")
+
+        # 4. Secondary Failover: Google Gemini API (if configured)
+        if active_gemini_key:
             models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
-            
             for m in models:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={key}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={active_gemini_key}"
                 payload = {
                     "contents": [{"parts": [{"text": prompt}]}],
                     "systemInstruction": {
@@ -159,17 +198,17 @@ def gen_response():
                 except Exception:
                     pass
 
-        # 4. Live Web Intelligence Fallback
+        # 5. Live Web Intelligence Fallback
         web_res = _web_intelligence(prompt)
         if web_res:
             return jsonify({"status": "success", "response": web_res})
 
-        # 5. Graceful Fallback
+        # 6. Graceful Fallback
         clean_topic = _clean_hinglish(prompt)
         topic_title = (clean_topic or prompt).title()
         return jsonify({
             "status": "success", 
-            "response": f"I have processed your query regarding {topic_title}, Sir. For real-time conversational reasoning across any topic, you can configure your free Gemini API key in Settings (⚙️)."
+            "response": f"I have processed your query regarding {topic_title}, Sir. For real-time conversational reasoning across any topic, you can configure your free Gemini or ChatGPT API key in Settings (⚙️)."
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

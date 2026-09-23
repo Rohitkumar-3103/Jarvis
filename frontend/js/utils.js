@@ -4,7 +4,7 @@
 
 // Global state variables
 const BACKEND_URL = 'http://127.0.0.1:5000';
-let rawApiKey = localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '';
+let rawApiKey = localStorage.getItem('jarvis_openai_key') || localStorage.getItem('jarvis_chatgpt_key') || localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '';
 let geminiApiKey = rawApiKey.trim();
 let selectedVoiceName = localStorage.getItem('jarvis_selected_voice') || '';
 let voicePitch = parseFloat(localStorage.getItem('jarvis_voice_pitch') || '1.0');

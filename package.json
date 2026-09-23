@@ -21,7 +21,10 @@
     "automation",
     "flux-ai"
   ],
-  "author": "Rohit Kumar",
+  "author": {
+    "name": "Rohit Kumar Gupta",
+    "url": "https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",

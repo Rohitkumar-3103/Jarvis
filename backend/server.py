@@ -6,6 +6,12 @@ from flask_cors import CORS
 import sys
 import os
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.api.auth import auth_api
@@ -44,7 +50,7 @@ def main():
     
     host = os.getenv("FLASK_HOST", "0.0.0.0")
     port = int(os.getenv("FLASK_PORT", 5000))
-    app.run(host=host, port=port, debug=True, use_reloader=False)
+    app.run(host=host, port=port, debug=False, use_reloader=False)
 
 if __name__ == '__main__':
     main()

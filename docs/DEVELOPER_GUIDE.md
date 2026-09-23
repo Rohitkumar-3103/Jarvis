@@ -105,3 +105,12 @@ pytest tests/
 - [ ] **Code Interpreter**: Type `"write code for binary search"` to verify code block syntax highlighting.
 - [ ] **Settings Modal**: Open Settings (`⚙️`) and test 360° Color Wheel and API key configuration.
 - [ ] **Tactical Auth Portal**: Open `http://127.0.0.1:8080/auth.html` to verify GLSL shader and pull-cord lamp switch.
+
+---
+
+## 👨‍💻 Author & Connect
+
+- **Lead Developer**: Rohit Kumar Gupta
+- **LinkedIn**: [Rohit Kumar Gupta on LinkedIn](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
+- **GitHub**: [@Rohitkumar-3103](https://github.com/Rohitkumar-3103)
+

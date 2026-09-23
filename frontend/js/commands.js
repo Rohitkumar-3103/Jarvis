@@ -22,10 +22,54 @@ async function takeCommand(message) {
     const rawQuery = message.trim();
     const query = rawQuery.toLowerCase();
 
+    // Biometric, Lock & Unlocking Commands (Voice Recognition overrides)
     // =========================================================================
-    // 0. Biometric, Lock & Unlocking Commands (Voice Recognition overrides)
-    // =========================================================================
-    if (query.includes('initiate face scan') || query.includes('retinal check') || query.includes('biometric check') || query.includes('face scan') || query.includes('start scan')) {
+    // Project Details & Technical Blueprint PDF Download Trigger
+    if (query.includes('download project details') || query.includes('project details') || query.includes('download pdf') || query.includes('project details pdf') || query.includes('download blueprint') || query.includes('system blueprint') || query.includes('download documentation') || query.includes('project blueprint')) {
+        const link = document.createElement('a');
+        link.href = 'JARVIS_Project_Details.pdf';
+        link.download = 'JARVIS_Project_Details.pdf';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        const summaryText = `========================================================
+    J.A.R.V.I.S. AI OS v3.2.0 — TECHNICAL BLUEPRINT & SPECS
+========================================================
+📄 DOCUMENT    : JARVIS_Project_Details.pdf
+⚡ ARCHITECTURE: Tactical Glassmorphic Web HUD + Flask REST Node
+🤖 COGNITION   : Dual-Layer Gemini 2.5/2.0 Flash + Local Knowledge
+🎙️ SPEECH      : Bilingual STT (en-IN/hi-IN) & Devanagari TTS
+🔑 BIOMETRICS  : OpenCV Haar Cascade Optical Face Scanner
+📊 TELEMETRY   : Real-time CPU, RAM, Temp & Clock Frequency (psutil)
+========================================================
+[+] Status: PDF Generated & Download Initiated.`;
+
+        appendChatBubble('JARVIS', summaryText, {
+            list: [
+                {
+                    text: '⬇️ Download PDF',
+                    action: () => {
+                        const a = document.createElement('a');
+                        a.href = 'JARVIS_Project_Details.pdf';
+                        a.download = 'JARVIS_Project_Details.pdf';
+                        a.click();
+                    }
+                },
+                {
+                    text: '👁️ View in Browser',
+                    action: () => {
+                        window.open('JARVIS_Project_Details.pdf', '_blank');
+                    }
+                }
+            ]
+        });
+        speak("Initiating download for the J.A.R.V.I.S. OS Technical Blueprint & Project Details PDF, Sir.");
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query.includes('initiate face scan') || query.includes('retinal check') || query.includes('biometric check') || query.includes('face scan') || query.includes('start scan')) {
         appendChatBubble('JARVIS', "Initiating optical scan arrays... Confirming biometric profile.");
         speak("Initiating biometric retinal check.");
         if (typeof startFacialScan === 'function') {
@@ -238,10 +282,10 @@ async function takeCommand(message) {
         setTimeout(() => window.open("https://github.com", "_blank"), 1000);
         updateCoreState('IDLE');
     }
-    else if (query.includes("open linkedin")) {
-        appendChatBubble('JARVIS', "Opening workspace: LinkedIn.");
-        speak("Opening LinkedIn, Sir.");
-        setTimeout(() => window.open("https://linkedin.com", "_blank"), 1000);
+    else if (query.includes("open linkedin") || query.includes("developer linkedin") || query.includes("author linkedin")) {
+        appendChatBubble('JARVIS', "Opening workspace: Rohit Kumar Gupta's LinkedIn profile.");
+        speak("Opening LinkedIn profile, Sir.");
+        setTimeout(() => window.open("https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/", "_blank"), 1000);
         updateCoreState('IDLE');
     }
     else if (query.includes("open gemini") || query.includes("gemini")) {
@@ -250,39 +294,96 @@ async function takeCommand(message) {
         setTimeout(() => window.open("https://gemini.google.com/app", "_blank"), 1000);
         updateCoreState('IDLE');
     }
-    else if (query.includes("open edclub") || query.includes("edclub")) {
-        appendChatBubble('JARVIS', "Opening interface: EdClub typing portal.");
-        speak("Opening EdClub typing practice portal, Sir.");
-        setTimeout(() => window.open("https://www.edclub.com/sportal/", "_blank"), 1000);
+    else if (query.includes("open whatsapp") || query.includes("launch whatsapp") || query === "whatsapp") {
+        appendChatBubble('JARVIS', "Opening interface: WhatsApp Web.");
+        speak("Opening WhatsApp, Sir.");
+        sendLocalCommand('whatsapp');
+        setTimeout(() => window.open("https://web.whatsapp.com", "_blank"), 1000);
         updateCoreState('IDLE');
     }
+    // Incomplete Open Prompt Detection (e.g. voice cut-off like "Open", "Open not", "Open a", "Open the")
+    else if (query === 'open' || query === 'open not' || query === 'open a' || query === 'open an' || query === 'open the' || query === 'launch' || query === 'start') {
+        appendChatBubble('JARVIS', "Which application would you like me to open, Sir? (e.g. Notepad, Chrome, VS Code, Calculator)");
+        speak("Which application would you like me to open, Sir?");
+        updateCoreState('IDLE');
+        return;
+    }
     // 4. Local OS applications commands
-    else if (query.includes('calculator') || query.includes('open calculator')) {
-        appendChatBubble('JARVIS', "Initializing application: Custom HTML Calculator.");
-        speak("Launching custom calculator, Sir.");
+    else if (query.includes('calculator') || query.includes('open calculator') || query === 'calc' || query === 'open calc') {
+        appendChatBubble('JARVIS', "Initializing application: Calculator.");
+        speak("Launching calculator, Sir.");
         sendLocalCommand('calculator');
         setTimeout(() => {
             window.open("file:///D:/code/html/Project/Calculator/calculator.html", "_blank");
         }, 1000);
         updateCoreState('IDLE');
+        return;
     }
-    else if (query.includes('open explorer') || query.includes('file explorer') || query.includes('open files')) {
+    else if (query.includes('open chrome') || query === 'chrome' || query === 'open browser' || query === 'browser' || query.includes('google chrome') || query.includes('open edge')) {
+        appendChatBubble('JARVIS', "Initializing application: Web Browser.");
+        speak("Opening web browser, Sir.");
+        sendLocalCommand('chrome');
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query.includes('open explorer') || query.includes('file explorer') || query.includes('open files') || query.includes('open folder')) {
         appendChatBubble('JARVIS', "Accessing laptop files: File Explorer.");
         speak("Accessing storage system, Sir.");
         sendLocalCommand('file');
         updateCoreState('IDLE');
+        return;
     }
-    else if (query.includes('open code') || query.includes('vs code')) {
+    else if (query.includes('open code') || query.includes('vs code') || query.includes('vscode') || query === 'code') {
         appendChatBubble('JARVIS', "Initializing application: Visual Studio Code.");
         speak("Launching VS Code workspace, Sir.");
         sendLocalCommand('code');
         updateCoreState('IDLE');
+        return;
     }
-    else if (query.includes('open notepad') || query.includes('notepad')) {
+    else if (query.includes('open notepad') || query.includes('notepad') || query === 'open note' || query === 'open notes' || query === 'open notebook' || query === 'open notpad' || query === 'open note pad' || query.includes('text editor') || query === 'note' || query === 'notes') {
         appendChatBubble('JARVIS', "Initializing application: Notepad.");
-        speak("Opening notepad text editor.");
+        speak("Opening Notepad text editor, Sir.");
         sendLocalCommand('notepad');
         updateCoreState('IDLE');
+        return;
+    }
+    else if (query.includes('open terminal') || query.includes('launch terminal') || query === 'terminal' || query.includes('open powershell') || query.includes('open cmd') || query.includes('open command prompt') || query.includes('open console') || query === 'cmd' || query === 'powershell') {
+        appendChatBubble('JARVIS', "Initializing application: System Terminal Console.");
+        speak("Launching terminal console, Sir.");
+        sendLocalCommand('terminal');
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query.includes('paint') || query.includes('mspaint')) {
+        appendChatBubble('JARVIS', "Initializing application: Paint.");
+        speak("Launching Paint, Sir.");
+        sendLocalCommand('paint');
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query.includes('task manager') || query.includes('taskmanager')) {
+        appendChatBubble('JARVIS', "Initializing application: Task Manager.");
+        speak("Opening Task Manager, Sir.");
+        sendLocalCommand('task manager');
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query === 'open settings' || query === 'system settings' || query === 'windows settings') {
+        appendChatBubble('JARVIS', "Opening Windows System Settings.");
+        speak("Opening settings, Sir.");
+        sendLocalCommand('settings');
+        updateCoreState('IDLE');
+        return;
+    }
+    else if (query.startsWith('open ') || query.startsWith('launch ')) {
+        const appTarget = rawQuery.replace(/^(open|launch)\s+/i, '').trim();
+        if (appTarget && appTarget.length >= 2 && !appTarget.includes(' ') && !['the', 'a', 'an', 'file', 'image', 'picture', 'photo'].includes(appTarget.toLowerCase())) {
+            appendChatBubble('JARVIS', `Attempting to launch application: ${appTarget}...`);
+            speak(`Launching ${appTarget}, Sir.`);
+            sendLocalCommand(`open ${appTarget}`);
+            updateCoreState('IDLE');
+            return;
+        }
     }
     // 5. System volume and screenshot commands
     else if (query.includes('camera screenshot') || query.includes('take camera screenshot') || query.includes('camera snap') || query.includes('face photo') || query.includes('take photo')) {
@@ -425,15 +526,48 @@ async function takeCommand(message) {
         sendLocalCommand(`file search ${fName}`);
         updateCoreState('IDLE');
     }
-    // 13. Weather fallback
-    else if (query.includes('weather') || query.includes('temperature')) {
-        let city = rawQuery.replace(/weather in/i, "").replace(/weather/i, "").trim();
-        city = city.replace(/[.?]$/, "").trim();
-        if (!city) city = "New York";
-        appendChatBubble('JARVIS', `Querying atmospheric vectors for: ${city}`);
-        speak(`Checking weather update for ${city}, Sir.`);
-        checkWeather(city);
+    // 13. Atmospheric & Weather Intelligence
+    else if (query.includes('weather') || query.includes('temperature') || query.includes('atmospheric') || query.includes('forecast')) {
+        let city = rawQuery
+            .replace(/what is the weather like in/i, "")
+            .replace(/what's the weather in/i, "")
+            .replace(/what is the weather in/i, "")
+            .replace(/tell me the weather in/i, "")
+            .replace(/weather report for/i, "")
+            .replace(/weather in/i, "")
+            .replace(/weather/i, "")
+            .replace(/temperature in/i, "")
+            .replace(/temperature of/i, "")
+            .replace(/temperature/i, "")
+            .replace(/forecast for/i, "")
+            .replace(/forecast/i, "")
+            .replace(/[.?]$/, "")
+            .trim();
+        if (!city) city = typeof currentWeatherCity !== 'undefined' ? currentWeatherCity : "Delhi";
+        
+        appendChatBubble('JARVIS', `Scanning atmospheric vectors and satellite telemetry for: ${city.toUpperCase()}...`);
+        speak(`Scanning atmospheric telemetry for ${city}, Sir.`);
+        
+        if (typeof fetchLiveWeather === 'function') {
+            const wdata = await fetchLiveWeather(city);
+            if (wdata && typeof buildWeatherChatCard === 'function') {
+                appendChatBubble('JARVIS', buildWeatherChatCard(wdata), {
+                    list: [
+                        {
+                            text: '🔄 Refresh Weather',
+                            action: () => fetchLiveWeather(wdata.city)
+                        },
+                        {
+                            text: '📍 Change City',
+                            action: () => promptChangeWeatherCity()
+                        }
+                    ]
+                });
+                speak(`Atmospheric scan for ${wdata.city} is complete. Temperature is ${wdata.temp} degrees Celsius with ${wdata.condition}, and humidity is ${wdata.humidity}.`);
+            }
+        }
         updateCoreState('IDLE');
+        return;
     }
     // 14. Conversational & Cognitive engine (AI Image, Code Automation & Knowledge Base)
     else {

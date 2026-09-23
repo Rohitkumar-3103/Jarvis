@@ -99,6 +99,18 @@ def execute_os_action(command: str) -> dict:
             os.system("code .")
         return {"status": "success", "message": "Launching VS Code workspace."}
 
+    elif any(k in cmd for k in ["terminal", "powershell", "cmd", "command prompt", "console"]):
+        if os.name == 'nt':
+            try:
+                subprocess.Popen("start wt || start powershell || start cmd", shell=True)
+            except Exception:
+                subprocess.Popen("start powershell", shell=True)
+        elif platform.system() == "Darwin":
+            subprocess.Popen("open -a Terminal", shell=True)
+        else:
+            subprocess.Popen("x-terminal-emulator || gnome-terminal || konsole || xterm", shell=True)
+        return {"status": "success", "message": "Launching system terminal console."}
+
     elif "play music" in cmd or cmd.startswith("play ") or "play song" in cmd:
         import actions.music
         import importlib
@@ -124,10 +136,52 @@ def execute_os_action(command: str) -> dict:
             os.system("start mailto:")
         return {"status": "success", "message": "Opening mail client."}
 
-    elif "notepad" in cmd:
+    elif "weather" in cmd or "temperature" in cmd:
+        city = cmd.replace("weather in", "").replace("weather", "").replace("temperature in", "").replace("temperature", "").strip()
+        if not city:
+            city = "Delhi"
+        from actions.weather import weather_action
+        msg = weather_action({"city": city})
+        return {"status": "success", "message": msg, "city": city}
+
+    elif any(k in cmd for k in ["notepad", "note", "notes", "notebook", "notpad", "text editor"]):
         if os.name == 'nt':
             os.system("start notepad")
         return {"status": "success", "message": "Launching Notepad text editor."}
+
+    elif any(k in cmd for k in ["calculator", "calc"]):
+        if os.name == 'nt':
+            os.system("start calc")
+        return {"status": "success", "message": "Launching Calculator."}
+
+    elif any(k in cmd for k in ["chrome", "browser", "google chrome"]):
+        if os.name == 'nt':
+            os.system("start chrome || start msedge")
+        return {"status": "success", "message": "Launching Web Browser."}
+
+    elif any(k in cmd for k in ["paint", "mspaint"]):
+        if os.name == 'nt':
+            os.system("start mspaint")
+        return {"status": "success", "message": "Launching Paint."}
+
+    elif any(k in cmd for k in ["task manager", "taskmanager"]):
+        if os.name == 'nt':
+            os.system("start taskmgr")
+        return {"status": "success", "message": "Launching Task Manager."}
+
+    elif cmd == "settings" or cmd == "open settings":
+        if os.name == 'nt':
+            os.system("start ms-settings:")
+        return {"status": "success", "message": "Launching Windows Settings."}
+
+    elif cmd.startswith("open ") or cmd.startswith("launch "):
+        app_target = re.sub(r'^(open|launch)\s+', '', cmd).strip()
+        try:
+            from actions.open_app import open_app
+            msg = open_app({"app_name": app_target})
+            return {"status": "success", "message": msg}
+        except Exception as e:
+            pass
 
     elif "camera" in cmd or "snap" in cmd or "photo" in cmd:
         import threading

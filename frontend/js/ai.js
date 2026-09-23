@@ -265,23 +265,66 @@ async function queryGeminiAPI(promptText) {
         return;
     }
 
-    // Google Gemini API (if key AIzaSy... is configured)
+    let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. You understand and answer in English and Hindi (Hinglish). Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max).";
+    let detectedModeBadge = "";
+
+    if (isAlgoRequest) {
+        activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Algorithm Explanations. Describe what the algorithm does, how it works, and its time complexity in simple terms. Keep it under 5 sentences, Sir.";
+        detectedModeBadge = "🧠 Mode Detected: Algorithm Explanation\n\n";
+    } else if (isDebugging) {
+        activeInstruction = "You are J.A.R.V.I.S. Debugging Assistant. Locate the bug, explain why it occurred in simple terms, and provide the corrected code. Keep it crisp and polite, Sir.";
+        detectedModeBadge = "🧠 Mode Detected: Debugger\n\n";
+    } else if (isCP) {
+        activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. Output: Algorithm, Complexity, C++17 Code, Explanation. Use Markdown, speak politely using 'Sir'.";
+        detectedModeBadge = "🧠 Mode Detected: Competitive Programming\n\n";
+    }
+
+    // Guard against accidental app requests in AI handler
+    if (['open note', 'open notes', 'open notebook', 'open notepad', 'notepad', 'open notpad'].includes(promptLower)) {
+        appendChatBubble('JARVIS', "Initializing application: Notepad.");
+        speak("Opening Notepad text editor, Sir.");
+        if (typeof sendLocalCommand === 'function') sendLocalCommand('notepad');
+        updateCoreState('IDLE');
+        return;
+    }
+
+    // 1. OpenAI / ChatGPT API (Primary Engine if sk-... key is present)
+    if (geminiApiKey && (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))) {
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${geminiApiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: activeInstruction },
+                        { role: 'user', content: promptText }
+                    ],
+                    max_tokens: 350
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                let responseText = data.choices?.[0]?.message?.content;
+                if (responseText) {
+                    appendChatBubble('JARVIS', detectedModeBadge + responseText);
+                    speak(responseText);
+                    updateCoreState('IDLE');
+                    return;
+                }
+            }
+        } catch (err) {
+            console.warn("Direct OpenAI call notice:", err);
+        }
+    }
+
+    // 2. Secondary Failover: Google Gemini API (if key AIzaSy... is configured)
     if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
         const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
-        let activeInstruction = "You are J.A.R.V.I.S., the legendary advanced AI system. You understand and answer in English and Hindi (Hinglish). Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max).";
-        let detectedModeBadge = "";
-
-        if (isAlgoRequest) {
-            activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Algorithm Explanations. Describe what the algorithm does, how it works, and its time complexity in simple terms. Keep it under 5 sentences, Sir.";
-            detectedModeBadge = "🧠 Mode Detected: Algorithm Explanation\n\n";
-        } else if (isDebugging) {
-            activeInstruction = "You are J.A.R.V.I.S. Debugging Assistant. Locate the bug, explain why it occurred in simple terms, and provide the corrected code. Keep it crisp and polite, Sir.";
-            detectedModeBadge = "🧠 Mode Detected: Debugger\n\n";
-        } else if (isCP) {
-            activeInstruction = "You are J.A.R.V.I.S. Coding Assistant, specializing in Competitive Programming. Output: Algorithm, Complexity, C++17 Code, Explanation. Use Markdown, speak politely using 'Sir'.";
-            detectedModeBadge = "🧠 Mode Detected: Competitive Programming\n\n";
-        }
-
         for (let model of models) {
             const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
             const requestPayload = {
@@ -309,8 +352,36 @@ async function queryGeminiAPI(promptText) {
             } catch (err) {}
         }
     }
+                    appendChatBubble('JARVIS', detectedModeBadge + responseText);
+                    speak(responseText);
+                    updateCoreState('IDLE');
+                    return;
+                }
+            }
+        } catch (err) {
+            console.warn("Direct OpenAI call notice:", err);
+        }
+    }
 
-    // Universal Knowledge & Live Intelligence Engine
+    // 3. Backend AI API Gateway (Proxies to Gemini or ChatGPT or Web Intelligence)
+    try {
+        const beResponse = await fetch(`${BACKEND_URL}/api/ai/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText, api_key: geminiApiKey })
+        });
+        if (beResponse.ok) {
+            const beData = await beResponse.json();
+            if (beData.status === 'success' && beData.response) {
+                appendChatBubble('JARVIS', beData.response);
+                speak(beData.response.replace(/[*_#`$]/g, ""));
+                updateCoreState('IDLE');
+                return;
+            }
+        }
+    } catch (e) {}
+
+    // 4. Universal Knowledge & Live Intelligence Fallback
     const fallbackAnswer = await generateFallbackKnowledge(promptText);
     appendChatBubble('JARVIS', fallbackAnswer);
     speak(fallbackAnswer.replace(/[*_#`$]/g, ""));

@@ -13,6 +13,19 @@ import smtplib
 import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from werkzeug.security import generate_password_hash, check_password_hash
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
+    import certifi
+    CA_FILE = certifi.where()
+except ImportError:
+    CA_FILE = None
+
 try:
     from pymongo import MongoClient
 except ImportError:
@@ -29,28 +42,70 @@ except Exception:
 # Memory cache for pending OTPs: {identifier_or_username: {"otp": "123456", "user_data": {...}}}
 pending_sessions = {}
 
+_cached_mongo_client = None
+_cached_mongo_uri = None
+
 def get_mongo_collection():
+    global _cached_mongo_client, _cached_mongo_uri
     if MongoClient is None:
         return None
     try:
-        mongo_uri = os.getenv("MONGO_URI", "mongodb://127.0.0.1:27017/")
-        client = MongoClient(mongo_uri, serverSelectionTimeoutMS=2000)
-        client.server_info() # Force connection check
-        db = client["ManualAuth"]
+        mongo_uri = os.getenv("MONGO_URI", "").strip()
+        if not mongo_uri:
+            return None
+            
+        if _cached_mongo_client is not None and _cached_mongo_uri == mongo_uri:
+            try:
+                db_name = os.getenv("MONGO_DB_NAME", "ManualAuth")
+                return _cached_mongo_client[db_name]["users"]
+            except Exception:
+                _cached_mongo_client = None
+
+        kwargs = {"serverSelectionTimeoutMS": 4000, "maxPoolSize": 20}
+        if CA_FILE and ("mongodb+srv://" in mongo_uri or "ssl=true" in mongo_uri.lower() or "tls=true" in mongo_uri.lower()):
+            kwargs["tlsCAFile"] = CA_FILE
+
+        client = MongoClient(mongo_uri, **kwargs)
+        client.admin.command('ping') # Lightweight ping check
+        _cached_mongo_client = client
+        _cached_mongo_uri = mongo_uri
+        
+        db_name = os.getenv("MONGO_DB_NAME", "ManualAuth")
+        db = client[db_name]
         return db["users"]
     except Exception as e:
         print(f"[-] MongoDB connection unavailable, falling back to local users.json: {str(e)}")
         return None
 
+def verify_password(stored_val, candidate_password):
+    if not stored_val or not candidate_password:
+        return False
+    # 1. Try Werkzeug password hash check
+    try:
+        if check_password_hash(stored_val, candidate_password):
+            return True
+    except Exception:
+        pass
+    # 2. Try SHA-256 hex digest
+    try:
+        sha_hash = hashlib.sha256(candidate_password.encode('utf-8')).hexdigest()
+        if stored_val == sha_hash:
+            return True
+    except Exception:
+        pass
+    # 3. Plaintext fallback
+    return str(stored_val) == str(candidate_password)
+
 def get_users_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     if not os.path.exists(DB_PATH):
-        admin_pass_hash = hashlib.sha256("3000".encode('utf-8')).hexdigest()
+        admin_pass_hash = generate_password_hash("3000")
         default_db = {
             "users": {
                 "ironman": {
                     "username": "ironman",
                     "password": admin_pass_hash,
+                    "password_hash": admin_pass_hash,
                     "fullname": "Tony Stark",
                     "email": "tony@starkindustries.com",
                     "phone": "+1234567890",
@@ -70,9 +125,12 @@ def get_users_db():
 
 def is_testing_mode():
     try:
-        return current_app.config.get('TESTING', False)
+        from flask import has_app_context, current_app
+        if has_app_context():
+            return current_app.config.get('TESTING', False)
     except Exception:
-        return False
+        pass
+    return os.getenv('TESTING', 'False').lower() in ('true', '1')
 
 def save_users_db(db):
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -116,7 +174,7 @@ J.A.R.V.I.S. Terminal Security
 ======================================================
 """
         msg.attach(MIMEText(body, 'plain'))
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=8) as server:
             server.starttls()
             server.login(smtp_email, smtp_pass)
             server.sendmail(smtp_email, target_email, msg.as_string())
@@ -210,6 +268,7 @@ def register_user():
         fullname = data['fullname'].strip()
         email = data['email'].strip()
         phone = data['phone'].strip()
+        avatar = data.get('avatar', 'assets/images/avatar.png')
 
         if len(username) < 3:
             return jsonify({"status": "error", "message": "Username must be at least 3 characters."}), 400
@@ -230,20 +289,20 @@ def register_user():
 
         # Generate 6-digit OTP
         otp_code = f"{random.randint(100000, 999999)}"
-        pass_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
 
         session_obj = {
             "otp": otp_code,
             "action": "register",
             "user_data": {
                 "username": username,
-                "password": pass_hash,
+                "password": password,
+                "password_hash": generate_password_hash(password),
                 "password_raw": password,
                 "fullname": fullname,
                 "email": email,
                 "phone": phone,
                 "role": "Terminal User",
-                "avatar": "assets/images/avatar.png"
+                "avatar": avatar
             }
         }
 
@@ -286,20 +345,21 @@ def login_user():
         user_email = "tony@starkindustries.com"
         user_phone = "+1234567890"
         user_role = "Terminal User"
+        user_avatar = "assets/images/avatar.png"
 
         # 1. Query MongoDB first if active
         mongo_col = get_mongo_collection()
         if mongo_col is not None:
             mongo_user = mongo_col.find_one({"$or": [{"email": username}, {"username": username}]})
             if mongo_user:
-                stored_pass = mongo_user.get("password")
-                input_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-                if stored_pass == password or stored_pass == input_hash:
+                stored_pass = mongo_user.get("password_hash") or mongo_user.get("password") or ""
+                if verify_password(stored_pass, password):
                     user_found = True
                     user_fullname = mongo_user.get("fullname") or mongo_user.get("username", username).upper()
                     user_email = mongo_user.get("email", "")
                     username = mongo_user.get("username", username)
                     user_role = "Terminal User"
+                    user_avatar = mongo_user.get("avatar", "assets/images/avatar.png")
                 else:
                     return jsonify({"status": "denied", "message": "Security vector mismatch. Access denied."}), 401
 
@@ -308,49 +368,36 @@ def login_user():
             db = get_users_db()
             if username in db['users']:
                 user = db['users'][username]
-                input_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-                if user['password'] == input_hash or user['password'] == password:
+                stored_pass = user.get('password_hash') or user.get('password') or ""
+                if verify_password(stored_pass, password):
                     user_found = True
-                    user_fullname = user['fullname']
+                    user_fullname = user.get('fullname', username)
                     user_email = user.get('email', '')
                     user_phone = user.get('phone', '')
                     user_role = user.get('role', 'Terminal User')
+                    user_avatar = user.get('avatar', 'assets/images/avatar.png')
                 else:
                     return jsonify({"status": "denied", "message": "Security vector mismatch. Access denied."}), 401
 
         if not user_found:
             return jsonify({"status": "denied", "message": "Identity not found in secure database."}), 401
 
-        # Generate OTP for 2FA
-        otp_code = f"{random.randint(100000, 999999)}"
-        session_obj = {
-            "otp": otp_code,
-            "action": "login",
-            "user_data": {
-                "username": username,
-                "fullname": user_fullname,
-                "email": user_email,
-                "phone": user_phone,
-                "role": user_role if username != "ironman" else "Primary User // Administrator",
-                "avatar": "assets/images/avatar.png"
-            }
-        }
-
-        pending_sessions[username] = session_obj
-        pending_sessions[user_email.lower()] = session_obj
-
-        # Dispatch OTPs
-        send_email_otp(user_email, otp_code)
-        send_sms_otp(user_phone, otp_code)
-
-        return jsonify({
-            "status": "otp_required",
-            "success": True,
-            "message": "Security Verification Code (OTP) dispatched.",
+        # Direct instant login for registered users
+        user_profile = {
             "username": username,
+            "fullname": user_fullname,
             "email": user_email,
             "phone": user_phone,
-            "otp_code": otp_code
+            "role": user_role if username != "ironman" else "Primary User // Administrator",
+            "avatar": user_avatar
+        }
+
+        return jsonify({
+            "status": "success",
+            "success": True,
+            "authorized": True,
+            "message": "Authentication approved. Access granted.",
+            "user": user_profile
         })
 
     except Exception as e:
@@ -360,16 +407,32 @@ def login_user():
 def verify_otp():
     try:
         data = request.get_json() or {}
-        identifier = (data.get('username') or data.get('identifier') or data.get('email') or '').strip().lower()
+        raw_user = (data.get('username') or '').strip()
+        raw_ident = (data.get('identifier') or '').strip()
+        raw_email = (data.get('email') or '').strip()
+        raw_phone = (data.get('phone') or '').strip()
         otp = str(data.get('otp', '')).strip()
 
-        if not identifier or not otp:
+        if not any([raw_user, raw_ident, raw_email, raw_phone]) or not otp:
             return jsonify({"status": "error", "message": "Username/Identifier and verification code are required."}), 400
 
-        if identifier not in pending_sessions:
+        session_record = None
+        for candidate in [
+            raw_user.lower(),
+            raw_ident.lower(),
+            raw_email.lower(),
+            raw_phone,
+            raw_user,
+            raw_ident,
+            raw_email
+        ]:
+            if candidate and candidate in pending_sessions:
+                session_record = pending_sessions[candidate]
+                break
+
+        if not session_record:
             return jsonify({"status": "error", "message": "No active pending authentication session for this user."}), 400
 
-        session_record = pending_sessions[identifier]
         if session_record['otp'] != otp:
             return jsonify({"status": "error", "message": "Invalid authentication code. Match failed."}), 400
 
@@ -390,18 +453,21 @@ def verify_otp():
                         "password": user_data.get("password_raw", user_data["password"]),
                         "passwordConf": user_data.get("password_raw", user_data["password"]),
                         "fullname": user_data["fullname"],
+                        "avatar": user_data.get("avatar", "assets/images/avatar.png"),
                         "createdAt": datetime.datetime.now(datetime.timezone.utc)
                     })
             else:
                 db = get_users_db()
+                pass_hash = user_data.get("password_hash") or generate_password_hash(user_data.get("password", ""))
                 db['users'][user_data["username"]] = {
                     "username": user_data["username"],
-                    "password": user_data["password"],
+                    "password": pass_hash,
+                    "password_hash": pass_hash,
                     "fullname": user_data["fullname"],
                     "email": user_data["email"],
                     "phone": user_data["phone"],
                     "role": user_data["role"],
-                    "avatar": user_data["avatar"]
+                    "avatar": user_data.get("avatar", "assets/images/avatar.png")
                 }
                 save_users_db(db)
 
@@ -424,6 +490,38 @@ def verify_otp():
             }
         })
 
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@auth_api.route('/api/auth/update-avatar', methods=['POST'])
+def update_user_avatar():
+    try:
+        data = request.get_json() or {}
+        username = (data.get('username') or '').strip().lower()
+        avatar = data.get('avatar')
+
+        if not username or not avatar:
+            return jsonify({"status": "error", "message": "Username and avatar payload required."}), 400
+
+        # Update in MongoDB if active
+        mongo_col = get_mongo_collection()
+        if mongo_col is not None:
+            mongo_col.update_one(
+                {"$or": [{"username": username}, {"email": username}]},
+                {"$set": {"avatar": avatar}}
+            )
+
+        # Update in users.json
+        db = get_users_db()
+        if username in db.get('users', {}):
+            db['users'][username]['avatar'] = avatar
+            save_users_db(db)
+
+        return jsonify({
+            "status": "success",
+            "message": "Identity photo vector updated successfully.",
+            "avatar": avatar
+        })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -475,3 +573,38 @@ def authenticate_face():
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@auth_api.route('/api/auth/db-status', methods=['GET'])
+def get_db_status():
+    mongo_col = get_mongo_collection()
+    if mongo_col is not None:
+        try:
+            count = mongo_col.count_documents({})
+            db_name = os.getenv("MONGO_DB_NAME", "ManualAuth")
+            return jsonify({
+                "status": "connected",
+                "engine": "MongoDB Atlas / Cloud Database",
+                "database": db_name,
+                "collection": "users",
+                "total_users": count,
+                "is_cloud": True,
+                "message": "Connected to MongoDB Cloud database."
+            })
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "engine": "MongoDB",
+                "error": str(e),
+                "is_cloud": False
+            }), 500
+    else:
+        db = get_users_db()
+        users_count = len(db.get("users", {}))
+        return jsonify({
+            "status": "fallback",
+            "engine": "Local JSON Cache (users.json)",
+            "database": "data/users.json",
+            "total_users": users_count,
+            "is_cloud": False,
+            "message": "Running on local secure storage. To connect MongoDB Atlas, set MONGO_URI in .env."
+        })

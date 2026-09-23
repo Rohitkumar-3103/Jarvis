@@ -62,14 +62,24 @@ def load_api_keys() -> dict:
     if env_gemini_key and not data.get("gemini_api_key"):
         data["gemini_api_key"] = env_gemini_key.strip()
         
+    env_openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_KEY")
+    if env_openai_key and not data.get("openai_api_key"):
+        data["openai_api_key"] = env_openai_key.strip()
+        data["chatgpt_key"] = env_openai_key.strip()
+        
     return data
 
 def get_gemini_key() -> str | None:
     return load_api_keys().get("gemini_api_key")
 
+def get_openai_key() -> str | None:
+    keys = load_api_keys()
+    return keys.get("openai_api_key") or keys.get("chatgpt_key")
+
 def is_configured() -> bool:
-    key = get_gemini_key()
-    return bool(key and len(key) > 15)
+    gemini_key = get_gemini_key()
+    openai_key = get_openai_key()
+    return bool((gemini_key and len(gemini_key) > 15) or (openai_key and len(openai_key) > 15))
 
 
 def get_assistant_name() -> str:

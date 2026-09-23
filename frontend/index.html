@@ -123,9 +123,13 @@
                     <h2 style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; margin: 0;">USER PROFILE</h2>
                 </div>
                 <div class="panel-body" style="display: flex; align-items: center; gap: 12px; padding: 12px;">
-                    <div class="profile-avatar-wrapper" style="position: relative; width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--theme-primary, #00f0ff); overflow: hidden; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); flex-shrink: 0;">
+                    <div class="profile-avatar-wrapper" style="position: relative; width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--theme-primary, #00f0ff); overflow: hidden; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); flex-shrink: 0; cursor: pointer;" title="Click to upload/change identity photo" onclick="document.getElementById('profile-avatar-file-input').click()">
                         <img src="assets/images/avatar.png" id="profile-avatar-img" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="avatar-upload-hover-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.65); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; color: var(--theme-primary, #00f0ff); font-size: 0.75rem;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0'">
+                            <i class="fa-solid fa-camera" style="font-size: 0.85rem;"></i>
+                        </div>
                     </div>
+                    <input type="file" id="profile-avatar-file-input" accept="image/*" style="display: none;" onchange="handleUserAvatarUpload(event)">
                     <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
                         <span id="profile-full-name" style="font-family: var(--font-hud); font-size: 0.8rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TONY STARK</span>
                         <span id="profile-username" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary, #94a3b8);">@ironman</span>
@@ -163,9 +167,17 @@
                     <i class="fa-solid fa-comments" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
                     <span>AI Neural Chat</span>
                 </a>
+                <a href="JARVIS_Project_Details.pdf" download="JARVIS_Project_Details.pdf" target="_blank" class="dash-menu-item" onclick="closeDashboardSideMenu();">
+                    <i class="fa-solid fa-file-pdf" style="color: #00f0ff; width: 20px; text-align: center;"></i>
+                    <span>Download Project PDF</span>
+                </a>
                 <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); openAuthTerminalModal();">
                     <i class="fa-solid fa-right-to-bracket" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
                     <span>Auth Terminal (Sign In/Up)</span>
+                </a>
+                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); if (typeof sendLocalCommand === 'function') { sendLocalCommand('terminal'); if (typeof speak === 'function') speak('Launching system terminal console, Sir.'); }">
+                    <i class="fa-solid fa-terminal" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
+                    <span>System Terminal Console</span>
                 </a>
                 <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); resetMainframeDatabase();">
                     <i class="fa-solid fa-rotate-left" style="color: #ff4b4b; width: 20px; text-align: center;"></i>
@@ -275,7 +287,12 @@
                 <div class="scanline"></div>
                 <span class="hud-ticker" id="hud-ticker">MAIN CORE STATUS: ACTIVE // VOICE SYNAPSE: CONNECTED // COGNITIVE NET: STABLE</span>
             </div>
-            <div class="hud-metrics" style="display: flex; align-items: center; gap: 18px;">
+            <div class="hud-metrics" style="display: flex; align-items: center; gap: 14px;">
+                <div class="metric-item weather-widget" style="display: flex; align-items: center; gap: 7px; cursor: pointer; background: rgba(0, 240, 255, 0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 240, 255, 0.25); box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); transition: all 0.2s;" onclick="promptChangeWeatherCity()" title="Atmospheric scan // Click to change location">
+                    <i class="fa-solid fa-cloud-sun text-cyan" style="font-size: 0.95rem; filter: drop-shadow(0 0 5px rgba(0,240,255,0.6));"></i>
+                    <span style="font-family: var(--font-hud); font-size: 0.68rem; color: #94a3b8; letter-spacing: 1px;">ATMOSPHERIC SCAN</span>
+                    <span class="metric-value font-mono text-cyan" id="header-weather-display" style="font-size: 0.85rem; font-weight: 700; color: var(--theme-primary, #00f0ff); margin-left: 2px;">--°C</span>
+                </div>
                 <div class="metric-item clock-widget">
                     <span class="metric-value font-mono" id="hud-clock">00:00:00</span>
                 </div>
@@ -632,8 +649,8 @@
                 <div class="settings-section">
                     <h3>Cognitive Connect Settings</h3>
                     <div class="settings-row">
-                        <label for="settings-api-key">Gemini Developer API Key</label>
-                        <input type="password" id="settings-api-key" placeholder="AI Studio Key (AI_KEY)...">
+                        <label for="settings-api-key">AI Cognitive Key (Gemini / ChatGPT)</label>
+                        <input type="password" id="settings-api-key" placeholder="AI Studio (AIzaSy...) or ChatGPT (sk-...)...">
                     </div>
                 </div>
                 <div class="settings-section">
@@ -768,18 +785,18 @@
     </div>
 
     <!-- JS Scripts (Modular Structure) -->
-    <script src="js/utils.js?v=5.7.0" defer></script>
-    <script src="js/storage.js?v=5.7.0" defer></script>
-    <script src="js/animations.js?v=5.7.0" defer></script>
-    <script src="js/settings.js?v=5.7.0" defer></script>
-    <script src="js/lockscreen.js?v=5.7.0" defer></script>
-    <script src="js/chat.js?v=5.7.0" defer></script>
-    <script src="js/weather.js?v=5.7.0" defer></script>
-    <script src="js/dashboard.js?v=5.7.0" defer></script>
-    <script src="js/commands.js?v=5.7.0" defer></script>
-    <script src="js/ai.js?v=5.7.0" defer></script>
-    <script src="js/voice.js?v=5.7.0" defer></script>
-    <script src="js/app.js?v=5.7.0" defer></script>
+    <script src="js/utils.js?v=6.2.0" defer></script>
+    <script src="js/storage.js?v=6.0.0" defer></script>
+    <script src="js/animations.js?v=6.0.0" defer></script>
+    <script src="js/settings.js?v=6.2.0" defer></script>
+    <script src="js/lockscreen.js?v=6.0.0" defer></script>
+    <script src="js/chat.js?v=6.0.0" defer></script>
+    <script src="js/weather.js?v=6.0.0" defer></script>
+    <script src="js/dashboard.js?v=6.0.0" defer></script>
+    <script src="js/commands.js?v=6.2.0" defer></script>
+    <script src="js/ai.js?v=6.2.0" defer></script>
+    <script src="js/voice.js?v=6.2.0" defer></script>
+    <script src="js/app.js?v=6.0.0" defer></script>
 
     <!-- HOLOGRAPHIC AUTH TERMINAL MODAL (PILOT AUTH TERMINAL INTEGRATED) -->
     <div class="settings-modal-overlay" id="auth-terminal-modal" onclick="if(event.target === this) closeAuthTerminalModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">
@@ -903,10 +920,56 @@
             }
         }
 
+        function handleUserAvatarUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 256;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    
+                    const minDim = Math.min(img.width, img.height);
+                    const sx = (img.width - minDim) / 2;
+                    const sy = (img.height - minDim) / 2;
+                    ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+
+                    const optimizedAvatar = canvas.toDataURL('image/jpeg', 0.85);
+
+                    // Update DOM elements
+                    const avatarImgs = document.querySelectorAll('#profile-avatar-img, .participant-avatar');
+                    avatarImgs.forEach(el => el.src = optimizedAvatar);
+
+                    // Update localStorage
+                    const savedUser = localStorage.getItem('jarvis_user');
+                    let userObj = savedUser ? JSON.parse(savedUser) : { username: "ironman", fullname: "Tony Stark", role: "Primary User // Administrator" };
+                    userObj.avatar = optimizedAvatar;
+                    localStorage.setItem('jarvis_user', JSON.stringify(userObj));
+
+                    // Send to backend to persist in database
+                    const backendUrl = typeof BACKEND_URL !== 'undefined' ? BACKEND_URL : 'http://127.0.0.1:5000';
+                    fetch(`${backendUrl}/api/auth/update-avatar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: userObj.username, avatar: optimizedAvatar })
+                    }).catch(err => console.log('Avatar sync:', err));
+
+                    if (typeof speak === 'function') speak("Identity photo updated successfully, Sir.");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         async function resetMainframeDatabase() {
             if (confirm("Reset and clear all user accounts from the mainframe database?")) {
                 try {
-                    const res = await fetch('http://127.0.0.1:3000/api/auth/reset-accounts', { method: 'POST' });
+                    const res = await fetch('http://127.0.0.1:5000/api/auth/reset-accounts', { method: 'POST' });
                     const data = await res.json();
                     alert(data.message || "Mainframe database reset complete.");
                 } catch (err) {

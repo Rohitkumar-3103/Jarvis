@@ -38,15 +38,42 @@ function initSpeechSynthesis() {
     }
 }
 
+let currentCloudAudio = null;
+
 function speak(text) {
     if (!window.speechSynthesis || !autoSpeak) {
         return;
     }
 
-    window.speechSynthesis.cancel();
+    // Cancel any previous speech synthesis or cloud audio
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    if (currentCloudAudio) {
+        try {
+            currentCloudAudio.pause();
+            currentCloudAudio.currentTime = 0;
+            currentCloudAudio = null;
+        } catch (e) {}
+    }
 
-    const cleanSpeechText = text.replace(/[*_`#\-]/g, '').trim();
+    // Thoroughly clean text for crystal-clear natural speech output
+    let cleanSpeechText = (text || "")
+        .replace(/```[\s\S]*?```/g, 'Code block generated.')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/https?:\/\/\S+/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/[*_#$~<>|]/g, '')
+        .replace(/\\u[0-9a-fA-F]{4}/g, '')
+        .replace(/\{[^\}]*\}/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
     if (!cleanSpeechText) return;
+
+    // For very long text responses, speak the primary concise insight (first 2-3 sentences)
+    const sentences = cleanSpeechText.split(/(?<=[.!?])\s+/);
+    if (sentences.length > 3) {
+        cleanSpeechText = sentences.slice(0, 3).join(" ");
+    }
 
     // Detect if text contains Hindi characters (Devanagari script) or Hinglish vocabulary
     const hinglishRegex = /\b(namaste|kaise|sahayata|sawaal|hoon|aapka|apka|main|kaun|kya|hai|kardo|kijiye|sunte|boliye)\b/i;
@@ -69,9 +96,10 @@ function speak(text) {
             };
             window.speechSynthesis.speak(utterance);
         } else {
-            // Google Translate TTS Cloud Fallback for Hindi (highly reliable, no system voice required)
+            // Google Translate TTS Cloud Fallback for Hindi
             updateCoreState('SPEAKING');
             const audio = document.createElement('audio');
+            currentCloudAudio = audio;
             audio.referrerPolicy = "no-referrer";
             audio.volume = voiceVolume;
             audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=hi&client=tw-ob&q=${encodeURIComponent(cleanSpeechText)}`;
@@ -83,6 +111,7 @@ function speak(text) {
                 window.speechSynthesis.speak(utterance);
             });
             audio.onended = () => {
+                currentCloudAudio = null;
                 if (currentCoreState === 'SPEAKING') updateCoreState('IDLE');
             };
         }
@@ -121,12 +150,13 @@ function speak(text) {
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
+let speechFinalTimeout = null;
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.lang = 'en-US';
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
@@ -134,11 +164,31 @@ if (SpeechRecognition) {
     };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (textInputField) textInputField.value = '';
-        appendChatBubble('USER', transcript);
-        updateCoreState('THINKING');
-        takeCommand(transcript);
+        let interimText = '';
+        let finalText = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalText += event.results[i][0].transcript;
+            } else {
+                interimText += event.results[i][0].transcript;
+            }
+        }
+
+        // Live visual indicator in input field
+        if (textInputField && (interimText || finalText)) {
+            textInputField.value = finalText || interimText;
+        }
+
+        if (finalText) {
+            const cleanFinal = finalText.trim();
+            if (cleanFinal) {
+                if (textInputField) textInputField.value = '';
+                appendChatBubble('USER', cleanFinal);
+                updateCoreState('THINKING');
+                takeCommand(cleanFinal);
+            }
+        }
     };
 
     recognition.onerror = (e) => {

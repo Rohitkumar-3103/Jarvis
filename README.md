@@ -1,5 +1,11 @@
 # 🌐 J.A.R.V.I.S. AI OS v3.2.0
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rohit_Kumar_Gupta-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
+[![GitHub](https://img.shields.io/badge/GitHub-Rohitkumar--3103-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Rohitkumar-3103/Jarvis)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-v3.2.0-00f0ff?style=flat-square)](https://github.com/Rohitkumar-3103/Jarvis)
+
 Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advanced automated full-stack AI assistant and tactical desktop operating system inspired by the Stark Industries Mark XLVII interface.
 
 > 📚 **Context & Architecture Documentation for AI Agents & Developers:**
@@ -32,7 +38,76 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 *   **Structure**: HTML5 (Semantic modules, modal dialogues)
 *   **Styling**: CSS3 (Custom properties, CSS Grid/Flexbox layouts, Backdrop blur filters, Keyframe animations)
 *   **Logic**: JavaScript (ES6+, asynchronous fetch API, Web Speech API integration)
-*   **AI Engine**: Google Gemini API (`gemini-1.5-flash` model)
+*   **Backend Services**: Python 3.12 Flask REST API, OpenCV Biometrics, `psutil` Telemetry
+*   **AI Engine**: Google Gemini API (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`), Pollinations Flux 4K Generator
+
+---
+
+## 🏛️ System Architecture & Design
+
+J.A.R.V.I.S. operates on a decoupled multi-tier architecture uniting a low-latency client-side Web HUD with a local Python Flask REST node and cloud AI services:
+
+```mermaid
+graph TD
+    User([👤 User: Voice / Text / Camera / Mouse])
+
+    subgraph Frontend["🖥️ Presentation Tier: Tactical Web HUD (Port 8080)"]
+        UI["Glassmorphic Tactical HUD (index.html)"]
+        ArcReactor["Arc Reactor State Machine (arc.js)"]
+        VoiceEngine["Bilingual Web Speech STT / TTS (voice.js)"]
+        ImageEngine["Pollinations Flux 4K AI (ai.js)"]
+        AuthTerminal["Tactical Auth Terminal / WebGL (auth.html)"]
+    end
+
+    subgraph Backend["⚙️ Application Tier: Flask REST Microservices (Port 5000)"]
+        Server["Flask Application Router (server.py)"]
+        AuthAPI["Biometric Face & Hybrid Auth (/api/auth)"]
+        SysAPI["Hardware Diagnostics & OS Automation (/api/system)"]
+        AIAPI["Google Gemini LLM Bridge (/api/ai)"]
+        CodeAPI["Python Sandbox Interpreter (/api/code)"]
+        ChatAPI["Conversation History Database (/api/chat)"]
+        WeatherAPI["Atmospheric Telemetry (/api/weather)"]
+    end
+
+    subgraph NativeTier["⚡ Native Agent Tools & Live Multimodal Engine"]
+        SysMon["Hardware Monitor (psutil)"]
+        Desktop["Windows App & System Controller"]
+        Browser["Playwright Web Automation Engine"]
+        Media["OS Media & Audio Scanner"]
+    end
+
+    subgraph CloudServices["🌐 External AI & Cloud Services"]
+        Gemini["Google Gemini API (2.5 / 2.0 Flash)"]
+        Pollinations["Pollinations AI 1024x1024 Flux Engine"]
+        OpenMeteo["Open-Meteo Weather API"]
+    end
+
+    User <-->|Speech / Clicks / Gestures| UI
+    UI <--> ArcReactor
+    UI <--> VoiceEngine
+    UI -->|Image Generation| ImageEngine
+    ImageEngine <--> Pollinations
+
+    UI <-->|REST API / JSON| Server
+    Server --> AuthAPI
+    Server --> SysAPI
+    Server --> AIAPI
+    Server --> CodeAPI
+    Server --> ChatAPI
+    Server --> WeatherAPI
+
+    AIAPI <--> Gemini
+    SysAPI --> SysMon
+    SysAPI --> Desktop
+    Server --> Browser
+    Server --> Media
+    WeatherAPI <--> OpenMeteo
+```
+
+> 📖 **Deep-Dive Architecture & Design Specifications:**
+> * 🏛️ **[System Architecture Blueprint](docs/ARCHITECTURE.md)** — Multi-tier topology, microservices mapping, execution flows, and security invariants.
+> * 🎨 **[Tactical HUD Design System](docs/DESIGN.md)** — Glassmorphic styling, 360° theme palettes, tonal stacking, and typography tokens.
+
 
 ---
 
@@ -333,3 +408,23 @@ window.speechSynthesis.speak(utterance);
 *   **Media Playback Controls**: Programmed a local directory track scanner under `actions/music.py` with support for keyboard media event hooks (Play/Pause, Next Track).
 *   **Automated Testing Suite**: Implemented 9 working test cases covering Flask server endpoints, LLM model providers, and system monitoring telemetry.
 *   **Optimized Console Streams**: Removed local file logging (`logs/` directory) and configured standard output console streams.
+
+---
+
+## 👨‍💻 Author & Connect
+
+**Rohit Kumar Gupta**  
+*Creator & Lead Developer of J.A.R.V.I.S. AI OS*
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect_on_LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Rohitkumar-3103/Jarvis)
+
+* 💼 **LinkedIn**: [linkedin.com/in/rohit-kumar-gupta-a96b8428a](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
+* 🐙 **GitHub**: [github.com/Rohitkumar-3103](https://github.com/Rohitkumar-3103)
+* 🚀 **Project Repository**: [github.com/Rohitkumar-3103/Jarvis](https://github.com/Rohitkumar-3103/Jarvis)
+
+---
+
+## 📄 License
+
+This project is open-sourced under the **MIT License** — see the [LICENSE](LICENSE) file for complete details.
