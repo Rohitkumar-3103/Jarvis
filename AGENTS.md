@@ -189,7 +189,8 @@ When modifying this repository, you **MUST** adhere to the following rules:
 ### 6. 🎨 AI Image Generation Parameters
 - Image generation is handled by Pollinations AI (`https://image.pollinations.ai/prompt/...`).
 - Standard prompts use `&width=1024&height=1024&seed=${randomSeed}&nologo=true&enhance=true`.
-- Anime character requests (`naruto`, `goku`, `anime`) use 2D studio cell-shaded prompt formatting with clear linework.
+- **2D Only Rule**: All image generation requests MUST be formatted as **strictly 2D** (flat vector art, clean cel-shaded anime illustration, 2D graphic novel art, crisp linework). 
+- Explicitly exclude 3D models, 3D CGI, octane renders, and photorealism in prompt engineering.
 
 ---
 

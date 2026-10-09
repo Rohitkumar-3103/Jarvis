@@ -130,8 +130,8 @@ body {
 }
 
 .hud-btn-mini {
-    background: rgba(255, 255, 255, 0.01);
-    border: 1px solid rgba(0, 240, 255, 0.15);
+    background: rgba(0, 240, 255, 0.04);
+    border: 1px solid rgba(0, 240, 255, 0.25);
     border-radius: 6px;
     color: var(--theme-primary);
     width: 28px;
@@ -140,16 +140,25 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 6px rgba(0, 240, 255, 0.08);
     outline: none;
+    padding: 0;
+}
+.hud-btn-mini i {
+    font-size: 0.85rem;
+    pointer-events: none;
+    transition: transform 0.2s ease;
 }
 .hud-btn-mini:hover {
-    background: rgba(0, 240, 255, 0.08);
+    background: rgba(0, 240, 255, 0.15);
     border-color: var(--theme-primary);
-    color: var(--text-primary);
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
-    transform: scale(1.05);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.35);
+    transform: scale(1.08);
+}
+.hud-btn-mini:hover i {
+    transform: scale(1.1);
 }
 
 /* Global Utilitarian Helper Classes */

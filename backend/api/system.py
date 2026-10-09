@@ -91,6 +91,28 @@ def run_shell_command():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@system_api.route('/api/system/config', methods=['GET'])
+def get_system_config():
+    try:
+        import os
+        import json
+        CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "config", "api_keys.json")
+        gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+        if os.path.exists(CONFIG_PATH):
+            try:
+                with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    gemini_key = cfg.get("gemini_api_key", "").strip() or gemini_key
+            except Exception:
+                pass
+        return jsonify({
+            "status": "success",
+            "gemini_api_key": gemini_key,
+            "has_gemini_key": bool(gemini_key and len(gemini_key) > 10)
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 @system_api.route('/api/system/config', methods=['POST'])
 def save_system_config():
     try:
@@ -99,14 +121,8 @@ def save_system_config():
         CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "config", "api_keys.json")
         data = request.get_json() or {}
         gemini_key = data.get('gemini_api_key', '').strip()
-        openai_key = data.get('openai_api_key', '').strip() or data.get('chatgpt_key', '').strip()
         
-        # If gemini_key starts with sk-, route to openai_key
-        if gemini_key.startswith('sk-') or 'proj-' in gemini_key:
-            openai_key = gemini_key
-            gemini_key = ''
-
-        if gemini_key or openai_key:
+        if gemini_key:
             os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
             config_data = {}
             if os.path.exists(CONFIG_PATH):
@@ -115,14 +131,14 @@ def save_system_config():
                         config_data = json.load(f)
                 except Exception:
                     pass
-            if gemini_key:
-                config_data["gemini_api_key"] = gemini_key
-            if openai_key:
-                config_data["openai_api_key"] = openai_key
-                config_data["chatgpt_key"] = openai_key
+            config_data["gemini_api_key"] = gemini_key
+            config_data["preferred_ai_provider"] = "gemini"
+            config_data["llm_provider"] = "gemini"
+            config_data.pop("openai_api_key", None)
+            config_data.pop("chatgpt_key", None)
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
                 json.dump(config_data, f, indent=2)
-            return jsonify({"status": "success", "message": "API keys synced successfully."})
-        return jsonify({"status": "error", "message": "Invalid API key"}), 400
+            return jsonify({"status": "success", "message": "Google Gemini API key synced successfully."})
+        return jsonify({"status": "error", "message": "Invalid Gemini API key"}), 400
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

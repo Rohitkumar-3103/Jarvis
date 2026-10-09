@@ -4,8 +4,39 @@
 
 // Global state variables
 const BACKEND_URL = 'http://127.0.0.1:5000';
-let rawApiKey = localStorage.getItem('jarvis_openai_key') || localStorage.getItem('jarvis_chatgpt_key') || localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '';
+// Purge any stale OpenAI / ChatGPT keys
+try {
+    localStorage.removeItem('jarvis_openai_key');
+    localStorage.removeItem('jarvis_chatgpt_key');
+} catch (e) {}
+
+let rawApiKey = localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '';
 let geminiApiKey = rawApiKey.trim();
+
+// Automatically sync Gemini API key from backend (.env / config) if not present locally
+async function syncGeminiKeyFromBackend() {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/system/config`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.gemini_api_key) {
+                if (!geminiApiKey || geminiApiKey.length < 10) {
+                    geminiApiKey = data.gemini_api_key.trim();
+                    localStorage.setItem('jarvis_gemini_key', geminiApiKey);
+                    localStorage.setItem('jarvis_gemini_api_key', geminiApiKey);
+                }
+                const keyInput = document.getElementById('settings-api-key');
+                if (keyInput && !keyInput.value) keyInput.value = geminiApiKey;
+                if (typeof updateCognitionStatus === 'function') updateCognitionStatus();
+            }
+        }
+    } catch (e) {}
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncGeminiKeyFromBackend);
+} else {
+    syncGeminiKeyFromBackend();
+}
 let selectedVoiceName = localStorage.getItem('jarvis_selected_voice') || '';
 let voicePitch = parseFloat(localStorage.getItem('jarvis_voice_pitch') || '1.0');
 let voiceRate = parseFloat(localStorage.getItem('jarvis_voice_rate') || '1.0');
@@ -291,21 +322,148 @@ function showSystemConfirm(message) {
 }
 
 // Global UI Modal & Side Drawer Control Functions
+let reactorTelemetryInterval = null;
+let isReactorOverdrive = false;
+
 function openLogoZoomModal() {
     const modal = document.getElementById('logo-zoom-modal');
-    if (modal) modal.style.display = 'flex';
+    if (!modal) return;
+    modal.style.display = 'flex';
+    
+    // Start live telemetry fluctuation
+    startReactorTelemetryStream();
 }
 
 function closeLogoZoomModal() {
     const modal = document.getElementById('logo-zoom-modal');
-    if (modal) modal.style.display = 'none';
+    if (!modal) return;
+    modal.style.display = 'none';
+
+    // Clear live telemetry interval
+    if (reactorTelemetryInterval) {
+        clearInterval(reactorTelemetryInterval);
+        reactorTelemetryInterval = null;
+    }
+
+    // Reset overdrive if enabled
+    if (isReactorOverdrive) {
+        toggleReactorOverdrive(false);
+    }
+}
+
+function startReactorTelemetryStream() {
+    if (reactorTelemetryInterval) clearInterval(reactorTelemetryInterval);
+
+    reactorTelemetryInterval = setInterval(() => {
+        const pwrEl = document.getElementById('reactor-val-power');
+        const tmpEl = document.getElementById('reactor-val-temp');
+        const flxEl = document.getElementById('reactor-val-flux');
+        const frqEl = document.getElementById('reactor-val-freq');
+
+        if (!pwrEl) return;
+
+        if (isReactorOverdrive) {
+            // Overdrive jitter around 4.78 - 4.88 GW
+            const jitterPwr = (4.78 + Math.random() * 0.10).toFixed(2);
+            const jitterTmp = (45.2 + Math.random() * 0.8).toFixed(1);
+            pwrEl.textContent = `${jitterPwr} GW`;
+            if (tmpEl) tmpEl.textContent = `${jitterTmp} °C`;
+        } else {
+            // Nominal jitter around 3.20 - 3.28 GW
+            const jitterPwr = (3.20 + Math.random() * 0.08).toFixed(2);
+            const jitterTmp = (38.2 + Math.random() * 0.5).toFixed(1);
+            const jitterFlx = (99.95 + Math.random() * 0.04).toFixed(2);
+            pwrEl.textContent = `${jitterPwr} GW`;
+            if (tmpEl) tmpEl.textContent = `${jitterTmp} °C`;
+            if (flxEl) flxEl.textContent = `${jitterFlx} %`;
+            if (frqEl) frqEl.textContent = `${(99.98 + Math.random() * 0.04).toFixed(2)} Hz`;
+        }
+    }, 1400);
+}
+
+function toggleReactorOverdrive(forceState) {
+    const dialog = document.getElementById('reactor-modal-dialog');
+    const btnText = document.getElementById('btn-overdrive-text');
+    const badge = document.getElementById('reactor-power-badge');
+    const pwrEl = document.getElementById('reactor-val-power');
+    const bars = document.querySelectorAll('#reactor-power-bars .telemetry-bar-segment');
+
+    if (forceState !== undefined) {
+        isReactorOverdrive = forceState;
+    } else {
+        isReactorOverdrive = !isReactorOverdrive;
+    }
+
+    if (isReactorOverdrive) {
+        if (dialog) dialog.classList.add('overdrive');
+        if (btnText) btnText.textContent = 'DISENGAGE OVERDRIVE';
+        if (badge) {
+            badge.textContent = 'OVERDRIVE // 150%';
+            badge.style.color = '#ffaa00';
+            badge.style.borderColor = 'rgba(255, 170, 0, 0.5)';
+            badge.style.background = 'rgba(255, 170, 0, 0.12)';
+        }
+        if (pwrEl) {
+            pwrEl.textContent = '4.82 GW';
+            pwrEl.style.color = '#ffaa00';
+        }
+        bars.forEach(bar => {
+            bar.classList.add('active', 'warn');
+        });
+        if (typeof speak === 'function') {
+            speak("Arc Reactor overdrive engaged. Power output at maximum threshold.");
+        }
+    } else {
+        if (dialog) dialog.classList.remove('overdrive');
+        if (btnText) btnText.textContent = 'OVERDRIVE BOOST';
+        if (badge) {
+            badge.textContent = 'NOMINAL';
+            badge.style.color = '#00ff66';
+            badge.style.borderColor = 'rgba(0, 255, 102, 0.3)';
+            badge.style.background = 'rgba(0, 255, 102, 0.08)';
+        }
+        if (pwrEl) {
+            pwrEl.textContent = '3.24 GW';
+            pwrEl.style.color = '';
+        }
+        bars.forEach((bar, idx) => {
+            bar.classList.remove('warn');
+            if (idx < 8) bar.classList.add('active');
+            else bar.classList.remove('active');
+        });
+        if (typeof speak === 'function') {
+            speak("Overdrive disengaged. Core returning to stable synapse.");
+        }
+    }
+}
+
+function triggerReactorCalibration() {
+    const statusText = document.getElementById('reactor-status-text');
+    if (statusText) statusText.textContent = 'CALIBRATING...';
+
+    const coreImg = document.querySelector('.reactor-core-img-box img');
+    if (coreImg) {
+        coreImg.style.transform = 'scale(1.1)';
+        coreImg.style.filter = 'drop-shadow(0 0 45px #00f0ff) drop-shadow(0 0 70px #ffffff)';
+    }
+
+    setTimeout(() => {
+        if (statusText) statusText.textContent = 'HARMONIC LOCKED';
+        if (coreImg) {
+            coreImg.style.transform = '';
+            coreImg.style.filter = '';
+        }
+        if (typeof speak === 'function') {
+            speak("Arc Reactor calibration sequence complete. Core resonance at 100 percent.");
+        }
+    }, 1200);
 }
 
 function openDashboardSideMenu() {
     const drawer = document.getElementById('dash-side-drawer');
     const backdrop = document.getElementById('dash-side-backdrop');
     if (!drawer) return;
-    const isCurrentlyOpen = drawer.classList.contains('open') || window.getComputedStyle(drawer).display === 'flex';
+    const isCurrentlyOpen = drawer.classList.contains('open') || (window.getComputedStyle(drawer).display === 'flex' && drawer.style.display !== 'none');
     if (isCurrentlyOpen) {
         closeDashboardSideMenu();
     } else {
@@ -314,6 +472,11 @@ function openDashboardSideMenu() {
         if (backdrop) {
             backdrop.classList.add('open');
             backdrop.style.setProperty('display', 'block', 'important');
+        }
+        const voiceIcon = document.getElementById('side-menu-voice-icon');
+        if (voiceIcon) {
+            const isVoiceOn = localStorage.getItem('jarvis_auto_speak') !== 'false';
+            voiceIcon.className = isVoiceOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
         }
     }
 }
@@ -331,6 +494,22 @@ function closeDashboardSideMenu() {
     }
 }
 
+function toggleSideMenuVoice() {
+    let isAutoSpeak = localStorage.getItem('jarvis_auto_speak') !== 'false';
+    isAutoSpeak = !isAutoSpeak;
+    localStorage.setItem('jarvis_auto_speak', isAutoSpeak);
+    if (typeof autoSpeak !== 'undefined') {
+        autoSpeak = isAutoSpeak;
+    }
+    const icon = document.getElementById('side-menu-voice-icon');
+    if (icon) {
+        icon.className = isAutoSpeak ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+    }
+    if (typeof speak === 'function') {
+        speak(isAutoSpeak ? "Voice output initialized, Sir." : "Voice synthesis muted.");
+    }
+}
+
 function openAuthTerminalModal() {
     const modal = document.getElementById('auth-terminal-modal');
     if (modal) modal.style.display = 'flex';
@@ -340,3 +519,219 @@ function closeAuthTerminalModal() {
     const modal = document.getElementById('auth-terminal-modal');
     if (modal) modal.style.display = 'none';
 }
+
+// ==========================================================================
+// Quick Applications Custom Site Management Engine
+// ==========================================================================
+
+function getStoredCustomSites() {
+    try {
+        const stored = localStorage.getItem('jarvis_custom_sites');
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        console.warn("Failed to parse custom sites:", e);
+        return [];
+    }
+}
+
+function saveStoredCustomSites(sites) {
+    try {
+        localStorage.setItem('jarvis_custom_sites', JSON.stringify(sites));
+    } catch (e) {
+        console.warn("Failed to save custom sites:", e);
+    }
+}
+
+function openAddSiteModal() {
+    const modal = document.getElementById('add-site-modal');
+    if (!modal) return;
+    const nameInput = document.getElementById('custom-site-name');
+    const urlInput = document.getElementById('custom-site-url');
+    const preview = document.getElementById('custom-site-preview-icon');
+    
+    if (nameInput) nameInput.value = '';
+    if (urlInput) urlInput.value = '';
+    if (preview) {
+        preview.innerHTML = '<i class="fa-solid fa-globe" style="color: var(--theme-primary); font-size: 0.95rem;"></i>';
+    }
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        if (nameInput) nameInput.focus();
+    }, 100);
+}
+
+function closeAddSiteModal() {
+    const modal = document.getElementById('add-site-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function fillSitePreset(name, url) {
+    const nameInput = document.getElementById('custom-site-name');
+    const urlInput = document.getElementById('custom-site-url');
+    if (nameInput) nameInput.value = name;
+    if (urlInput) urlInput.value = url;
+    updateSiteIconPreview(url);
+}
+
+function updateSiteIconPreview(url) {
+    const preview = document.getElementById('custom-site-preview-icon');
+    if (!preview) return;
+    if (!url || url.trim().length < 3) {
+        preview.innerHTML = '<i class="fa-solid fa-globe" style="color: var(--theme-primary); font-size: 0.95rem;"></i>';
+        return;
+    }
+    let formattedUrl = url.trim();
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+        formattedUrl = 'https://' + formattedUrl;
+    }
+    try {
+        const parsed = new URL(formattedUrl);
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${parsed.hostname}&sz=64`;
+        preview.innerHTML = `<img src="${faviconUrl}" alt="icon" style="width: 22px; height: 22px; border-radius: 4px; object-fit: contain;" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-globe\\' style=\\'color: var(--theme-primary); font-size: 0.95rem;\\'></i>'">`;
+    } catch (e) {
+        preview.innerHTML = '<i class="fa-solid fa-globe" style="color: var(--theme-primary); font-size: 0.95rem;"></i>';
+    }
+}
+
+function submitNewCustomSite() {
+    const nameInput = document.getElementById('custom-site-name');
+    const urlInput = document.getElementById('custom-site-url');
+    if (!nameInput || !urlInput) return;
+
+    const name = nameInput.value.trim();
+    let url = urlInput.value.trim();
+
+    if (!name || !url) {
+        alert("Please provide both site name and URL.");
+        return;
+    }
+
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
+
+    let hostname = '';
+    try {
+        hostname = new URL(url).hostname;
+    } catch (e) {
+        alert("Please enter a valid website URL (e.g. https://chatgpt.com)");
+        return;
+    }
+
+    const sites = getStoredCustomSites();
+    const newSite = {
+        id: 'site_' + Date.now(),
+        name: name,
+        url: url,
+        hostname: hostname,
+        favicon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`
+    };
+
+    sites.push(newSite);
+    saveStoredCustomSites(sites);
+    renderCustomSites();
+    closeAddSiteModal();
+
+    if (typeof speak === 'function') {
+        speak(`Application shortcut for ${name} added to console, Sir.`);
+    }
+}
+
+function deleteCustomSite(id, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    let sites = getStoredCustomSites();
+    const targetSite = sites.find(s => s.id === id);
+    sites = sites.filter(s => s.id !== id);
+    saveStoredCustomSites(sites);
+    renderCustomSites();
+
+    if (targetSite && typeof speak === 'function') {
+        speak(`Application shortcut for ${targetSite.name} removed, Sir.`);
+    }
+}
+
+function launchCustomSite(url, name) {
+    if (typeof speak === 'function') {
+        speak(`Launching ${name}, Sir.`);
+    }
+    window.open(url, '_blank');
+}
+
+function renderCustomSites() {
+    const appsGrid = document.querySelector('.apps-grid');
+    if (!appsGrid) return;
+
+    // Remove existing custom site buttons
+    const existingCustomCards = appsGrid.querySelectorAll('.custom-site-card');
+    existingCustomCards.forEach(c => c.remove());
+
+    const addBtn = document.getElementById('btn-add-quick-site');
+    const sites = getStoredCustomSites();
+
+    sites.forEach(site => {
+        const btn = document.createElement('button');
+        btn.className = 'app-card-btn custom-site-card';
+        btn.setAttribute('data-app', site.name);
+        btn.setAttribute('title', `Launch ${site.name}`);
+        btn.onclick = () => launchCustomSite(site.url, site.name);
+
+        const deleteBtn = document.createElement('span');
+        deleteBtn.className = 'custom-site-delete-btn';
+        deleteBtn.setAttribute('title', `Remove ${site.name}`);
+        deleteBtn.innerHTML = '&times;';
+        deleteBtn.onclick = (e) => deleteCustomSite(site.id, e);
+
+        const img = document.createElement('img');
+        img.className = 'app-icon-img';
+        img.src = site.favicon || `https://www.google.com/s2/favicons?domain=${site.hostname || 'google.com'}&sz=64`;
+        img.alt = site.name;
+        img.style.cssText = 'width: 24px; height: 24px; margin-bottom: 8px; border-radius: 4px; object-fit: contain; filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.4));';
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = 'https://www.google.com/s2/favicons?domain=google.com&sz=64';
+        };
+
+        const label = document.createElement('span');
+        label.textContent = site.name;
+
+        btn.appendChild(deleteBtn);
+        btn.appendChild(img);
+        btn.appendChild(label);
+
+        if (addBtn && addBtn.parentNode === appsGrid) {
+            appsGrid.insertBefore(btn, addBtn);
+        } else {
+            appsGrid.appendChild(btn);
+        }
+    });
+}
+
+function matchCustomSiteCommand(query) {
+    if (!query) return null;
+    const cleanQuery = query.toLowerCase().trim();
+    const sites = getStoredCustomSites();
+    for (const site of sites) {
+        const name = site.name.toLowerCase();
+        if (
+            cleanQuery === name ||
+            cleanQuery === `open ${name}` ||
+            cleanQuery === `launch ${name}` ||
+            cleanQuery.includes(`open ${name}`) ||
+            cleanQuery.includes(`launch ${name}`)
+        ) {
+            return site;
+        }
+    }
+    return null;
+}
+
+// Auto-mount custom sites on page initialization
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderCustomSites);
+} else {
+    renderCustomSites();
+}
+

@@ -42,14 +42,18 @@ CONFIG_PATH = BASE_DIR / "config" / "api_keys.json"
 _DEFAULTS = {
     "llm_url":      "http://localhost:11434",
     "llm_model":    "llama3.2",
-    "llm_provider": "ollama",   # "ollama" | "openai"
+    "llm_provider": "gemini",   # "gemini" | "ollama"
 }
 
 
 def get_llm_provider() -> str:
-    """Returns 'ollama' or 'openai' (covers LM Studio, LocalAI, Jan, etc.)."""
-    raw = _load_config().get("llm_provider", "ollama").strip().lower()
-    return "openai" if raw in ("openai", "lmstudio", "localai", "jan", "llamacpp") else "ollama"
+    """Returns 'gemini', 'ollama', or 'local'."""
+    raw = _load_config().get("llm_provider", "gemini").strip().lower()
+    if raw in ("gemini", "google"):
+        return "gemini"
+    if raw in ("lmstudio", "localai", "jan", "llamacpp", "local"):
+        return "local"
+    return "ollama"
 
 
 def _load_config() -> dict:

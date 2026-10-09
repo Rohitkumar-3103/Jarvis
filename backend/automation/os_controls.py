@@ -64,7 +64,9 @@ def execute_os_action(command: str) -> dict:
         if os.name == 'nt':
             try:
                 import webbrowser
-                calc_path = os.path.abspath("D:\\code\\html\\Project\\Calculator\\calculator.html")
+                calc_path = os.path.abspath(r"D:\code\Web Development\Project\Summer Intership\Calculator\calculator.html")
+                if not os.path.exists(calc_path):
+                    calc_path = os.path.abspath(r"D:\code\html\Project\Calculator\calculator.html")
                 webbrowser.open(calc_path)
                 return {"status": "success", "message": "Launching Custom Calculator."}
             except Exception as e:
@@ -111,7 +113,7 @@ def execute_os_action(command: str) -> dict:
             subprocess.Popen("x-terminal-emulator || gnome-terminal || konsole || xterm", shell=True)
         return {"status": "success", "message": "Launching system terminal console."}
 
-    elif "play music" in cmd or cmd.startswith("play ") or "play song" in cmd:
+    elif "play music" in cmd or cmd.startswith("play ") or "play song" in cmd or "music auto" in cmd or "auto music" in cmd or cmd == "music":
         import actions.music
         import importlib
         importlib.reload(actions.music)
@@ -126,10 +128,11 @@ def execute_os_action(command: str) -> dict:
         success = control_playback("next")
         return {"status": "success" if success else "error", "message": "Triggered next media track track."}
 
-    elif "music" in cmd:
+    elif "music" in cmd or "video" in cmd:
+        music_path = r"C:\Users\seaem\Music\video"
         if os.name == 'nt':
-            os.system('explorer.exe "C:\\Users\\seaem\\Music\\New folder\\video"')
-        return {"status": "success", "message": "Opening local music/video folder: C:\\Users\\seaem\\Music\\New folder\\video"}
+            os.system(f'explorer.exe "{music_path}"')
+        return {"status": "success", "message": f"Opening local music/video folder: {music_path}"}
 
     elif "email" in cmd:
         if os.name == 'nt':

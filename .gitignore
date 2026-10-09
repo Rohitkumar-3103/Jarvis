@@ -92,3 +92,10 @@ desktop.ini
 
 # 10. AI Agent Caches
 .gemini/
+
+# 11. Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# 12. Local Documentation Templates
+thesis_template_0.1/

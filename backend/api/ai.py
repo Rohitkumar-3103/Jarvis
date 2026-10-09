@@ -33,18 +33,16 @@ ACRONYMS = {
     "SQL": "The full form of **SQL** is **Structured Query Language**, domain-specific language for managing relational databases, Sir."
 }
 
-def _get_api_keys():
-    gemini_key = os.getenv("GEMINI_API_KEY", "")
-    openai_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_KEY") or ""
+def _get_gemini_key():
+    gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     try:
         if os.path.exists(CONFIG_PATH):
             with open(CONFIG_PATH, "r", encoding="utf-8") as f:
                 d = json.load(f)
-                gemini_key = d.get("gemini_api_key") or gemini_key
-                openai_key = d.get("openai_api_key") or d.get("chatgpt_key") or openai_key
+                gemini_key = d.get("gemini_api_key", "").strip() or gemini_key
     except Exception:
         pass
-    return gemini_key, openai_key
+    return gemini_key
 
 def _evaluate_acronym(prompt: str):
     p_lower = prompt.lower()
@@ -127,8 +125,6 @@ def gen_response():
         if acronym_res:
             return jsonify({"status": "success", "response": acronym_res})
 
-        gemini_key, openai_key = _get_api_keys()
-        
         # Build prompt instructions
         cp_keywords = ["problem", "codeforces", "codechef", "leetcode", "atcoder", "hackerrank", "uva", "spoj", "sample input", "constraints", "write c++", "solve"]
         coding_keywords = ["code", "python", "javascript", "c++", "java", "html", "css", "function", "programming", "compile", "debug", "script", "regex"]
@@ -144,42 +140,10 @@ def gen_response():
             system_instruction = "You are J.A.R.V.I.S. Coding Assistant. Write clean, modular, and well-commented code. Address edge cases and follow language best practices. Keep the explanation crisp and speak politely using 'Sir'."
             badge = "🧠 Mode Detected: General Coding\n\n"
 
-        # Determine which key to prioritize
-        active_gemini_key = client_key if (client_key and client_key.startswith("AIzaSy")) else (gemini_key if gemini_key.startswith("AIzaSy") else "")
-        active_openai_key = client_key if (client_key and (client_key.startswith("sk-") or "proj-" in client_key)) else (openai_key if (openai_key.startswith("sk-") or "proj-" in openai_key) else "")
-
-        # 3. Prioritize OpenAI / ChatGPT API as Primary Cognitive Engine
-        if active_openai_key:
-            openai_url = "https://api.openai.com/v1/chat/completions"
-            openai_payload = {
-                "model": "gpt-4o-mini",
-                "messages": [
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": prompt}
-                ],
-                "max_tokens": 400
-            }
-            openai_headers = {
-                "Authorization": f"Bearer {active_openai_key}",
-                "Content-Type": "application/json"
-            }
-            try:
-                res = requests.post(openai_url, headers=openai_headers, json=openai_payload, timeout=10)
-                if res.status_code == 200:
-                    choices = res.json().get("choices", [])
-                    if choices:
-                        content = choices[0].get("message", {}).get("content", "")
-                        if content:
-                            return jsonify({"status": "success", "response": badge + content})
-                else:
-                    err_info = res.json().get("error", {})
-                    print(f"[OpenAI Core] Notice {res.status_code}: {err_info.get('message', res.text)}")
-            except Exception as e:
-                print(f"[OpenAI Core Error]: {e}")
-
-        # 4. Secondary Failover: Google Gemini API (if configured)
+        # 3. Google Gemini API (Primary Cognitive Engine)
+        active_gemini_key = client_key.strip() if (client_key and len(client_key.strip()) > 10) else _get_gemini_key()
         if active_gemini_key:
-            models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']
+            models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-exp']
             for m in models:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={active_gemini_key}"
                 payload = {
@@ -189,26 +153,29 @@ def gen_response():
                     }
                 }
                 try:
-                    res = requests.post(url, json=payload, timeout=8)
+                    res = requests.post(url, json=payload, timeout=12)
                     if res.status_code == 200:
                         candidates = res.json().get("candidates", [])
                         if candidates:
-                            text = candidates[0]["content"]["parts"][0]["text"]
-                            return jsonify({"status": "success", "response": badge + text})
-                except Exception:
-                    pass
+                            text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                            if text:
+                                return jsonify({"status": "success", "response": badge + text.strip()})
+                    else:
+                        print(f"[Gemini API Notice] Model {m} returned {res.status_code}: {res.text[:120]}")
+                except Exception as e:
+                    print(f"[Gemini API Exception] Model {m} failed: {e}")
 
-        # 5. Live Web Intelligence Fallback
+        # 4. Live Web Intelligence Fallback
         web_res = _web_intelligence(prompt)
         if web_res:
             return jsonify({"status": "success", "response": web_res})
 
-        # 6. Graceful Fallback
+        # 5. Graceful Fallback
         clean_topic = _clean_hinglish(prompt)
         topic_title = (clean_topic or prompt).title()
         return jsonify({
             "status": "success", 
-            "response": f"I have processed your query regarding {topic_title}, Sir. For real-time conversational reasoning across any topic, you can configure your free Gemini or ChatGPT API key in Settings (⚙️)."
+            "response": f"I have processed your query regarding {topic_title}, Sir. Google Gemini cognitive engine is configured and standing by."
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

@@ -22,6 +22,8 @@ def get_track_list(directory: str = None) -> list[str]:
     
     user_home = Path.home()
     default_dirs = [
+        str(user_home / "Music" / "video"),
+        r"C:\Users\seaem\Music\video",
         str(user_home / "Music" / "New folder" / "video"),
         str(user_home / "Music"),
         str(user_home / "Videos"),
@@ -69,9 +71,11 @@ def play_music(song_query: str = "") -> dict:
     tracks = get_track_list()
     
     clean_query = song_query.strip().lower()
-    for prefix in ["play music", "play song", "play track", "play video", "play"]:
+    for prefix in ["play music", "play song", "play track", "play video", "play", "music auto", "auto music"]:
         if clean_query.startswith(prefix):
             clean_query = clean_query[len(prefix):].strip()
+    if clean_query in ["music", "auto"]:
+        clean_query = ""
             
     # 1. If a specific song query is provided, search local tracks
     if clean_query:

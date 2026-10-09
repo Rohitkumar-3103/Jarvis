@@ -34,14 +34,8 @@ function initSettingsForm() {
 
 function updateCognitionStatus() {
     if (!llmStatus) return;
-    if (geminiApiKey && (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))) {
-        llmStatus.textContent = "CHATGPT CORE";
-        llmStatus.className = "status-card-value text-green";
-    } else if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
+    if (geminiApiKey && geminiApiKey.length > 10) {
         llmStatus.textContent = "GEMINI CORE";
-        llmStatus.className = "status-card-value text-purple";
-    } else if (geminiApiKey) {
-        llmStatus.textContent = "AI CONNECTED";
         llmStatus.className = "status-card-value text-purple";
     } else {
         llmStatus.textContent = "LOCAL_ROUTER";
@@ -76,20 +70,15 @@ if (saveSettingsBtn) {
     saveSettingsBtn.addEventListener('click', () => {
         geminiApiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
         localStorage.setItem('jarvis_gemini_api_key', geminiApiKey);
-        if (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-")) {
-            localStorage.setItem('jarvis_openai_key', geminiApiKey);
-            localStorage.setItem('jarvis_chatgpt_key', geminiApiKey);
-        }
+        localStorage.setItem('jarvis_gemini_key', geminiApiKey);
+        localStorage.removeItem('jarvis_openai_key');
+        localStorage.removeItem('jarvis_chatgpt_key');
 
         if (geminiApiKey) {
-            const syncPayload = (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))
-                ? { openai_api_key: geminiApiKey, chatgpt_key: geminiApiKey }
-                : { gemini_api_key: geminiApiKey };
-
             fetch(`${BACKEND_URL}/api/system/config`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(syncPayload)
+                body: JSON.stringify({ gemini_api_key: geminiApiKey })
             }).catch(err => console.warn("Failed to sync key to backend config:", err));
         }
 
@@ -245,7 +234,7 @@ function hexToHSL(hex) {
 
 function updateHandlePosition(angle) {
     if (!colorWheelHandle) return;
-    const radius = 60; 
+    const radius = 46; 
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
     colorWheelHandle.style.transform = `translate(${x}px, ${y}px)`;
@@ -256,6 +245,8 @@ function applyCustomColor(hex) {
     document.documentElement.style.setProperty('--theme-glow', hex + '4d'); 
     
     if (colorHexInput) colorHexInput.value = hex;
+    const swatch = document.getElementById('settings-swatch-display');
+    if (swatch) swatch.style.background = hex;
     if (colorWheelPreview) {
         colorWheelPreview.style.background = hex;
         colorWheelPreview.style.boxShadow = `0 0 15px ${hex}`;
@@ -265,6 +256,31 @@ function applyCustomColor(hex) {
     localStorage.setItem('jarvis_hud_theme', 'custom');
     if (modalThemeSelect) modalThemeSelect.value = 'custom';
 }
+
+function applyPresetColor(hex, hueDeg) {
+    if (window.isAutoColorCycling) stopAutoColorCycling();
+    applyCustomColor(hex);
+    if (typeof updateHandlePosition === 'function') {
+        const rad = ((hueDeg - 90) * Math.PI) / 180;
+        updateHandlePosition(rad);
+    }
+    if (typeof playClickSound === 'function') playClickSound();
+}
+window.applyPresetColor = applyPresetColor;
+
+function toggleSettingsKeyVisibility() {
+    const input = document.getElementById('settings-api-key');
+    const eye = document.getElementById('settings-key-eye');
+    if (!input || !eye) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        eye.className = 'fa-solid fa-eye';
+    } else {
+        input.type = 'password';
+        eye.className = 'fa-solid fa-eye-slash';
+    }
+}
+window.toggleSettingsKeyVisibility = toggleSettingsKeyVisibility;
 
 const colorAutoBtn = document.getElementById('color-picker-auto-btn');
 let autoColorInterval = null;

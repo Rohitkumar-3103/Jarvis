@@ -263,17 +263,44 @@ async function takeCommand(message) {
         handleSendMessageCommand(rawQuery);
         updateCoreState('IDLE');
     }
-    // 3. Web Navigation commands
+    // 3. Web Navigation commands & Custom Site Shortcuts
+    else if (query.includes('add site') || query.includes('add application') || query.includes('add app') || query.includes('add quick app') || query.includes('add shortcut')) {
+        appendChatBubble('JARVIS', "Opening Quick Applications configuration terminal...");
+        speak("Opening Add Site configuration modal, Sir.");
+        if (typeof openAddSiteModal === 'function') {
+            openAddSiteModal();
+        }
+        updateCoreState('IDLE');
+    }
+    else if (typeof matchCustomSiteCommand === 'function' && matchCustomSiteCommand(query)) {
+        const customSite = matchCustomSiteCommand(query);
+        appendChatBubble('JARVIS', `Opening interface: ${customSite.name}.`);
+        speak(`Opening ${customSite.name}, Sir.`);
+        setTimeout(() => window.open(customSite.url, "_blank"), 1000);
+        updateCoreState('IDLE');
+    }
     else if (query.includes('open google')) {
         appendChatBubble('JARVIS', "Opening interface: Google.");
         speak("Opening Google search node, Sir.");
         setTimeout(() => window.open("https://google.com", "_blank"), 1000);
         updateCoreState('IDLE');
     } 
-    else if (query.includes("open youtube")) {
+    else if (query.includes("open youtube") || query === "youtube" || query.includes("launch youtube")) {
         appendChatBubble('JARVIS', "Opening interface: YouTube.");
         speak("Opening video database, YouTube.");
-        setTimeout(() => window.open("https://youtube.com", "_blank"), 1000);
+        setTimeout(() => window.open("https://www.youtube.com/", "_blank"), 1000);
+        updateCoreState('IDLE');
+    } 
+    else if (query === 'open wikipedia' || query === 'wikipedia' || query === 'launch wikipedia') {
+        appendChatBubble('JARVIS', "Opening knowledge interface: Wikipedia.");
+        speak("Opening Wikipedia encyclopedia, Sir.");
+        setTimeout(() => window.open("https://www.wikipedia.org/", "_blank"), 1000);
+        updateCoreState('IDLE');
+    }
+    else if (query.includes("open edclub") || query === "edclub" || query.includes("launch edclub")) {
+        appendChatBubble('JARVIS', "Opening typing academy: EdClub.");
+        speak("Opening EdClub typing portal, Sir.");
+        setTimeout(() => window.open("https://www.edclub.com/sportal/", "_blank"), 1000);
         updateCoreState('IDLE');
     } 
     else if (query.includes("open github")) {
@@ -314,7 +341,7 @@ async function takeCommand(message) {
         speak("Launching calculator, Sir.");
         sendLocalCommand('calculator');
         setTimeout(() => {
-            window.open("file:///D:/code/html/Project/Calculator/calculator.html", "_blank");
+            window.open("file:///D:/code/Web%20Development/Project/Summer%20Intership/Calculator/calculator.html", "_blank");
         }, 1000);
         updateCoreState('IDLE');
         return;
@@ -429,15 +456,16 @@ async function takeCommand(message) {
     }
     // 6. Wikipedia search
     else if (query.includes('wikipedia') || query.startsWith('search wikipedia for')) {
-        let keyword = rawQuery.replace(/search wikipedia for/i, "").replace(/wikipedia/i, "").trim();
+        let keyword = rawQuery.replace(/search wikipedia for/i, "").replace(/open wikipedia/i, "").replace(/wikipedia/i, "").trim();
         keyword = keyword.replace(/[.?]$/, "").trim();
-        if (keyword) {
+        if (keyword && keyword.toLowerCase() !== 'open') {
             appendChatBubble('JARVIS', `Searching Wikipedia databases for: ${keyword}`);
             speak(`Searching Wikipedia for ${keyword}, Sir.`);
             setTimeout(() => window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(keyword)}`, "_blank"), 1000);
         } else {
-            appendChatBubble('JARVIS', "Wikipedia search warning: No query specified.");
-            speak("What would you like to search Wikipedia for, Sir?");
+            appendChatBubble('JARVIS', "Opening knowledge interface: Wikipedia.");
+            speak("Opening Wikipedia encyclopedia, Sir.");
+            setTimeout(() => window.open("https://www.wikipedia.org/", "_blank"), 1000);
         }
         updateCoreState('IDLE');
     }
@@ -493,7 +521,7 @@ async function takeCommand(message) {
         updateCoreState('IDLE');
     }
     // 11. Music Controls
-    else if (query.includes('play music') || query.startsWith('play song') || (query.startsWith('play ') && !query.includes('video') && !query.includes('game') && !query.includes('youtube') && !query.includes('code'))) {
+    else if (query.includes('play music') || query.includes('music auto') || query.includes('auto music') || query === 'music' || query.startsWith('play song') || (query.startsWith('play ') && !query.includes('video') && !query.includes('game') && !query.includes('youtube') && !query.includes('code'))) {
         updateCoreState('THINKING');
         const res = await sendLocalCommand(rawQuery);
         if (res && res.status === 'success') {
@@ -505,8 +533,8 @@ async function takeCommand(message) {
         }
         updateCoreState('IDLE');
     }
-    else if (query.includes('open music') || query.includes('music open') || query === 'music') {
-        appendChatBubble('JARVIS', "📂 Opening local music and video storage...");
+    else if (query.includes('open music') || query.includes('music open') || query.includes('music folder') || query.includes('video folder') || query.includes('open music folder')) {
+        appendChatBubble('JARVIS', "📂 Opening local media storage: C:\\Users\\seaem\\Music\\video...");
         speak("Accessing local media storage, Sir.");
         sendLocalCommand('music');
         updateCoreState('IDLE');

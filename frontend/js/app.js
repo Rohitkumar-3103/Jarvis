@@ -119,11 +119,28 @@ function updateCoreState(state) {
 }
 
 if (sendTriggerBtn) {
-    sendTriggerBtn.addEventListener('click', handleTextInputSubmit);
+    sendTriggerBtn.addEventListener('click', () => {
+        sendTriggerBtn.classList.add('clicked');
+        setTimeout(() => sendTriggerBtn.classList.remove('clicked'), 300);
+        handleTextInputSubmit();
+    });
 }
 if (textInputField) {
+    textInputField.addEventListener('input', () => {
+        if (sendTriggerBtn) {
+            if (textInputField.value.trim().length > 0) {
+                sendTriggerBtn.classList.add('active');
+            } else {
+                sendTriggerBtn.classList.remove('active');
+            }
+        }
+    });
     textInputField.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            if (sendTriggerBtn) {
+                sendTriggerBtn.classList.add('clicked');
+                setTimeout(() => sendTriggerBtn.classList.remove('clicked'), 300);
+            }
             handleTextInputSubmit();
         }
     });
@@ -135,6 +152,7 @@ function handleTextInputSubmit() {
     if (!textVal) return;
 
     textInputField.value = '';
+    if (sendTriggerBtn) sendTriggerBtn.classList.remove('active');
     if (window.speechSynthesis) window.speechSynthesis.cancel();
 
     appendChatBubble('USER', textVal);
@@ -360,6 +378,7 @@ if (dockCameraBtn) {
 const dockMusicBtn = document.getElementById('dock-music');
 if (dockMusicBtn) {
     dockMusicBtn.addEventListener('click', () => {
+        if (typeof playClickSound === 'function') playClickSound();
         takeCommand("play music");
     });
 }

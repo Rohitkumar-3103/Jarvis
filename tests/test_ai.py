@@ -12,4 +12,4 @@ def test_load_config():
 
 def test_llm_provider_retrieval():
     provider = get_llm_provider()
-    assert provider in ("ollama", "openai")
+    assert provider in ("gemini", "ollama", "local")

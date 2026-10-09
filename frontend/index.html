@@ -15,16 +15,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Icons: Local FontAwesome 6.5.2 (Same-Origin, Adblock-Proof, Offline-Ready) + CDN Fallback -->
+    <link rel="stylesheet" href="css/all.min.css?v=6.5.2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=3.7.0">
+    <link rel="stylesheet" href="css/style.css?v=3.8.0">
+    <link rel="stylesheet" href="css/dashboard.css?v=4.0.7">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/lockscreen.css">
     <link rel="stylesheet" href="css/chat.css?v=3.3.0">
-    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/settings.css?v=3.5.0">
     <link rel="stylesheet" href="css/widgets.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/responsive.css">
@@ -40,60 +41,303 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
 
     <style>
-        /* DASHBOARD SIDE MENU DRAWER STYLES (POSITIONED UNDER TOP-RIGHT MENU BUTTON) */
+        /* DASHBOARD SIDE MENU DRAWER STYLES (TACTICAL STARK HUD SPEC) */
+        .dash-side-backdrop {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 85% 15%, rgba(0, 240, 255, 0.08) 0%, rgba(2, 6, 18, 0.75) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .dash-side-backdrop.open {
+            display: block !important;
+            opacity: 1;
+        }
+
         .dash-side-drawer {
             position: fixed;
             top: 58px;
             right: 20px;
-            width: 340px;
-            max-height: calc(100vh - 80px);
+            width: 380px;
+            max-height: calc(100vh - 78px);
             overflow-y: auto;
+            overflow-x: hidden;
             z-index: 10000;
-            background: rgba(4, 10, 24, 0.98);
-            border: 1.5px solid var(--theme-primary, #00f0ff);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 240, 255, 0.35);
-            border-radius: 12px;
+            background: linear-gradient(168deg, rgba(8, 16, 36, 0.96) 0%, rgba(4, 10, 24, 0.98) 50%, rgba(1, 5, 16, 0.99) 100%);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.9), 
+                0 0 35px rgba(0, 240, 255, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                inset 0 0 20px rgba(0, 240, 255, 0.04);
+            border-radius: 16px;
             display: none;
             flex-direction: column;
-            gap: 14px;
-            padding: 1.2rem;
+            gap: 13px;
+            padding: 1.25rem 1.25rem 1.75rem 1.25rem;
             box-sizing: border-box;
+            transform-origin: top right;
         }
+
+        .dash-side-drawer > * {
+            flex-shrink: 0 !important;
+        }
+
         .dash-side-drawer.open {
             display: flex !important;
+            animation: drawerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .dash-side-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(3px);
-            z-index: 9999;
-            display: none;
+
+        @keyframes drawerSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
-        .dash-side-backdrop.open {
-            display: block !important;
+
+        .dash-side-drawer::before,
+        .dash-side-drawer::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            pointer-events: none;
+            border-color: var(--theme-primary, #00f0ff);
+            border-style: solid;
+            transition: all 0.3s ease;
         }
-        .dash-menu-item {
+        .dash-side-drawer::before {
+            top: 6px;
+            left: 6px;
+            border-width: 2px 0 0 2px;
+            border-top-left-radius: 6px;
+            box-shadow: -2px -2px 6px rgba(0, 240, 255, 0.4);
+        }
+        .dash-side-drawer::after {
+            bottom: 6px;
+            right: 6px;
+            border-width: 0 2px 2px 0;
+            border-bottom-right-radius: 6px;
+            box-shadow: 2px 2px 6px rgba(0, 240, 255, 0.4);
+        }
+
+        .dash-side-drawer::-webkit-scrollbar {
+            width: 4px;
+        }
+        .dash-side-drawer::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dash-side-drawer::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.25);
+            border-radius: 10px;
+        }
+        .dash-side-drawer::-webkit-scrollbar-thumb:hover {
+            background: var(--theme-primary, #00f0ff);
+            box-shadow: 0 0 8px var(--theme-primary, #00f0ff);
+        }
+
+        @media (max-width: 480px) {
+            .dash-side-drawer {
+                width: calc(100vw - 20px);
+                right: 10px;
+                top: 54px;
+                padding: 1rem;
+            }
+        }
+
+        /* PILOT DOSSIER PROFILE CARD (ENSURES FULL VISIBILITY WITHOUT CLIPPING) */
+        .dash-profile-card {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.06) 0%, rgba(4, 12, 28, 0.7) 100%);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-radius: 12px;
+            overflow: visible !important;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            flex-shrink: 0 !important;
+            height: auto !important;
+            min-height: fit-content !important;
+            box-sizing: border-box !important;
+        }
+        .dash-profile-card:hover {
+            border-color: rgba(0, 240, 255, 0.55);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.18);
+        }
+
+        .dash-profile-header {
+            padding: 8px 12px;
+            background: rgba(0, 240, 255, 0.09);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            border-top-left-radius: 11px;
+            border-top-right-radius: 11px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            color: #e5e7eb;
-            font-size: 0.88rem;
-            font-family: var(--font-sans);
-            font-weight: 500;
-            border: 1px solid transparent;
-            transition: all 0.25s ease;
-            cursor: pointer;
-            text-decoration: none;
+            justify-content: space-between;
+            box-sizing: border-box;
         }
-        .dash-menu-item:hover {
-            background: rgba(0, 240, 255, 0.12);
-            border-color: rgba(0, 240, 255, 0.3);
+        .dash-profile-header-left {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--font-hud);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary, #e0f2fe);
+            letter-spacing: 1px;
+        }
+        .dash-profile-header-left i {
             color: var(--theme-primary, #00f0ff);
-            transform: translateX(4px);
+        }
+
+        .dash-profile-auth-status {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: #00ff66;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.5px;
+        }
+        .dash-profile-auth-status .status-dot-green {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00ff66;
+            box-shadow: 0 0 8px #00ff66;
+            animation: statusBlink 2.5s infinite ease-in-out;
+        }
+
+        .dash-profile-body {
+            display: flex !important;
+            align-items: center !important;
+            gap: 13px !important;
+            padding: 14px 14px 16px 14px !important;
+            min-height: 80px !important;
+            height: auto !important;
+            box-sizing: border-box !important;
+            border-bottom-left-radius: 11px;
+            border-bottom-right-radius: 11px;
+        }
+
+        .dash-avatar-wrapper {
+            position: relative !important;
+            width: 54px !important;
+            height: 54px !important;
+            min-width: 54px !important;
+            min-height: 54px !important;
+            border-radius: 50% !important;
+            border: 2px solid var(--theme-primary, #00f0ff) !important;
+            overflow: hidden !important;
+            background: rgba(0, 240, 255, 0.08) !important;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.35) !important;
+            flex-shrink: 0 !important;
+            cursor: pointer !important;
+            transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+        }
+        .dash-avatar-wrapper:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.6) !important;
+        }
+        .dash-avatar-wrapper img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
+        .dash-avatar-overlay {
+            position: absolute !important;
+            inset: 0 !important;
+            background: rgba(2, 6, 18, 0.78) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            opacity: 0 !important;
+            transition: opacity 0.2s ease !important;
+            color: var(--theme-primary, #00f0ff) !important;
+            font-size: 0.62rem !important;
+            gap: 2px !important;
+        }
+        .dash-avatar-wrapper:hover .dash-avatar-overlay {
+            opacity: 1 !important;
+        }
+
+        .dash-profile-details {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 3px !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+        }
+        .dash-profile-name {
+            font-family: var(--font-hud) !important;
+            font-size: 0.88rem !important;
+            font-weight: 700 !important;
+            color: var(--text-primary, #e0f2fe) !important;
+            letter-spacing: 1px !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+        .dash-profile-handle {
+            font-family: var(--font-mono) !important;
+            font-size: 0.68rem !important;
+            color: var(--text-secondary, #94a3b8) !important;
+            line-height: 1.2 !important;
+        }
+        .dash-clearance-pill {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            font-family: var(--font-mono) !important;
+            font-size: 0.62rem !important;
+            color: #00ff66 !important;
+            letter-spacing: 0.5px !important;
+            margin-top: 4px !important;
+            background: rgba(0, 255, 102, 0.08) !important;
+            border: 1px solid rgba(0, 255, 102, 0.35) !important;
+            padding: 3px 8px !important;
+            border-radius: 4px !important;
+            width: fit-content !important;
+            white-space: nowrap !important;
+            box-sizing: border-box !important;
+        }
+
+        .dash-logout-btn {
+            background: rgba(255, 75, 75, 0.08) !important;
+            border: 1px solid rgba(255, 75, 75, 0.35) !important;
+            color: #ff4b4b !important;
+            cursor: pointer !important;
+            width: 36px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            font-size: 0.88rem !important;
+            flex-shrink: 0 !important;
+        }
+        .dash-logout-btn:hover {
+            background: rgba(255, 75, 75, 0.22) !important;
+            border-color: #ff4b4b !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 16px rgba(255, 75, 75, 0.5) !important;
+            transform: scale(1.06) !important;
         }
     </style>
 </head>
@@ -105,91 +349,163 @@
     <!-- DASHBOARD SIDE MENU BACKDROP & DRAWER PANEL -->
     <div id="dash-side-backdrop" class="dash-side-backdrop" onclick="closeDashboardSideMenu()"></div>
 
-    <aside id="dash-side-drawer" class="dash-side-drawer">
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-            <!-- DRAWER HEADER -->
-            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.15);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--theme-primary, #00f0ff); box-shadow: 0 0 10px var(--theme-primary, #00f0ff);"></span>
-                    <span style="font-family: var(--font-hud); font-size: 0.9rem; font-weight: 700; color: var(--theme-primary, #00f0ff); letter-spacing: 2px;">J.A.R.V.I.S. CONTROL</span>
+    <aside id="dash-side-drawer" class="dash-side-drawer" role="complementary" aria-label="Stark System Control Console">
+        <!-- 1. DRAWER HEADER -->
+        <div class="dash-drawer-header">
+            <div class="dash-header-title-box">
+                <div class="dash-header-pulse-core">
+                    <span class="dash-pulse-dot"></span>
+                    <span class="dash-pulse-ring"></span>
                 </div>
-                <button style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer; transition: color 0.2s;" onclick="closeDashboardSideMenu()" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='#9ca3af'">&times;</button>
-            </div>
-
-            <!-- USER PROFILE WIDGET PANEL -->
-            <section class="hud-panel profile-panel" aria-label="User Profile" id="profile-widget" style="margin-bottom: 0; background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 10px; overflow: hidden; box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);">
-                <div class="panel-header" style="padding: 8px 12px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.15); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-user-gear" style="color: var(--theme-primary, #00f0ff);"></i>
-                    <h2 style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; margin: 0;">USER PROFILE</h2>
-                </div>
-                <div class="panel-body" style="display: flex; align-items: center; gap: 12px; padding: 12px;">
-                    <div class="profile-avatar-wrapper" style="position: relative; width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--theme-primary, #00f0ff); overflow: hidden; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); flex-shrink: 0; cursor: pointer;" title="Click to upload/change identity photo" onclick="document.getElementById('profile-avatar-file-input').click()">
-                        <img src="assets/images/avatar.png" id="profile-avatar-img" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="avatar-upload-hover-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.65); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; color: var(--theme-primary, #00f0ff); font-size: 0.75rem;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0'">
-                            <i class="fa-solid fa-camera" style="font-size: 0.85rem;"></i>
-                        </div>
-                    </div>
-                    <input type="file" id="profile-avatar-file-input" accept="image/*" style="display: none;" onchange="handleUserAvatarUpload(event)">
-                    <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
-                        <span id="profile-full-name" style="font-family: var(--font-hud); font-size: 0.8rem; font-weight: 700; color: var(--text-primary, #e0f2fe); letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TONY STARK</span>
-                        <span id="profile-username" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary, #94a3b8);">@ironman</span>
-                        <span id="profile-clearance" style="font-family: var(--font-mono); font-size: 0.58rem; color: #00ff66; letter-spacing: 0.5px; margin-top: 2px;">PRIMARY USER // ADMINISTRATOR</span>
-                    </div>
-                    <button class="hud-btn-mini" id="profile-logout-btn" title="Lock access / Logout" style="background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.4); color: #ff4b4b; cursor: pointer; padding: 6px 8px; border-radius: 4px; transition: all 0.2s; font-size: 0.8rem; flex-shrink: 0;">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                </div>
-            </section>
-
-            <!-- SYSTEM STATUS BADGES -->
-            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; font-family: var(--font-mono); font-size: 0.72rem; display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
-                    <span>SECURITY CLEARANCE</span>
-                    <span style="color: #00ff66; font-weight: bold;">LEVEL 4 APPROVED</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
-                    <span>MONGODB CLOUD</span>
-                    <span style="color: #00f0ff; font-weight: bold;">PROJECT A</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; color: #9ca3af;">
-                    <span>GMAIL TRANSPORTER</span>
-                    <span style="color: #ffaa00; font-weight: bold;">CONNECTED</span>
+                <div style="display: flex; flex-direction: column; gap: 1px;">
+                    <span class="dash-header-title">J.A.R.V.I.S. CONTROL</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.6rem; color: #64748b; letter-spacing: 1px;">TACTICAL COMMAND MATRIX</span>
                 </div>
             </div>
-
-            <!-- NAVIGATION MENU ITEMS -->
-            <nav style="display: flex; flex-direction: column; gap: 6px;">
-                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu();">
-                    <i class="fa-solid fa-gauge-high" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
-                    <span>Core Dashboard</span>
-                </a>
-                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); if (typeof window.toggleChatPanel === 'function') window.toggleChatPanel();">
-                    <i class="fa-solid fa-comments" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
-                    <span>AI Neural Chat</span>
-                </a>
-                <a href="JARVIS_Project_Details.pdf" download="JARVIS_Project_Details.pdf" target="_blank" class="dash-menu-item" onclick="closeDashboardSideMenu();">
-                    <i class="fa-solid fa-file-pdf" style="color: #00f0ff; width: 20px; text-align: center;"></i>
-                    <span>Download Project PDF</span>
-                </a>
-                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); openAuthTerminalModal();">
-                    <i class="fa-solid fa-right-to-bracket" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
-                    <span>Auth Terminal (Sign In/Up)</span>
-                </a>
-                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); if (typeof sendLocalCommand === 'function') { sendLocalCommand('terminal'); if (typeof speak === 'function') speak('Launching system terminal console, Sir.'); }">
-                    <i class="fa-solid fa-terminal" style="color: var(--theme-primary, #00f0ff); width: 20px; text-align: center;"></i>
-                    <span>System Terminal Console</span>
-                </a>
-                <a href="#" class="dash-menu-item" onclick="closeDashboardSideMenu(); resetMainframeDatabase();">
-                    <i class="fa-solid fa-rotate-left" style="color: #ff4b4b; width: 20px; text-align: center;"></i>
-                    <span style="color: #ff4b4b;">Reset Mainframe Accounts</span>
-                </a>
-            </nav>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="dash-drawer-close-btn" onclick="closeDashboardSideMenu()" title="Close Menu (Esc)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         </div>
 
-        <!-- DRAWER FOOTER WITH LOGOUT -->
-        <div style="padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #6b7280; text-align: center;">J.A.R.V.I.S. OS v3.2 &copy; STARK INDUSTRIES</div>
+        <!-- 2. USER PROFILE DOSSIER PANEL -->
+        <section class="dash-profile-card" aria-label="User Profile" id="profile-widget" style="flex-shrink: 0; min-height: fit-content; height: auto; margin-bottom: 2px;">
+            <div class="dash-profile-header">
+                <div class="dash-profile-header-left">
+                    <i class="fa-solid fa-id-badge"></i>
+                    <span>PILOT DOSSIER</span>
+                </div>
+                <div class="dash-profile-auth-status">
+                    <span class="status-dot-green"></span>
+                    <span>AUTH VERIFIED</span>
+                </div>
+            </div>
+            <div class="dash-profile-body">
+                <div class="dash-avatar-wrapper" id="profile-avatar-wrapper" title="Click to upload/change identity photo" onclick="document.getElementById('profile-avatar-file-input').click()">
+                    <img src="assets/images/avatar.png" id="profile-avatar-img" alt="Avatar">
+                    <div class="dash-avatar-overlay">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>UPDATE</span>
+                    </div>
+                </div>
+                <input type="file" id="profile-avatar-file-input" accept="image/*" style="display: none;" onchange="handleUserAvatarUpload(event)">
+                <div class="dash-profile-details">
+                    <span id="profile-full-name" class="dash-profile-name">TONY STARK</span>
+                    <span id="profile-username" class="dash-profile-handle">@ironman</span>
+                    <div class="dash-clearance-pill">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span id="profile-clearance">PRIMARY USER // ADMINISTRATOR</span>
+                    </div>
+                </div>
+                <button class="dash-logout-btn" id="profile-logout-btn" title="Lock access / Logout">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. SYSTEM TELEMETRY & UPLINKS -->
+        <div class="dash-section-label">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>SYSTEM TELEMETRY &amp; UPLINKS</span>
         </div>
+        <div class="dash-telem-card">
+            <div class="dash-telem-row">
+                <div class="dash-telem-left">
+                    <div class="dash-telem-icon-box green">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <span class="dash-telem-label">SECURITY CLEARANCE</span>
+                </div>
+                <span class="dash-telem-badge green">
+                    <span class="dash-telem-dot green"></span>
+                    <span>LEVEL 4 APPROVED</span>
+                </span>
+            </div>
+            <div class="dash-telem-row">
+                <div class="dash-telem-left">
+                    <div class="dash-telem-icon-box cyan">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <span class="dash-telem-label">MONGODB CLOUD</span>
+                </div>
+                <span class="dash-telem-badge cyan">
+                    <span class="dash-telem-dot cyan"></span>
+                    <span>PROJECT A // SYNC</span>
+                </span>
+            </div>
+            <div class="dash-telem-row">
+                <div class="dash-telem-left">
+                    <div class="dash-telem-icon-box gold">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </div>
+                    <span class="dash-telem-label">GMAIL TRANSPORTER</span>
+                </div>
+                <span class="dash-telem-badge gold">
+                    <span class="dash-telem-dot gold"></span>
+                    <span>CONNECTED</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 4. TACTICAL DIRECTIVES NAVIGATION -->
+        <div class="dash-section-label">
+            <i class="fa-solid fa-bolt"></i>
+            <span>TACTICAL DIRECTIVES</span>
+        </div>
+        <nav class="dash-action-list">
+            <a href="JARVIS_Project_Details.pdf" download="JARVIS_Project_Details.pdf" target="_blank" class="dash-action-card" onclick="closeDashboardSideMenu();">
+                <div class="dash-action-card-left">
+                    <div class="dash-action-icon-pod">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div class="dash-action-text-box">
+                        <span class="dash-action-title">Download Project PDF</span>
+                        <span class="dash-action-subtitle">Architecture blueprint &amp; whitepaper</span>
+                    </div>
+                </div>
+                <span class="dash-action-badge"><i class="fa-solid fa-download"></i> PDF</span>
+            </a>
+
+            <a href="#" class="dash-action-card" onclick="closeDashboardSideMenu(); openAuthTerminalModal();">
+                <div class="dash-action-card-left">
+                    <div class="dash-action-icon-pod">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="dash-action-text-box">
+                        <span class="dash-action-title">Auth Terminal (Sign In/Up)</span>
+                        <span class="dash-action-subtitle">Tactical pilot login &amp; biometric register</span>
+                    </div>
+                </div>
+                <span class="dash-action-badge"><i class="fa-solid fa-arrow-right-to-bracket"></i> AUTH</span>
+            </a>
+
+            <a href="#" class="dash-action-card" onclick="closeDashboardSideMenu(); if (typeof sendLocalCommand === 'function') { sendLocalCommand('terminal'); if (typeof speak === 'function') speak('Launching system terminal console, Sir.'); }">
+                <div class="dash-action-card-left">
+                    <div class="dash-action-icon-pod">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div class="dash-action-text-box">
+                        <span class="dash-action-title">System Terminal Console</span>
+                        <span class="dash-action-subtitle">Native OS shell &amp; diagnostics command</span>
+                    </div>
+                </div>
+                <span class="dash-action-badge"><i class="fa-solid fa-chevron-right"></i> CLI</span>
+            </a>
+
+            <a href="#" class="dash-action-card danger" onclick="closeDashboardSideMenu(); resetMainframeDatabase();">
+                <div class="dash-action-card-left">
+                    <div class="dash-action-icon-pod">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="dash-action-text-box">
+                        <span class="dash-action-title" style="color: #ff6b6b;">Reset Mainframe Accounts</span>
+                        <span class="dash-action-subtitle" style="color: #f87171;">Emergency biometric database purge</span>
+                    </div>
+                </div>
+                <span class="dash-action-badge danger"><i class="fa-solid fa-rotate-left"></i> RESET</span>
+            </a>
+        </nav>
     </aside>
 
     <!-- 1. STARTUP SYSTEM LOAD OVERLAY -->
@@ -277,15 +593,20 @@
     <div class="dashboard-container" id="dashboard-container" style="display: none;">
         <!-- Top Title Bar -->
         <header class="hud-header">
-            <div class="hud-logo" onclick="openLogoZoomModal()" style="cursor: pointer;" title="Click to inspect High-Res Core Matrix">
-                <div class="logo-icon-wrapper" style="width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #030611; border: 1px solid rgba(0, 240, 255, 0.5); box-shadow: 0 0 12px rgba(0, 240, 255, 0.4); transition: all 0.3s ease;">
-                    <img src="assets/images/jarvis_logo.png" alt="J.A.R.V.I.S. Logo" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(1.1) contrast(1.1);">
+            <div class="hud-logo" onclick="openLogoZoomModal()" style="cursor: pointer;" title="Click to inspect High-Res Arc Reactor Matrix">
+                <div class="hud-logo-pod">
+                    <div class="hud-logo-ring-outer"></div>
+                    <div class="hud-logo-core-img">
+                        <img src="assets/images/jarvis_logo.png" alt="J.A.R.V.I.S. Arc Reactor Core">
+                    </div>
                 </div>
-                <span class="logo-text">J.A.R.V.I.S. <span class="logo-version">v3.2.0</span></span>
-            </div>
-            <div class="hud-title-display">
-                <div class="scanline"></div>
-                <span class="hud-ticker" id="hud-ticker">MAIN CORE STATUS: ACTIVE // VOICE SYNAPSE: CONNECTED // COGNITIVE NET: STABLE</span>
+                <div class="hud-logo-branding">
+                    <span class="hud-logo-title">J.A.R.V.I.S.</span>
+                    <div class="hud-logo-badge">
+                        <span class="hud-logo-beacon"></span>
+                        <span class="hud-logo-ver">v3.2.0</span>
+                    </div>
+                </div>
             </div>
             <div class="hud-metrics" style="display: flex; align-items: center; gap: 14px;">
                 <div class="metric-item weather-widget" style="display: flex; align-items: center; gap: 7px; cursor: pointer; background: rgba(0, 240, 255, 0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 240, 255, 0.25); box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); transition: all 0.2s;" onclick="promptChangeWeatherCity()" title="Atmospheric scan // Click to change location">
@@ -386,9 +707,14 @@
 
                 <!-- Quick Apps Widget -->
                 <section class="hud-panel apps-panel" aria-label="Quick Apps">
-                    <div class="panel-header">
-                        <i class="fa-solid fa-cubes"></i>
-                        <h2>QUICK APPLICATIONS</h2>
+                    <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-cubes"></i>
+                            <h2>QUICK APPLICATIONS</h2>
+                        </div>
+                        <button class="apps-header-add-btn" onclick="openAddSiteModal()" title="Add Custom Website Shortcut">
+                            <i class="fa-solid fa-plus"></i> ADD SITE
+                        </button>
                     </div>
                     <div class="panel-body apps-grid">
                         <button class="app-card-btn" data-app="Google" title="Launch Google">
@@ -435,8 +761,8 @@
                             </svg>
                             <span>Calculator</span>
                         </button>
-                        <button class="app-card-btn" data-app="Wikipedia" title="Search Wikipedia">
-                            <i class="fa-brands fa-wikipedia-w"></i>
+                        <button class="app-card-btn" data-app="Wikipedia" title="Launch Wikipedia">
+                            <i class="fa-brands fa-wikipedia-w" style="font-size: 1.45rem; color: #ffffff; margin-bottom: 8px; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));"></i>
                             <span>Wikipedia</span>
                         </button>
                         <button class="app-card-btn" data-app="Gemini" title="Launch Gemini">
@@ -528,7 +854,7 @@
                         <i class="fa-regular fa-comment-dots"></i>
                         <h2>COMMS LOG</h2>
                         <div style="margin-left: auto; display: flex; gap: 8px; align-items: center;">
-                            <button id="toggle-chat-logs-btn" class="hud-btn-mini" title="Toggle Comms Log visibility" style="background: transparent; border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; transition: all 0.2s;">
+                            <button id="toggle-chat-logs-btn" class="hud-btn-mini" title="Toggle Comms Log visibility">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
                             <button id="clear-logs-btn" class="hud-btn-mini" title="Purge database logs">
@@ -551,7 +877,7 @@
                     <div class="panel-header">
                         <i class="fa-solid fa-bell"></i>
                         <h2>SYSTEM LOG & NOTIFICATIONS</h2>
-                        <button id="toggle-sys-logs-btn" class="hud-btn-mini" title="Toggle System Log visibility" style="margin-left: auto; background: transparent; border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 3px; font-size: 0.75rem; transition: all 0.2s;">
+                        <button id="toggle-sys-logs-btn" class="hud-btn-mini" title="Toggle System Log visibility" style="margin-left: auto;">
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
@@ -584,10 +910,13 @@
                 <button class="dock-item" id="dock-screenshot" title="Capture Desktop Screen">
                     <i class="fa-solid fa-desktop"></i>
                 </button>
+                <button class="dock-item dock-mic-item" id="dock-mic" title="Voice Synapse (Toggle STT)">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                </button>
                 <button class="dock-item" id="dock-camera" title="Capture Webcam Photo">
                     <i class="fa-solid fa-camera"></i>
                 </button>
-                <button class="dock-item" id="dock-music" title="Audio Player Controls">
+                <button class="dock-item" id="dock-music" title="Auto Play Music (Media Player)">
                     <i class="fa-solid fa-music"></i>
                 </button>
 
@@ -638,71 +967,139 @@
         </div>
     </div>
 
-    <!-- SYSTEM CONFIGURATION PANEL -->
+    <!-- SYSTEM CONFIGURATION PANEL (MARK XLVII SCI-FI MATRIX) -->
     <div class="settings-modal-overlay" id="settings-overlay">
         <div class="settings-modal">
             <div class="settings-header">
-                <h2>SYSTEM CONFIGURATIONS</h2>
-                <button class="close-modal-btn" id="close-settings-btn"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="settings-body">
-                <div class="settings-section">
-                    <h3>Cognitive Connect Settings</h3>
-                    <div class="settings-row">
-                        <label for="settings-api-key">AI Cognitive Key (Gemini / ChatGPT)</label>
-                        <input type="password" id="settings-api-key" placeholder="AI Studio (AIzaSy...) or ChatGPT (sk-...)...">
-                    </div>
+                <div class="settings-header-left">
+                    <span class="settings-header-badge"><i class="fa-solid fa-microchip"></i> STARK KERNEL MATRIX</span>
+                    <h2>SYSTEM CONFIGURATIONS</h2>
                 </div>
-                <div class="settings-section">
-                    <h3>Security Protocols</h3>
-                    <div class="settings-row">
+                <button class="close-modal-btn" id="close-settings-btn" title="Close Settings"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="settings-body">
+                <!-- 1. COGNITIVE CONNECT SETTINGS -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <span class="settings-card-title"><i class="fa-solid fa-brain"></i> Cognitive Connect</span>
+                        <span class="settings-pill-tag">GEMINI 2.5 FLASH</span>
+                    </div>
+                    <div class="settings-input-group">
+                        <i class="fa-solid fa-key settings-input-icon"></i>
+                        <input type="password" id="settings-api-key" class="settings-input-field" placeholder="Google AI Studio Gemini API Key (AIzaSy...)" autocomplete="off">
+                        <button type="button" class="settings-eye-toggle" onclick="toggleSettingsKeyVisibility()" title="Toggle Key Visibility">
+                            <i class="fa-solid fa-eye-slash" id="settings-key-eye"></i>
+                        </button>
+                    </div>
+                    <span class="settings-helper-text">Key is validated client-side and saved encrypted to your local Stark runtime.</span>
+                </div>
+
+                <!-- 2. SECURITY PROTOCOLS -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <span class="settings-card-title"><i class="fa-solid fa-shield-halved"></i> Security Protocols</span>
+                        <span class="settings-pill-tag">BIOMETRICS</span>
+                    </div>
+                    <div class="settings-toggle-row">
+                        <div class="settings-toggle-info">
+                            <span class="settings-toggle-label"><i class="fa-solid fa-face-viewfinder"></i> Biometric Facial Gateway</span>
+                            <span class="settings-toggle-desc">Require OpenCV Haar Cascade biometric camera verification on console boot</span>
+                        </div>
                         <label class="switch-container">
                             <input type="checkbox" id="settings-facelock-toggle">
                             <span class="switch-slider"></span>
                         </label>
-                        <span>Activate Biometric Face Authentication on Startup</span>
                     </div>
                 </div>
-                <div class="settings-section">
-                    <h3>Core HUD Customizations</h3>
 
-                    <div class="settings-row">
-                        <label for="settings-voice-select">TTS Voice Synthesis Engine</label>
-                        <select id="settings-voice-select">
+                <!-- 3. VOCAL MATRIX & SYNTHESIS -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <span class="settings-card-title"><i class="fa-solid fa-waveform-lines"></i> Vocal Matrix & Audio</span>
+                        <span class="settings-pill-tag">BILINGUAL TTS</span>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="settings-voice-select" style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-secondary); text-transform: uppercase;">TTS Voice Synthesis Engine</label>
+                        <select id="settings-voice-select" class="settings-select">
                             <option value="default">System Default Synthesis</option>
                         </select>
                     </div>
-                    <div class="settings-row" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
-                        <label for="settings-voice-volume">TTS Output Volume (<span id="voice-volume-val-display" style="color: var(--theme-primary); font-family: var(--font-mono);">100%</span>)</label>
-                        <input type="range" id="settings-voice-volume" min="0" max="1" step="0.05" value="1.0" style="accent-color: var(--theme-primary); cursor: pointer; width: 140px;" oninput="document.getElementById('voice-volume-val-display').textContent = Math.round(this.value * 100) + '%'; voiceVolume = parseFloat(this.value); localStorage.setItem('jarvis_voice_volume', this.value);">
+
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="settings-voice-volume" style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-secondary); text-transform: uppercase;">Audio Output Gain</label>
+                            <span id="voice-volume-val-display" class="volume-badge">100%</span>
+                        </div>
+                        <div class="volume-control-box">
+                            <i class="fa-solid fa-volume-low" style="color: var(--text-muted); font-size: 0.75rem;"></i>
+                            <input type="range" id="settings-voice-volume" class="volume-slider-range" min="0" max="1" step="0.05" value="1.0" oninput="document.getElementById('voice-volume-val-display').textContent = Math.round(this.value * 100) + '%'; voiceVolume = parseFloat(this.value); localStorage.setItem('jarvis_voice_volume', this.value);">
+                            <i class="fa-solid fa-volume-high" style="color: var(--theme-primary); font-size: 0.75rem;"></i>
+                        </div>
                     </div>
-                    <div class="settings-row" style="flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 15px;">
-                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                            <label style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-secondary); text-transform: uppercase;">UI COLOUR &mdash; drag the handle</label>
-                            <div style="display: flex; gap: 8px;">
-                                <button id="color-picker-auto-btn" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'; this.style.borderColor='var(--theme-primary)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)';" onmouseout="if (!window.isAutoColorCycling) { this.style.background='rgba(0, 240, 255, 0.05)'; this.style.borderColor='rgba(0, 240, 255, 0.25)'; this.style.boxShadow='0 0 5px rgba(0, 240, 255, 0.05)'; }" title="Toggle Auto Color Cycling Mode">AUTO</button>
-                                <button id="color-picker-default-btn" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--theme-primary); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-family: var(--font-mono); transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'; this.style.borderColor='var(--theme-primary)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.05)'; this.style.borderColor='rgba(0, 240, 255, 0.25)'; this.style.boxShadow='0 0 5px rgba(0, 240, 255, 0.05)';" title="Reset to default Cyan">DEFAULT</button>
-                            </div>
+                </div>
+
+                <!-- 4. HUD COLOR SPECTRUM CUSTOMIZATION -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <span class="settings-card-title"><i class="fa-solid fa-palette"></i> Tactical HUD Color Spectrum</span>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="color-picker-auto-btn" class="color-hud-action-btn" title="Toggle Auto Color Cycling Mode"><i class="fa-solid fa-rotate"></i> AUTO</button>
+                            <button id="color-picker-default-btn" class="color-hud-action-btn" title="Reset to Default Cyan"><i class="fa-solid fa-arrow-rotate-left"></i> DEFAULT</button>
                         </div>
-                        
-                        <div id="color-wheel-wrapper" style="position: relative; width: 160px; height: 160px; margin: 15px auto; display: flex; align-items: center; justify-content: center; cursor: crosshair;">
-                            <div id="color-wheel-ring" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);"></div>
-                            <div style="position: absolute; width: 75%; height: 75%; border-radius: 50%; background: #060e1d; display: flex; align-items: center; justify-content: center;">
-                                <div id="color-wheel-preview" style="width: 50%; height: 50%; border-radius: 50%; background: var(--theme-primary); box-shadow: 0 0 15px var(--theme-primary); transition: background 0.1s, box-shadow 0.1s;"></div>
-                            </div>
-                            <div id="color-wheel-handle" style="position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #ffffff; border: 2px solid #000000; box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); top: 50%; left: 50%; margin-top: -7px; margin-left: -7px; cursor: pointer; pointer-events: none; transform: translate(60px, 0px);"></div>
+                    </div>
+
+                    <!-- Quick Preset Swatches -->
+                    <div class="theme-presets-grid">
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#00f0ff', 184)" title="Stark Cyan">
+                            <span class="theme-preset-dot" style="background: #00f0ff; color: #00f0ff;"></span> Cyan
                         </div>
-                        
-                        <div style="width: 100%;">
-                            <input type="text" id="color-picker-hex-input" class="settings-input" style="width: 100%; text-align: left; font-family: var(--font-mono); font-size: 0.8rem; box-sizing: border-box;" value="#00f0ff" maxlength="7" autocomplete="off">
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#0088ff', 208)" title="Arc Cobalt">
+                            <span class="theme-preset-dot" style="background: #0088ff; color: #0088ff;"></span> Cobalt
+                        </div>
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#00ff9d', 157)" title="Neon Emerald">
+                            <span class="theme-preset-dot" style="background: #00ff9d; color: #00ff9d;"></span> Emerald
+                        </div>
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#f59e0b', 37)" title="Mark Gold">
+                            <span class="theme-preset-dot" style="background: #f59e0b; color: #f59e0b;"></span> Gold
+                        </div>
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#ef4444', 356)" title="Hulkbuster Red">
+                            <span class="theme-preset-dot" style="background: #ef4444; color: #ef4444;"></span> Crimson
+                        </div>
+                        <div class="theme-preset-chip" onclick="applyPresetColor('#ab46ff', 273)" title="Quantum Violet">
+                            <span class="theme-preset-dot" style="background: #ab46ff; color: #ab46ff;"></span> Violet
+                        </div>
+                    </div>
+
+                    <!-- 360 Spectrum Wheel & Hex Row -->
+                    <div class="color-picker-container">
+                        <div class="color-picker-left-controls">
+                            <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--text-secondary); text-transform: uppercase;">Hex Coordinates</span>
+                            <div class="hex-input-box">
+                                <div id="settings-swatch-display" class="hex-color-swatch" style="background: var(--theme-primary, #00f0ff);"></div>
+                                <input type="text" id="color-picker-hex-input" class="settings-input-field" style="padding: 8px 10px !important; text-align: left;" value="#00f0ff" maxlength="7" autocomplete="off" spellcheck="false">
+                            </div>
+                            <span style="font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted);">Drag handle around ring for 360° dynamic HUD hue.</span>
+                        </div>
+
+                        <!-- Compact 130px Wheel (Never overflows or gets cut off) -->
+                        <div id="color-wheel-wrapper" style="position: relative; width: 130px; height: 130px; margin: 0; display: flex; align-items: center; justify-content: center; cursor: crosshair; flex-shrink: 0;" title="Click & Drag to Select Color">
+                            <div id="color-wheel-ring" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);"></div>
+                            <div style="position: absolute; width: 72%; height: 72%; border-radius: 50%; background: #060e1d; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.08);">
+                                <div id="color-wheel-preview" style="width: 48%; height: 48%; border-radius: 50%; background: var(--theme-primary); box-shadow: 0 0 12px var(--theme-primary); transition: background 0.1s, box-shadow 0.1s;"></div>
+                            </div>
+                            <div id="color-wheel-handle" style="position: absolute; width: 13px; height: 13px; border-radius: 50%; background: #ffffff; border: 2px solid #000000; box-shadow: 0 0 8px rgba(255, 255, 255, 0.9); top: 50%; left: 50%; margin-top: -6.5px; margin-left: -6.5px; cursor: pointer; pointer-events: none; transform: translate(46px, 0px);"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- FOOTER -->
             <div class="settings-footer">
-                <button class="hud-btn secondary" id="btn-import-settings">Import Config</button>
-                <button class="hud-btn secondary" id="btn-export-settings">Export Config</button>
-                <button class="hud-btn primary" id="btn-save-settings">Commit Parameters</button>
+                <button class="settings-btn-secondary hud-btn secondary" id="btn-import-settings"><i class="fa-solid fa-file-arrow-up"></i> Import Config</button>
+                <button class="settings-btn-secondary hud-btn secondary" id="btn-export-settings"><i class="fa-solid fa-file-arrow-down"></i> Export Config</button>
+                <button class="settings-btn-primary hud-btn primary" id="btn-save-settings"><i class="fa-solid fa-floppy-disk"></i> Commit Parameters</button>
             </div>
         </div>
     </div>
@@ -764,39 +1161,192 @@
 
 
 
-    <!-- Holographic Logo Zoom Modal -->
-    <div class="settings-modal-overlay" id="logo-zoom-modal" onclick="if(event.target === this) closeLogoZoomModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.92); backdrop-filter: blur(12px);">
-        <div class="settings-modal" style="max-width: 520px; width: 90%; background: rgba(4, 10, 24, 0.98); border: 1.5px solid var(--theme-primary); box-shadow: 0 0 40px rgba(0, 240, 255, 0.4); border-radius: 12px; padding: 0; overflow: hidden;">
-            <div class="settings-header" style="padding: 14px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="font-family: var(--font-hud); font-size: 0.9rem; color: var(--theme-primary); letter-spacing: 1.5px; margin: 0;"><i class="fa-solid fa-atom" style="margin-right: 8px;"></i>J.A.R.V.I.S. ARC REACTOR MATRIX</h2>
-                <button onclick="closeLogoZoomModal()" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='var(--text-primary)'"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="settings-body" style="padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: #020612;">
-                <div style="position: relative; width: 320px; height: 320px; border-radius: 50%; padding: 10px; background: radial-gradient(circle, rgba(0,240,255,0.15) 0%, rgba(0,0,0,0.8) 70%); border: 2px solid rgba(0, 240, 255, 0.4); box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.2); display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img src="assets/images/jarvis_logo.png" alt="High Res Logo" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0,240,255,0.8));">
+    <!-- Holographic Arc Reactor Matrix Modal (Mark VI Tactical Sci-Fi HUD) -->
+    <div class="reactor-modal-overlay" id="logo-zoom-modal" onclick="if(event.target === this) closeLogoZoomModal()">
+        <div class="reactor-modal-dialog" id="reactor-modal-dialog">
+            <!-- 4 Sci-Fi Cyber Corner Brackets -->
+            <div class="reactor-corner top-left"></div>
+            <div class="reactor-corner top-right"></div>
+            <div class="reactor-corner bottom-left"></div>
+            <div class="reactor-corner bottom-right"></div>
+
+            <!-- Modal Header -->
+            <div class="reactor-header">
+                <div class="reactor-header-title-box">
+                    <div class="reactor-header-icon-pod">
+                        <i class="fa-solid fa-atom fa-spin-slow"></i>
+                    </div>
+                    <div class="reactor-header-text">
+                        <h2 class="reactor-title">J.A.R.V.I.S. ARC REACTOR MATRIX</h2>
+                    </div>
                 </div>
-                <div style="width: 100%; background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary);">
-                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">CORE ARCHITECTURE:</span><span>MARK VI ARC REACTOR</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">POWER OUTPUT:</span><span style="color: #00ff66;">3.0 GW // STABLE SYNAPSE</span></div>
-                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--theme-primary);">ELECTRON ORBITAL AURA:</span><span style="color: var(--neon-cyan);">ACTIVE // 100% FREQUENCY</span></div>
+                <div class="reactor-header-actions">
+                    <div class="reactor-status-beacon">
+                        <span class="beacon-dot"></span>
+                        <span id="reactor-status-text">CORE ONLINE</span>
+                    </div>
+                    <button class="reactor-close-btn" onclick="closeLogoZoomModal()" title="Close Core Matrix (Esc)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="reactor-body">
+                <!-- ARC REACTOR HOLOGRAPHIC STAGE (ROTATING RINGS & ZERO SQUARE CLIPPING) -->
+                <div class="reactor-stage">
+                    <!-- Concentric Counter-Rotating Rings -->
+                    <div class="reactor-ring-stator"></div>
+                    <div class="reactor-ring-tachymeter"></div>
+                    <div class="reactor-orbital-ring orbit-1">
+                        <span class="reactor-electron"></span>
+                    </div>
+                    <div class="reactor-orbital-ring orbit-2">
+                        <span class="reactor-electron"></span>
+                    </div>
+                    <div class="reactor-plasma-aura"></div>
+
+                    <!-- Core Image Floating (mix-blend-mode: screen + radial mask removes all square borders) -->
+                    <div class="reactor-core-img-box">
+                        <img src="assets/images/jarvis_logo.png" alt="Mark VI Arc Reactor Core">
+                    </div>
+                </div>
+
+                <!-- LIVE TELEMETRY MATRIX HUD GRID -->
+                <div class="reactor-telemetry-grid">
+                    <!-- Power Output Card -->
+                    <div class="reactor-telemetry-card">
+                        <div class="telemetry-card-header">
+                            <span class="telemetry-card-label"><i class="fa-solid fa-bolt"></i> POWER OUTPUT</span>
+                            <span class="telemetry-card-badge" id="reactor-power-badge">NOMINAL</span>
+                        </div>
+                        <div class="telemetry-card-value highlight-cyan" id="reactor-val-power">3.24 GW</div>
+                        <div class="telemetry-bar-wrap" id="reactor-power-bars">
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                        </div>
+                    </div>
+
+                    <!-- Core Temperature Card -->
+                    <div class="reactor-telemetry-card">
+                        <div class="telemetry-card-header">
+                            <span class="telemetry-card-label"><i class="fa-solid fa-temperature-half"></i> CORE TEMP</span>
+                            <span class="telemetry-card-badge">OPTIMAL</span>
+                        </div>
+                        <div class="telemetry-card-value highlight-green" id="reactor-val-temp">38.4 °C</div>
+                        <div class="telemetry-bar-wrap">
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                            <div class="telemetry-bar-segment"></div>
+                        </div>
+                    </div>
+
+                    <!-- Magnetic Confinement Card -->
+                    <div class="reactor-telemetry-card">
+                        <div class="telemetry-card-header">
+                            <span class="telemetry-card-label"><i class="fa-solid fa-magnet"></i> CONFINEMENT FLUX</span>
+                            <span class="telemetry-card-badge">STABLE</span>
+                        </div>
+                        <div class="telemetry-card-value highlight-cyan" id="reactor-val-flux">99.98 %</div>
+                        <div class="telemetry-bar-wrap">
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment"></div>
+                        </div>
+                    </div>
+
+                    <!-- Synapse Resonance Frequency Card -->
+                    <div class="reactor-telemetry-card">
+                        <div class="telemetry-card-header">
+                            <span class="telemetry-card-label"><i class="fa-solid fa-wave-square"></i> HARMONIC FREQ</span>
+                            <span class="telemetry-card-badge">LOCKED</span>
+                        </div>
+                        <div class="telemetry-card-value highlight-green" id="reactor-val-freq">100.00 Hz</div>
+                        <div class="telemetry-bar-wrap">
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                            <div class="telemetry-bar-segment active"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Architecture Spec Strip -->
+                <div class="reactor-spec-strip">
+                    <div class="reactor-spec-item">
+                        <span>ARCH:</span>
+                        <span class="cyan">MARK VI PALLADIUM-HYBRID</span>
+                    </div>
+                    <div class="reactor-spec-item">
+                        <span>COOLANT:</span>
+                        <span class="cyan">LIQUID HE // ACTIVE</span>
+                    </div>
+                    <div class="reactor-spec-item">
+                        <span>AURA:</span>
+                        <span class="cyan">100% ELECTRON FLUX</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Tactical Action Row -->
+                <div class="reactor-action-row">
+                    <button class="reactor-action-btn overdrive" id="btn-reactor-overdrive" onclick="toggleReactorOverdrive()">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                        <span id="btn-overdrive-text">OVERDRIVE BOOST</span>
+                    </button>
+                    <button class="reactor-action-btn calibrate" onclick="triggerReactorCalibration()">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>CALIBRATE SYNAPSE</span>
+                    </button>
+                    <button class="reactor-action-btn dismiss" onclick="closeLogoZoomModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                        <span>CLOSE MATRIX</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- JS Scripts (Modular Structure) -->
-    <script src="js/utils.js?v=6.2.0" defer></script>
+    <script src="js/utils.js?v=6.6.1" defer></script>
     <script src="js/storage.js?v=6.0.0" defer></script>
     <script src="js/animations.js?v=6.0.0" defer></script>
-    <script src="js/settings.js?v=6.2.0" defer></script>
+    <script src="js/settings.js?v=6.4.0" defer></script>
     <script src="js/lockscreen.js?v=6.0.0" defer></script>
     <script src="js/chat.js?v=6.0.0" defer></script>
     <script src="js/weather.js?v=6.0.0" defer></script>
     <script src="js/dashboard.js?v=6.0.0" defer></script>
-    <script src="js/commands.js?v=6.2.0" defer></script>
-    <script src="js/ai.js?v=6.2.0" defer></script>
-    <script src="js/voice.js?v=6.2.0" defer></script>
-    <script src="js/app.js?v=6.0.0" defer></script>
+    <script src="js/commands.js?v=6.7.0" defer></script>
+    <script src="js/ai.js?v=6.6.0" defer></script>
+    <script src="js/voice.js?v=6.3.0" defer></script>
+    <script src="js/app.js?v=6.3.0" defer></script>
 
     <!-- HOLOGRAPHIC AUTH TERMINAL MODAL (PILOT AUTH TERMINAL INTEGRATED) -->
     <div class="settings-modal-overlay" id="auth-terminal-modal" onclick="if(event.target === this) closeAuthTerminalModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">
@@ -810,6 +1360,71 @@
             </div>
             <div class="settings-body" style="padding: 0; height: 610px; overflow: hidden; background: #080808;">
                 <iframe src="auth.html" style="width: 100%; height: 610px; border: none; display: block;" id="auth-terminal-iframe" scrolling="auto"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOLOGRAPHIC ADD QUICK APPLICATION MODAL -->
+    <div class="settings-modal-overlay" id="add-site-modal" onclick="if(event.target === this) closeAddSiteModal()" style="display: none; z-index: 10003; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">
+        <div class="settings-modal" style="max-width: 520px; width: 92%; height: auto; background: rgba(4, 10, 24, 0.98); border: 1.5px solid var(--theme-primary); box-shadow: 0 0 50px rgba(0, 240, 255, 0.45); border-radius: 14px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="settings-header" style="padding: 14px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.2); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <h2 style="font-family: var(--font-hud); font-size: 0.95rem; color: var(--theme-primary); letter-spacing: 1.5px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-layer-group"></i> ADD QUICK APPLICATION
+                </h2>
+                <button onclick="closeAddSiteModal()" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.2rem; transition: color 0.2s;" onmouseover="this.style.color='#ff4b4b'" onmouseout="this.style.color='var(--text-primary)'">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- Fast Presets -->
+                <div>
+                    <label style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--theme-primary); letter-spacing: 1px; display: block; margin-bottom: 8px;">
+                        <i class="fa-solid fa-bolt"></i> POPULAR PRESETS (1-CLICK)
+                    </label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('ChatGPT', 'https://chatgpt.com')">ChatGPT</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Reddit', 'https://reddit.com')">Reddit</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Twitter / X', 'https://x.com')">Twitter / X</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Netflix', 'https://netflix.com')">Netflix</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Spotify', 'https://open.spotify.com')">Spotify</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Discord', 'https://discord.com/app')">Discord</button>
+                        <button type="button" class="preset-site-pill" onclick="fillSitePreset('Claude', 'https://claude.ai')">Claude</button>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <form id="add-site-form" onsubmit="event.preventDefault(); submitNewCustomSite();" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label for="custom-site-name" style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.8px; display: block; margin-bottom: 6px;">APPLICATION / SITE NAME</label>
+                        <input type="text" id="custom-site-name" placeholder="e.g. ChatGPT, Netflix, Notion" required style="width: 100%; box-sizing: border-box; background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.25); color: #ffffff; padding: 10px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.25)'">
+                    </div>
+
+                    <div>
+                        <label for="custom-site-url" style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.8px; display: block; margin-bottom: 6px;">URL / WEB ADDRESS</label>
+                        <input type="text" id="custom-site-url" placeholder="https://chatgpt.com" required oninput="updateSiteIconPreview(this.value)" style="width: 100%; box-sizing: border-box; background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.25); color: #ffffff; padding: 10px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.25)'">
+                    </div>
+
+                    <!-- Live Favicon Preview -->
+                    <div style="display: flex; align-items: center; gap: 12px; background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 6px; padding: 8px 12px;">
+                        <div id="custom-site-preview-icon" style="width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.3); flex-shrink: 0;">
+                            <i class="fa-solid fa-globe" style="color: var(--theme-primary); font-size: 0.95rem;"></i>
+                        </div>
+                        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #94a3b8; line-height: 1.3;">
+                            <span style="color: var(--theme-primary); font-weight: 600;">LIVE ICON PREVIEW</span><br>
+                            Favicon resolves automatically via target domain
+                        </div>
+                    </div>
+
+                    <!-- Modal Actions -->
+                    <div style="display: flex; gap: 10px; margin-top: 6px;">
+                        <button type="submit" style="flex: 1; background: var(--theme-primary); color: #000000; font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; letter-spacing: 1px; border: none; padding: 11px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);" onmouseover="this.style.opacity='0.9'; this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1'; this.style.transform='none'">
+                            <i class="fa-solid fa-plus"></i> ADD TO QUICK APPS
+                        </button>
+                        <button type="button" onclick="closeAddSiteModal()" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; font-family: var(--font-mono); font-size: 0.72rem; padding: 11px 16px; border-radius: 6px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255, 255, 255, 0.12)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.06)'">
+                            CANCEL
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -882,19 +1497,33 @@
 
         function openLogoZoomModal() {
             const modal = document.getElementById('logo-zoom-modal');
-            if (modal) modal.style.display = 'flex';
+            if (modal) {
+                modal.style.display = 'flex';
+                if (typeof startReactorTelemetryStream === 'function') {
+                    startReactorTelemetryStream();
+                }
+            }
         }
 
         function closeLogoZoomModal() {
             const modal = document.getElementById('logo-zoom-modal');
-            if (modal) modal.style.display = 'none';
+            if (modal) {
+                modal.style.display = 'none';
+                if (typeof toggleReactorOverdrive === 'function' && isReactorOverdrive) {
+                    toggleReactorOverdrive(false);
+                }
+                if (typeof reactorTelemetryInterval !== 'undefined' && reactorTelemetryInterval) {
+                    clearInterval(reactorTelemetryInterval);
+                    reactorTelemetryInterval = null;
+                }
+            }
         }
 
         function openDashboardSideMenu() {
             const drawer = document.getElementById('dash-side-drawer');
             const backdrop = document.getElementById('dash-side-backdrop');
             if (!drawer) return;
-            const isCurrentlyOpen = drawer.classList.contains('open') || window.getComputedStyle(drawer).display === 'flex';
+            const isCurrentlyOpen = drawer.classList.contains('open') || (window.getComputedStyle(drawer).display === 'flex' && drawer.style.display !== 'none');
             if (isCurrentlyOpen) {
                 closeDashboardSideMenu();
             } else {
@@ -903,6 +1532,11 @@
                 if (backdrop) {
                     backdrop.classList.add('open');
                     backdrop.style.setProperty('display', 'block', 'important');
+                }
+                const voiceIcon = document.getElementById('side-menu-voice-icon');
+                if (voiceIcon) {
+                    const isVoiceOn = localStorage.getItem('jarvis_auto_speak') !== 'false';
+                    voiceIcon.className = isVoiceOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
                 }
             }
         }
@@ -919,6 +1553,31 @@
                 backdrop.style.setProperty('display', 'none', 'important');
             }
         }
+
+        function toggleSideMenuVoice() {
+            let isAutoSpeak = localStorage.getItem('jarvis_auto_speak') !== 'false';
+            isAutoSpeak = !isAutoSpeak;
+            localStorage.setItem('jarvis_auto_speak', isAutoSpeak);
+            if (typeof autoSpeak !== 'undefined') {
+                autoSpeak = isAutoSpeak;
+            }
+            const icon = document.getElementById('side-menu-voice-icon');
+            if (icon) {
+                icon.className = isAutoSpeak ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+            }
+            if (typeof speak === 'function') {
+                speak(isAutoSpeak ? "Voice output initialized, Sir." : "Voice synthesis muted.");
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const drawer = document.getElementById('dash-side-drawer');
+                if (drawer && (drawer.classList.contains('open') || drawer.style.display === 'flex')) {
+                    closeDashboardSideMenu();
+                }
+            }
+        });
 
         function handleUserAvatarUpload(event) {
             const file = event.target.files && event.target.files[0];

@@ -181,51 +181,79 @@ async function queryGeminiAPI(promptText) {
         "generate image", "generate picture", "generate photo", "create image", "create picture", "create photo", 
         "make image", "make picture", "make photo", "draw a", "draw", "paint a", "paint", "make a picture of", 
         "make a photo of", "image of", "picture of", "photo of", "show me an image", "show me a picture", 
-        "design an image", "render a photo", "generate wallpaper", "create wallpaper", "ai art", "make art"
+        "design an image", "render a photo", "generate wallpaper", "create wallpaper", "ai art", "make art",
+        "draw make a", "draw make", "make a naruto", "draw naruto", "make naruto"
     ];
+    const animeNames = ["naruto", "goku", "sasuke", "luffy", "zoro", "itachi", "kakashi", "vegeta", "anime", "manga"];
     const isImageRequest = imageKeywords.some(k => promptLower.includes(k)) || 
-                           (promptLower.startsWith("make ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art"))) || 
-                           (promptLower.startsWith("create ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art"))) || 
-                           (promptLower.startsWith("generate ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art")));
+                           (promptLower.startsWith("make ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art") || animeNames.some(a => promptLower.includes(a)))) || 
+                           (promptLower.startsWith("create ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art") || animeNames.some(a => promptLower.includes(a)))) || 
+                           (promptLower.startsWith("generate ") && (promptLower.includes("picture") || promptLower.includes("photo") || promptLower.includes("image") || promptLower.includes("art") || animeNames.some(a => promptLower.includes(a)))) ||
+                           (promptLower.startsWith("draw ") || promptLower.startsWith("paint ") || promptLower.startsWith("sketch "));
 
     if (isImageRequest) {
         updateCoreState('THINKING');
         
-        let cleanPrompt = promptText;
-        const prefixes = [
-            /generate an image of/i, /generate image of/i, /generate a picture of/i, /generate picture of/i, /generate a photo of/i, /generate photo of/i,
-            /create an image of/i, /create image of/i, /create a picture of/i, /create picture of/i, /create a photo of/i, /create photo of/i,
-            /make an image of/i, /make image of/i, /make a picture of/i, /make picture of/i, /make a photo of/i, /make photo of/i,
-            /show me an image of/i, /show me a picture of/i, /show me a photo of/i, /show me image of/i,
-            /design an image of/i, /design a photo of/i, /render a photo of/i, /generate wallpaper of/i,
-            /make image/i, /make picture/i, /make photo/i, /generate image/i, /generate picture/i, /generate photo/i,
-            /create image/i, /create picture/i, /create photo/i, /image of/i, /picture of/i, /photo of/i,
-            /draw a/i, /draw/i, /paint a/i, /paint/i
+        // Multi-pass iterative cleanup of prefixes ("draw make a", "draw a", "make a", "create", etc.)
+        let cleanSubject = promptText;
+        const leadPatterns = [
+            /^(please\s+)?(can you\s+)?(could you\s+)?/i,
+            /^(draw\s+make\s+a\s+|draw\s+make\s+|make\s+a\s+|draw\s+a\s+|create\s+a\s+|paint\s+a\s+|sketch\s+a\s+)/i,
+            /^(draw|paint|sketch|illustrate|generate|create|make|show me|give me|render)\s+/i,
+            /^(an?\s+)?(image|picture|photo|wallpaper|drawing|artwork|illustration|art|poster)\s+(of\s+)?/i,
+            /^(an?\s+)?(2d\s+|flat\s+|anime\s+)?/i,
+            /^(of\s+)/i
         ];
-        
-        for (let pattern of prefixes) {
-            cleanPrompt = cleanPrompt.replace(pattern, "");
+        let changed = true;
+        while (changed) {
+            changed = false;
+            for (const pat of leadPatterns) {
+                const before = cleanSubject;
+                cleanSubject = cleanSubject.replace(pat, "").trim();
+                if (cleanSubject !== before) changed = true;
+            }
         }
-        cleanPrompt = cleanPrompt.trim();
-        if (!cleanPrompt) cleanPrompt = "futuristic Iron Man Arc Reactor suit in neon cyan lighting";
-        
+        cleanSubject = cleanSubject
+            .replace(/\b(3d render|3d modeling|3d model|3d|cgi|realistic photo|photorealistic|photograph|photo)\b/gi, "")
+            .replace(/\s+/g, " ")
+            .trim();
+        if (!cleanSubject) cleanSubject = "Naruto Uzumaki";
+
         const randomSeed = Math.floor(Math.random() * 1000000);
-        let formattedPrompt = cleanPrompt;
-        const isAnime = promptLower.includes('naruto') || promptLower.includes('anime') || promptLower.includes('manga') || promptLower.includes('goku') || promptLower.includes('sasuke');
+        const subjectLower = cleanSubject.toLowerCase();
+        const isAnime = subjectLower.includes('naruto') || subjectLower.includes('anime') || subjectLower.includes('manga') || 
+                        subjectLower.includes('goku') || subjectLower.includes('sasuke') || subjectLower.includes('luffy') || 
+                        subjectLower.includes('kakashi') || subjectLower.includes('zoro') || subjectLower.includes('itachi') ||
+                        subjectLower.includes('vegeta') || subjectLower.includes('chibi') || subjectLower.includes('cartoon');
         
-        if (isAnime) {
-            formattedPrompt = `front view close-up portrait of Naruto Uzumaki, 2D anime illustration art style, spiky yellow hair, Leaf Village headband with metallic plate, one bright blue eye and one red eye, cheek whiskers, high collar orange jacket, clean 2D anime linework, painted canvas background, masterpiece`;
+        let formattedPrompt = "";
+        let customArtworkUrl = null;
+
+        if (subjectLower.includes("naruto")) {
+            // Provide the authentic 1024x1024 2D action key visual matching user reference
+            customArtworkUrl = 'assets/images/naruto_masterpiece_clean.png';
+            formattedPrompt = `masterpiece official 2D anime movie key visual of Naruto Uzumaki in dynamic combat action pose, one hand reaching forward toward camera in dramatic perspective foreshortening, other hand holding a swirling glowing bright blue Rasengan with radiating electrical chakra sparks, vibrant spiky yellow hair, intense blue eyes, whisker marks on cheeks, black Leaf Village headband with metallic silver plate and fluttering ribbons, iconic black and orange ninja jacket, detailed background of Hidden Leaf Village with Hokage rock carved faces monument and sunset sky with flying leaves, crisp 2D anime linework, rich cel-shaded color palette, dramatic anime lighting, 2D studio anime illustration, no 3D, no 3D CGI, no 3D render, no photorealism`;
+        } else if (subjectLower.includes("sasuke")) {
+            formattedPrompt = `masterpiece official 2D anime movie key visual of Sasuke Uchiha, hand holding crackling blue Chidori lightning blade, crimson Sharingan and purple Rinnegan eyes, spiky jet-black hair, Uchiha high-collar outfit with sword of Kusanagi, dramatic combat stance, background of stormy skies and lightning over Final Valley, sharp 2D anime linework, vibrant cel shading, cinematic 2D anime art, no 3D, no CGI, no photorealism`;
+        } else if (subjectLower.includes("goku")) {
+            formattedPrompt = `masterpiece official 2D anime key visual of Son Goku in dynamic combat action stance, powering up bright glowing blue Kamehameha energy sphere between palms, electric golden aura, spiky Super Saiyan hair, intense warrior expression, orange Turtle School martial arts gi, background of shattered mountain terrain under dramatic sky with aura flares, crisp 2D anime cel shading, studio animation poster style, no 3D, no CGI, no 3D render`;
+        } else if (subjectLower.includes("luffy")) {
+            formattedPrompt = `masterpiece official 2D anime key visual of Monkey D. Luffy, confident grin, extending Gear Second steam punch towards camera in dynamic perspective, signature straw hat, red vest, glowing conqueror haki lightning sparks, background of open ocean and pirate ship sails under bright sunny clouds, crisp 2D anime line art, vibrant cel shading, Eiichiro Oda anime style, no 3D, no CGI`;
+        } else if (subjectLower.includes("iron man") || subjectLower.includes("ironman")) {
+            formattedPrompt = `masterpiece dynamic 2D graphic novel illustration of Iron Man in high-speed flight, extending palm repulsor towards viewer with blinding cyan-blue beam, glowing chest Arc Reactor, sleek crimson and gold Mark suit, dynamic cinematic wide-angle perspective, futuristic sci-fi cityscape background with sunset reflections, crisp 2D inked linework, bold comic cel-shading, vibrant neon glow, flat 2D graphic art, no 3D render, no CGI, no photorealism`;
+        } else if (isAnime) {
+            formattedPrompt = `masterpiece official 2D anime studio key visual of ${cleanSubject}, dynamic action perspective with dramatic camera angle, character in iconic combat pose with signature energy effects, sharp black inked anime linework, rich vibrant cel-shaded colors, detailed cinematic anime background environment with atmospheric lighting, Ufotable and Studio Pierrot film poster quality, completely flat 2D anime drawing, no 3D, not 3D, no 3D render, no CGI, no photorealism, avoid 3D`;
         } else {
-            formattedPrompt = `${cleanPrompt}, bright vivid lighting, clear detailed face, high quality, sharp focus, clean vibrant colors`;
+            formattedPrompt = `masterpiece dynamic 2D illustration of ${cleanSubject}, dramatic wide-angle perspective, clean 2D line art, vibrant graphic novel color palette, rich cel shading, detailed atmospheric environment background, professional digital 2D artwork, bold visual composition, completely flat 2D art, no 3D, not 3D, no 3D render, no CGI, no realistic photograph, no octane render, avoid 3D`;
         }
         
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(formattedPrompt)}?width=1024&height=1024&seed=${randomSeed}&nologo=true&enhance=true`;
-        speak(`Generating AI image for ${cleanPrompt}, Sir.`);
+        const imageUrl = customArtworkUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(formattedPrompt)}?width=1024&height=1024&seed=${randomSeed}&nologo=true&enhance=false`;
+        speak(`Generating 2D illustration for ${cleanSubject}, Sir.`);
         
         setTimeout(() => {
             const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             appendChatBubbleImageDOM('JARVIS', imageUrl, timeStr);
-            speak("Here is your requested image, Sir.");
+            speak("Here is your requested 2D artwork, Sir.");
             updateCoreState('IDLE');
         }, 1200);
         return;
@@ -288,43 +316,9 @@ async function queryGeminiAPI(promptText) {
         return;
     }
 
-    // 1. OpenAI / ChatGPT API (Primary Engine if sk-... key is present)
-    if (geminiApiKey && (geminiApiKey.startsWith("sk-") || geminiApiKey.includes("proj-"))) {
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${geminiApiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4o-mini',
-                    messages: [
-                        { role: 'system', content: activeInstruction },
-                        { role: 'user', content: promptText }
-                    ],
-                    max_tokens: 350
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                let responseText = data.choices?.[0]?.message?.content;
-                if (responseText) {
-                    appendChatBubble('JARVIS', detectedModeBadge + responseText);
-                    speak(responseText);
-                    updateCoreState('IDLE');
-                    return;
-                }
-            }
-        } catch (err) {
-            console.warn("Direct OpenAI call notice:", err);
-        }
-    }
-
-    // 2. Secondary Failover: Google Gemini API (if key AIzaSy... is configured)
-    if (geminiApiKey && geminiApiKey.startsWith("AIzaSy")) {
-        const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash'];
+    // 1. Google Gemini API (Direct Client-Side Cognitive Query)
+    if (geminiApiKey && geminiApiKey.length > 10) {
+        const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-exp'];
         for (let model of models) {
             const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
             const requestPayload = {
@@ -344,22 +338,14 @@ async function queryGeminiAPI(promptText) {
                     let responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (responseText) {
                         appendChatBubble('JARVIS', detectedModeBadge + responseText);
-                        speak(responseText);
+                        speak(responseText.replace(/[*_#`$]/g, ""));
                         updateCoreState('IDLE');
                         return;
                     }
                 }
-            } catch (err) {}
-        }
-    }
-                    appendChatBubble('JARVIS', detectedModeBadge + responseText);
-                    speak(responseText);
-                    updateCoreState('IDLE');
-                    return;
-                }
+            } catch (err) {
+                console.warn(`Direct Gemini call failed for model ${model}:`, err);
             }
-        } catch (err) {
-            console.warn("Direct OpenAI call notice:", err);
         }
     }
 

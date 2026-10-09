@@ -60,6 +60,9 @@ def _get_music() -> Path:
         xdg = os.environ.get("XDG_MUSIC_DIR", "")
         if xdg and Path(xdg).exists():
             return Path(xdg)
+    music_vid = Path.home() / "Music" / "video"
+    if music_vid.exists():
+        return music_vid
     return Path.home() / "Music"
 
 def _get_videos() -> Path:
