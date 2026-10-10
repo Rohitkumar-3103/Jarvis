@@ -1,5 +1,5 @@
 """
-Local LLM client for MARK XL.
+Local LLM client for J.A.R.V.I.S. (Mark XLVII).
 
 Supports two backends — selected via  "llm_provider"  in config/api_keys.json:
 

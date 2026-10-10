@@ -1,5 +1,5 @@
 """
-Speech-to-Text engines for MARK XL.
+Speech-to-Text engines for J.A.R.V.I.S. (Mark XLVII).
 
 Whisper  – offline transcription via faster-whisper (VAD-buffered)
 Vosk     – offline streaming transcription (lighter)
