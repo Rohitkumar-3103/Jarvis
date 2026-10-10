@@ -99,3 +99,8 @@ desktop.ini
 
 # 12. Local Documentation Templates
 thesis_template_0.1/
+
+# 13. Presentation & Academic Thesis Documents
+*.pptx
+*JARVIS_Presentation*
+*JARVIS_Thesis_Report*
