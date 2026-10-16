@@ -863,44 +863,67 @@
 <!-- PAGE 5: REPOSITORY STRUCTURE & QUICKSTART GUIDE -->
 <div class="page">
     <h2>8. Modular Repository Architecture</h2>
-    <div class="code-block">JARVIS-AI-OS/
-├── backend/                       # Python Flask API Microservices (Port 5000)
-│   ├── api/                       # REST Blueprints (ai, auth, calls, chat, code, files, system, weather)
-│   ├── automation/                # Native OS automation, media playback & hardware telemetry
-│   ├── data/                      # Local user database records
-│   ├── database/                  # SQLite/JSON chat history manager
-│   ├── config.py                  # Backend server configuration
-│   └── server.py                  # Primary Flask backend server entry point
-├── frontend/                      # Web HUD & Tactical Interface (Port 8080)
-│   ├── index.html                 # Main HUD Dashboard (Arc Reactor, Chat Feed, Side Drawer)
-│   ├── auth.html                  # Standalone Tactical Intelligence Biometric Auth Terminal
-│   ├── css/                       # Modular CSS (style, dashboard, chat, lockscreen, themes, animations)
-│   ├── js/                        # Frontend JS (ai, voice, commands, dashboard, settings, utils, chat, weather)
-│   └── assets/                    # HUD icons, Arc Reactor SVGs, avatar images, sounds
-├── core/                          # Multimodal Live Engines (STT, TTS, LLM Orchestration)
-│   ├── llm.py                     # LLM orchestration client (Gemini, Ollama, OpenAI)
-│   ├── prompt.txt                 # Master system prompt definitions
-│   ├── stt.py                     # Offline Whisper & Vosk Speech-to-Text
-│   └── tts.py                     # EdgeTTS, Kokoro, ElevenLabs Text-to-Speech
-├── actions/                       # Native Agent Tool Handlers
-│   ├── browser_control.py         # Playwright browser automation
-│   ├── youtube.py                 # YouTube streaming & transcript extractor
-│   ├── messaging.py               # WhatsApp Web/Desktop & email automation
-│   ├── screen_processor.py        # Screen capture OCR & vision analysis
-│   ├── open_app.py                # Application & URI launcher
-│   ├── computer_control.py        # System control & process supervisor
-│   ├── system_monitor.py          # Real-time hardware telemetry (psutil)
-│   ├── weather.py                 # Weather data provider (Open-Meteo)
-│   └── code_helper.py             # Competitive programming sandbox
-├── memory/                        # Context & Configuration Management (User Profile, Memory Persistence)
-├── config/                        # Shared Configuration & API key blueprints (api_keys.json.example)
-├── docs/                          # Comprehensive Technical Documentation (Architecture, APIs, Design)
-├── tests/                         # Automated Unit & Integration Tests (AI, API, Auth, Backend, Voice)
-├── run_dashboard.py               # Unified Full-Stack Launcher (Port 5000 + Port 8080)
-├── main.py                        # Live Gemini Multimodal Audio Desktop Client
-├── ui.py                          # PyQt6 Sci-Fi Desktop Client UI
-├── requirements.txt               # Python package dependencies
-└── package.json                   # Project metadata & npm scripts</div>
+    <div class="grid-2" style="margin-bottom: 2pt;">
+        <div class="code-block" style="font-size: 5.4pt; line-height: 1.16; margin: 0; padding: 3px 5px;">Jarvis/
+├── 🚀 ORCHESTRATION & PACKAGING
+│   ├── run_dashboard.py        # Full-Stack Launcher (5000+8080)
+│   ├── main.py                 # PyQt6 Live Multimodal Client
+│   ├── ui.py                   # Sci-Fi PyQt6 Desktop Client GUI
+│   ├── setup.py                # Setuptools Packaging Spec
+│   ├── package.json            # Project Metadata & NPM Scripts
+│   ├── requirements.txt        # Python Dependencies Manifest
+│   ├── requirements-docker.txt # Minimal Docker Dependencies
+│   ├── Dockerfile              # Container Deployment Blueprint
+│   ├── docker-compose.yml      # Multi-Container Compose
+│   ├── .env / .env.example     # Local Secret / Template Vars
+│   └── .gitignore              # Git Ignore Rules
+├── 📚 DOCUMENTATION & BLUEPRINTS
+│   ├── README.md               # GitHub Presentation & Quickstart
+│   ├── AGENTS.md               # AI Assistant Architecture & Invariants
+│   ├── PROJECT_OVERVIEW.md     # Subsystem Architecture Mapping
+│   ├── JARVIS_TECHNICAL_PROJECT_REPORT.md # Technical Report
+│   ├── LICENSE / CHANGELOG.md / CONTRIBUTING.md
+│   └── docs/                   # Technical Subsystem Manuals
+│       ├── API_DOCUMENTATION.md / ARCHITECTURE.md
+│       ├── DESIGN.md / DEVELOPER_GUIDE.md / INSTALLATION.md
+│       └── PYTHON_TUTORIAL.md / USER_GUIDE.md
+├── 🖥️ FRONTEND (PORT 8080)
+│   ├── index.html / auth.html / favicon.ico
+│   ├── css/ (style, dashboard, chat, lockscreen, settings...)
+│   ├── js/ (app, ai, voice, commands, dashboard, chat...)
+│   └── assets/ (images, icons, sounds)
+└── ⚙️ BACKEND (PORT 5000)
+    ├── server.py / server_config.py
+    ├── api/ (ai, auth, calls, chat, code, files, system, weather)
+    ├── automation/ (os_controls.py, media_player.py)
+    ├── database/ (chat_db.py) & data/ (users.json.example)</div>
+        <div class="code-block" style="font-size: 5.4pt; line-height: 1.16; margin: 0; padding: 3px 5px;">├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
+│   ├── __init__.py             # Engine Package Exports
+│   ├── llm.py                  # Multi-Model LLM Orchestration
+│   ├── stt.py                  # Offline Whisper & Vosk STT
+│   ├── tts.py                  # EdgeTTS, Kokoro & ElevenLabs Voices
+│   ├── prompt.txt              # Master System Persona Prompt
+│   ├── installer.py / startup.py
+├── ⚡ ACTIONS (NATIVE AGENT TOOL SUITE)
+│   ├── browser_control.py      # Playwright Web Automation
+│   ├── code_helper.py          # Python Sandbox & CP Helper
+│   ├── computer_control.py     # Process & System Power
+│   ├── computer_settings.py    # Windows Audio & Display
+│   ├── desktop.py / dev_agent.py / file_controller.py
+│   ├── file_processor.py       # Document Parsing & Summarization
+│   ├── flight_finder.py / game_updater.py / messaging.py
+│   ├── music.py / open_app.py / proactive.py / reminder.py
+│   ├── screen_processor.py     # Screen Capture OCR & Vision
+│   ├── system_monitor.py       # Real-Time CPU/RAM Telemetry
+│   ├── weather.py / web_search.py / youtube.py
+├── 💾 MEMORY & CONFIG
+│   ├── memory/ (memory_manager, config_manager, user_profile)
+│   └── config/ (api_keys.json.example, environment, jarvis.ico)
+└── 🧪 TESTS & VERIFICATION
+    ├── tests/ (test_actions.py, test_api.py, test_auth.py)
+    ├── screenshots/            # High-Resolution HUD Captures
+    └── demo/                   # Video Previews & Animation Assets</div>
+    </div>
 
     <h2>9. Installation, Quickstart & Launch Guide</h2>
 
