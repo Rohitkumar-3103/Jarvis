@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>J.A.R.V.I.S. AI OS v3.2.0 — Master Technical Blueprint & Project Specifications</title>
+<title>J.A.R.V.I.S. AI OS v3.2.5 — Master Technical Blueprint & Project Specifications</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -17,7 +17,7 @@
             color: #64748b;
         }
         @bottom-left {
-            content: "STARK INDUSTRIES // J.A.R.V.I.S. AI OS v3.2.0 MASTER SPECIFICATION";
+            content: "STARK INDUSTRIES // J.A.R.V.I.S. AI OS v3.2.5 MASTER SPECIFICATION";
             font-family: 'Orbitron', sans-serif;
             font-size: 6.5pt;
             color: #0ea5e9;
@@ -430,7 +430,7 @@
             <div class="cover-meta-grid">
                 <div class="meta-item">
                     <div class="meta-label">SYSTEM VERSION</div>
-                    <div class="meta-value">v3.2.0 PRODUCTION STABLE</div>
+                    <div class="meta-value">v3.2.5 PRODUCTION STABLE</div>
                 </div>
                 <div class="meta-item">
                     <div class="meta-label">DEPLOYMENT PORTS</div>
@@ -448,7 +448,7 @@
         </div>
 
         <div class="cover-footer">
-            <span>DOCUMENT REF: SPEC-JARVIS-3.2.0-MASTER</span>
+            <span>DOCUMENT REF: SPEC-JARVIS-3.2.5-MASTER</span>
             <span>DATE: OCTOBER 2026 // LEAD ARCHITECT: ROHIT KUMAR GUPTA</span>
         </div>
     </div>
@@ -528,7 +528,7 @@
         </div>
         <div class="card">
             <div class="card-header"><span class="badge badge-cyan">17</span> <i class="fa-solid fa-shield-halved"></i> Biometrics & Auth</div>
-            <p style="font-size: 6.7pt; margin: 0;">OpenCV Haar Cascade face scan, PIN fallback (3000), and 2FA OTP auth terminal.</p>
+            <p style="font-size: 6.7pt; margin: 0;">OpenCV Haar Cascade face scan, Master PIN (2710) manual bypass, and 2FA OTP auth terminal.</p>
         </div>
         <div class="card">
             <div class="card-header"><span class="badge badge-green">18</span> <i class="fa-solid fa-floppy-disk"></i> Conversation Logs</div>
@@ -660,6 +660,10 @@
             <p style="font-size: 6.8pt; margin: 0;">5 tactical presets (Cyan Matrix, Green Diagnostics, Red Combat, Gold Centurion, Purple Quantum) + custom continuous 360 color wheel.</p>
         </div>
     </div>
+    <div class="card" style="margin-top: 3pt;">
+        <div class="card-header"><span class="badge badge-cyan">COMMS</span> Tactical Hologram Communications Link (Mark XLVII Direct Satellite)</div>
+        <p style="font-size: 6.8pt; margin: 0;">Widescreen crystal clear video stage (540px x 310px) with top-right live duration overlay (🕒 00:00), Stark Tactical HUD Identity Banner (◈ CONTACT NAME ◈) with dual cyan pillars, and interactive Mic Mute, Camera Suspend & End Call controls.</p>
+    </div>
 
     <h2>5. Authentication, Biometrics & MongoDB Integration</h2>
     <table>
@@ -679,7 +683,7 @@
             <tr>
                 <td><strong>Passcode Fallback</strong></td>
                 <td>PIN Entry Mode</td>
-                <td>4-digit manual security PIN entry with default emergency bypass code (<code>3000</code>).</td>
+                <td>4-digit Master PIN security entry (<code>2710</code>) with manual emergency bypass. Requires explicit BYPASS button click or Enter key.</td>
             </tr>
             <tr>
                 <td><strong>2FA OTP Verification</strong></td>
@@ -840,6 +844,18 @@
                 <td><code>/api/weather</code></td>
                 <td>Live Open-Meteo temperature, atmospheric conditions, and humidity</td>
             </tr>
+            <tr>
+                <td><strong>Calls</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/calls/call</code></td>
+                <td>Initiate direct satellite voice/video call session with target identity</td>
+            </tr>
+            <tr>
+                <td><strong>Auth</strong></td>
+                <td><span class="badge badge-green">POST</span></td>
+                <td><code>/api/auth/update-avatar</code></td>
+                <td>Persist cropped 256x256 user identity photo to database</td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -914,7 +930,7 @@ python run_dashboard.py</div>
 
     <div style="margin-top: 4mm; border-top: 1px solid rgba(0, 240, 255, 0.3); padding-top: 3px; display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 6.2pt; color: #64748b;">
         <span>STARK INDUSTRIES AI DIVISION // ALL RIGHTS RESERVED</span>
-        <span>J.A.R.V.I.S. OS v3.2.0 MASTER BLUEPRINT SPECIFICATION</span>
+        <span>J.A.R.V.I.S. OS v3.2.5 MASTER BLUEPRINT SPECIFICATION</span>
     </div>
 </div>
 
