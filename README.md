@@ -415,36 +415,6 @@ window.speechSynthesis.speak(utterance);
 *   **Voice Avatar Concentric Waves**: Smooth audio fallback mode displaying animated concentric ripple rings (`ring-1`, `ring-2`, `ring-3`) and live bouncing voice frequency wave bars when video link is suspended or in audio-only mode.
 *   **Identity Photo Optimization & Sync**: Added client-side HTML5 Canvas 256x256 avatar cropping with seamless backend database persistence via `POST /api/auth/update-avatar`.
 
-## 🔄 Recent Updates (Version 3.2.0)
-
-*   **Holographic Fullscreen Code Modal**: Integrated a dedicated expand/zoom icon (`fa-expand`) next to code block copy buttons. Clicking it opens a beautiful, full-screen holographic modal viewer (`#code-zoom-overlay`) with backdrop-blur, custom copy shortcuts, and responsive syntax highlighting.
-*   **Return Code Compiler Validation**: Refactored the code interpreter engine (`code_helper.py`) to validate executions using the child process's exit status (`result.returncode == 0`) rather than simple keyword string scans. This completely eliminates false-positive error detections on successful script runs that output status logs.
-*   **Brand Shortcuts & SVG Vectors**: Replaced Instagram shortcuts with **Google Gemini** and **EdClub** (typing portal links) on the dashboard app grid and commands list. All app cards now render with their authentic, high-fidelity brand colors using crisp SVG vectors and transparent cropped assets (such as the EdClub orange bird).
-*   **Jumping Hover Animations**: Added CSS translation support for SVG elements and images within the quick launch dashboard grid so they animate and bounce up in unison on hover.
-*   **Double Header Removal**: Fixed output duplicate print bugs by removing redundant duplicate `Output:` headers from the backend interpreter string formatting blocks.
-*   **Streamlined Startup (Mark XLVII Removal)**: Simplified [run_dashboard.py](file:///d:/code/html/Project/AI%20chat/Jarvis/run_dashboard.py) to remove selection menu choices and references to the Mark XLVII Desktop Voice Assistant GUI (`main.py`), enabling direct one-click execution of the Web HUD Dashboard.
-*   **WebBrowser Calculator Open**: Swapped shell subshell execution (`os.system`) for Python's standard `webbrowser.open()` library method when launching the custom HTML calculator. This bypasses permissions restrictions and opens the calculator reliably in the default browser.
-*   **Robust .NET GDI Screen Capture**: Replaced the clipboard PrintScreen keypress fallback (which returned Access Denied and Null Pointer errors on background runs, re-saving the same old image) with a dynamic PowerShell `.ps1` execution script that calls the native Windows `.NET` GDI `CopyFromScreen` API directly, enabling real-time correct screen captures.
-*   **Dynamic Python Interpreter Detection**: Programmed the primary launcher script to automatically scan all available Python executables (`sys.executable`, `py -3.12`, `py -3.10`, `python3`, `python`) to identify which one contains the required system dependencies (like `Flask`), preventing crash loops when a new/empty Python version (like Python 3.14.6) is set as the default `py` handler.
-*   **Direct AI Image Generation Engine**: Added a native client intent parser inside the chat engine (`ai.js`) to capture graphics creation commands (e.g. `"make naruto picture"`, `"create image of a futuristic city"`). This dynamically extracts the visual description, streams a request to the free, fast Pollinations AI generator endpoint, and directly appends the generated image to your HUD chat log bubble.
-*   **Interactive Inline Image Download Button**: Integrated a styled download button directly underneath all image chat bubbles. This fetches the generated image payload as a blob and triggers a native download file stream, allowing the user to save the image directly to their computer's `Downloads` folder, bypassing default browser cross-origin download restrictions.
-*   **Explicit IPv4 Loopback Routing**: Configured the frontend client to send API requests explicitly to `http://127.0.0.1:5000` instead of using `window.location.hostname` (which translates to `localhost` and causes Windows to block connections by routing them to the inactive IPv6 `[::1]` interface). Binds the Flask server to `0.0.0.0` by default to listen on all interfaces.
-
-## 🔄 Recent Updates (Version 3.0)
-
-*   **Holographic Prompt Overlay Modals**: Completely replaced old generic browser `prompt()` and `confirm()` dialogs with custom-designed holographic overlay modals matching the dark sci-fi HUD theme. Includes Chrome autofill overrides to preserve the dark theme styling.
-*   **Copy-to-Clipboard Chat Bubble Actions**: Added hover copy buttons with a success checkmark animation to all chat bubbles (including dynamic messages and startup greetings) for ease of extracting responses.
-*   **Spinning Arc Reactor Logo**: Scaled up and styled the top-left logo with a layered, animated Arc Reactor (slow-spinning atom ring and a bright glowing white core dot).
-*   **Multi-Model Quota Failover**: Programmed a connection loop that automatically cycles through fallback models (`gemini-2.0-flash`, `gemini-flash-latest`) when hitting 429 quota rate limit errors, maintaining continuous conversation in the free tier.
-*   **Alternating Core Rings**: Configured all three surrounding status rings of the central core dashboard to rotate in opposite directions at different speeds, creating a 3D holographic diagnostic effect behind the main GIPHY core GIF.
-*   **Telemetry Ordering & Spacing**: Reordered top metrics bar to `[WEATHER] [CLOCK] [BATTERY]` with native browser telemetry bindings and improved main title version label margins.
-*   **Biometric Camera Frame Grabber**: Intercepts `"camera screenshot"` or `"take photo"` to snap real-time webcam frames via OpenCV (`cv2`) and display them inside secure chat bubbles.
-*   **Responsive Application Cards**: Populated the workspace launcher deck with new grid cards for **Instagram** and **Music** shortcuts.
-*   **Unified Brand Theme Sheets**: Re-routed theme styling variables to `themes.css` and added modular circular gauge canvas classes to `widgets.css`.
-*   **Media Playback Controls**: Programmed a local directory track scanner under `actions/music.py` with support for keyboard media event hooks (Play/Pause, Next Track).
-*   **Automated Testing Suite**: Implemented 9 working test cases covering Flask server endpoints, LLM model providers, and system monitoring telemetry.
-*   **Optimized Console Streams**: Removed local file logging (`logs/` directory) and configured standard output console streams.
-
 ---
 
 ## 👨‍💻 Author & Connect
