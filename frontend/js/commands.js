@@ -340,9 +340,6 @@ async function takeCommand(message) {
         appendChatBubble('JARVIS', "Initializing application: Calculator.");
         speak("Launching calculator, Sir.");
         sendLocalCommand('calculator');
-        setTimeout(() => {
-            window.open("file:///D:/code/Web%20Development/Project/Summer%20Intership/Calculator/calculator.html", "_blank");
-        }, 1000);
         updateCoreState('IDLE');
         return;
     }
@@ -429,15 +426,17 @@ async function takeCommand(message) {
         });
         updateCoreState('IDLE');
     }
-    else if (query.includes('screenshot') || query.includes('take screenshot')) {
-        appendChatBubble('JARVIS', "Capturing current HUD state...");
-        speak("Capturing screenshot, Sir.");
+    else if (query.includes('screenshot') || query.includes('take screenshot') || query.includes('capture desktop screen') || query.includes('capture desktop') || query.includes('capture screen') || query.includes('screen capture') || query.includes('desktop screen') || query.includes('desktop capture')) {
+        appendChatBubble('JARVIS', "Capturing desktop screen...");
+        speak("Capturing desktop screen, Sir.");
         sendLocalCommand('screenshot').then(res => {
             if (res && res.status === 'success') {
                 setTimeout(() => {
                     const timeStr = getFormattedTime();
                     appendChatBubbleImageDOM('JARVIS', 'assets/images/screenshot.png?t=' + Date.now(), timeStr);
-                }, 800);
+                }, 600);
+            } else {
+                appendChatBubble('JARVIS', "Notice: " + (res && res.message ? res.message : "Could not complete screen grab."));
             }
         });
         updateCoreState('IDLE');

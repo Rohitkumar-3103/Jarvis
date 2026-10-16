@@ -177,6 +177,15 @@ def execute_os_action(command: str) -> dict:
             os.system("start ms-settings:")
         return {"status": "success", "message": "Launching Windows Settings."}
 
+    elif cmd in ["calculator", "calc", "open calculator", "launch calculator", "open calc"]:
+        try:
+            from actions.open_app import open_app
+            msg = open_app({"app_name": "calculator"})
+            return {"status": "success", "message": msg}
+        except Exception:
+            subprocess.Popen("start calc:", shell=True)
+            return {"status": "success", "message": "Launching Windows Calculator."}
+
     elif cmd.startswith("open ") or cmd.startswith("launch "):
         app_target = re.sub(r'^(open|launch)\s+', '', cmd).strip()
         try:
@@ -225,17 +234,42 @@ def execute_os_action(command: str) -> dict:
         else:
             return {"status": "error", "message": result_dict["error"]}
 
-    elif "screenshot" in cmd:
+    elif "screenshot" in cmd or "capture desktop" in cmd or "capture screen" in cmd or "screen capture" in cmd or "desktop screen" in cmd:
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         assets_dir = os.path.join(base_dir, "frontend", "assets", "images")
+        os.makedirs(assets_dir, exist_ok=True)
         save_path = os.path.join(assets_dir, "screenshot.png")
+
+        # Attach thread to Default desktop on Windows
+        if os.name == 'nt':
+            try:
+                import ctypes
+                u32 = ctypes.windll.user32
+                hdesk = u32.OpenDesktopW('Default', 0, False, 0x0100)
+                if hdesk:
+                    u32.SetThreadDesktop(hdesk)
+            except Exception:
+                pass
+
         try:
             from PIL import ImageGrab
-            img = ImageGrab.grab()
+            img = ImageGrab.grab(all_screens=True)
             img.save(save_path)
-            return {"status": "success", "message": f"Screenshot saved successfully."}
+            if os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+                return {"status": "success", "message": "Screenshot saved successfully."}
         except Exception:
-            ps_code = f"""
+            pass
+
+        try:
+            import pyautogui
+            img = pyautogui.screenshot()
+            img.save(save_path)
+            if os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+                return {"status": "success", "message": "Screenshot captured via PyAutoGUI."}
+        except Exception:
+            pass
+
+        ps_code = f"""
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
@@ -246,21 +280,21 @@ $bmp.Save('{save_path}')
 $graphics.Dispose()
 $bmp.Dispose()
 """
-            ps_file = os.path.join(assets_dir, "grab.ps1")
-            try:
-                with open(ps_file, "w", encoding="utf-8") as f:
-                    f.write(ps_code)
-                subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-File", ps_file], capture_output=True, timeout=8)
-                if os.path.exists(save_path):
-                    return {"status": "success", "message": "Screenshot captured via .NET graphics."}
-                else:
-                    return {"status": "error", "message": "Screenshot script executed but file was not created."}
-            except Exception as e:
-                return {"status": "error", "message": f"Screenshot capture failed: {str(e)}"}
-            finally:
-                if os.path.exists(ps_file):
-                    try: os.remove(ps_file)
-                    except: pass
+        ps_file = os.path.join(assets_dir, "grab.ps1")
+        try:
+            with open(ps_file, "w", encoding="utf-8") as f:
+                f.write(ps_code)
+            subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-File", ps_file], capture_output=True, timeout=8)
+            if os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+                return {"status": "success", "message": "Screenshot captured via .NET graphics."}
+            else:
+                return {"status": "error", "message": "Screenshot script executed but file was not created."}
+        except Exception as e:
+            return {"status": "error", "message": f"Screenshot capture failed: {str(e)}"}
+        finally:
+            if os.path.exists(ps_file):
+                try: os.remove(ps_file)
+                except: pass
 
     elif "shutdown" in cmd:
         if os.name == 'nt':

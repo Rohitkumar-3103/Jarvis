@@ -21,11 +21,11 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css?v=3.8.0">
-    <link rel="stylesheet" href="css/dashboard.css?v=4.0.7">
+    <link rel="stylesheet" href="css/dashboard.css?v=4.6.1">
     <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/lockscreen.css">
-    <link rel="stylesheet" href="css/chat.css?v=3.3.0">
-    <link rel="stylesheet" href="css/settings.css?v=3.5.0">
+    <link rel="stylesheet" href="css/lockscreen.css?v=5.7.0">
+    <link rel="stylesheet" href="css/chat.css?v=3.5.0">
+    <link rel="stylesheet" href="css/settings.css?v=3.6.0">
     <link rel="stylesheet" href="css/widgets.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/responsive.css">
@@ -357,9 +357,8 @@
                     <span class="dash-pulse-dot"></span>
                     <span class="dash-pulse-ring"></span>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 1px;">
+                <div style="display: flex; flex-direction: column;">
                     <span class="dash-header-title">J.A.R.V.I.S. CONTROL</span>
-                    <span style="font-family: var(--font-mono); font-size: 0.6rem; color: #64748b; letter-spacing: 1px;">TACTICAL COMMAND MATRIX</span>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -521,70 +520,153 @@
         </div>
     </div>
 
-    <!-- 2. SYSTEM SECURITY AUTHENTICATION -->
-    <div class="lock-screen-overlay" id="lock-screen" style="display: none;">
+    <!-- 2. HOLOGRAPHIC BIOMETRICS & PIN LOCKSCREEN OVERLAY -->
+    <div class="lock-screen-overlay" id="lock-screen" style="display: none;" onclick="if(event.target === this) bypassLockScreen()">
         <div class="lock-container">
+            <!-- Terminal Exit / Close Button (Rotating Cross) -->
+            <button class="lock-close-btn" id="lock-close-btn" onclick="bypassLockScreen()" title="Exit Terminal (Esc)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Terminal Header -->
             <div class="lock-header">
-                <i class="fa-solid fa-user-shield security-icon-glow"></i>
-                <h2>SECURE SYSTEM AUTHENTICATION</h2>
-                <p>FACIAL SYNAPSE SCAN REQUIRED // LEVEL 4 CLEARANCE</p>
+                <div class="lock-shield-wrap">
+                    <div class="lock-shield-ring"></div>
+                    <i class="fa-solid fa-shield-halved security-icon-glow"></i>
+                </div>
+                <h2>J.A.R.V.I.S. SECURE ACCESS TERMINAL</h2>
+                <div class="lock-status-row">
+                    <span class="lock-security-badge"><i class="fa-solid fa-lock"></i> LEVEL 4 CLEARANCE</span>
+                    <span class="lock-status-pill"><span class="pulse-beacon"></span> DUAL BIOMETRIC &amp; PIN SYNAPSE</span>
+                </div>
             </div>
             
-            <div class="scanner-box">
-                <div class="scanner-corner top-left"></div>
-                <div class="scanner-corner top-right"></div>
-                <div class="scanner-corner bottom-left"></div>
-                <div class="scanner-corner bottom-right"></div>
-                <div class="scanner-line"></div>
-                <div class="scanner-grid"></div>
-                
-                <svg class="face-wireframe-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                    <path class="face-path" d="M50,15 C32,15 28,30 28,50 C28,70 36,85 50,85 C64,85 72,70 72,50 C72,30 68,15 50,15 Z" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5" />
-                    <circle cx="40" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
-                    <circle cx="60" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
-                    <path d="M36,42 L44,42 M40,38 L40,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
-                    <path d="M56,42 L64,42 M60,38 L60,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
-                    <path d="M50,42 L50,58 L46,58" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
-                    <path d="M42,68 Q50,72 58,68" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
-                    <line x1="50" y1="15" x2="50" y2="85" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
-                    <line x1="28" y1="50" x2="72" y2="50" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
-                </svg>
+            <!-- Dual Authentication Mode Tabs -->
+            <div class="lock-tabs-container">
+                <button class="lock-tab-btn active" id="tab-btn-face" onclick="switchLockTab('face')">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                        <circle cx="9" cy="9" r="1.2" fill="currentColor"/>
+                        <circle cx="15" cy="9" r="1.2" fill="currentColor"/>
+                        <path d="M9.5 15c.8 1 2.2 1 3 0"/>
+                    </svg>
+                    <span>BIOMETRIC FACE ID</span>
+                </button>
+                <button class="lock-tab-btn" id="tab-btn-pin" onclick="switchLockTab('pin')">
+                    <i class="fa-solid fa-key"></i>
+                    <span>SECURITY PIN MATRIX</span>
+                </button>
+            </div>
+            
+            <!-- TAB 1: BIOMETRIC FACE ID -->
+            <div class="lock-tab-content active" id="tab-content-face">
+                <div class="scanner-section">
+                    <div class="scanner-box">
+                        <div class="scanner-corner top-left"></div>
+                        <div class="scanner-corner top-right"></div>
+                        <div class="scanner-corner bottom-left"></div>
+                        <div class="scanner-corner bottom-right"></div>
+                        <div class="scanner-line"></div>
+                        <div class="scanner-grid"></div>
+                        <video id="lock-webcam" autoplay playsinline muted></video>
 
-                <video id="lock-webcam" autoplay playsinline muted></video>
-                <div class="scanner-target"></div>
-                <div class="scanner-data-left">SYS_SCAN: 09</div>
-                <div class="scanner-data-right">MATCH: <span id="match-val-display">00%</span></div>
-                <div class="lock-status-display" id="lock-status">STANDBY // CLICK BELOW TO INITIALIZE</div>
+                        <svg class="face-wireframe-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                            <path class="face-path" d="M50,15 C32,15 28,30 28,50 C28,70 36,85 50,85 C64,85 72,70 72,50 C72,30 68,15 50,15 Z" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5" />
+                            <circle cx="40" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
+                            <circle cx="60" cy="42" r="3" fill="none" stroke="rgba(0, 240, 255, 0.6)" stroke-width="1" />
+                            <path d="M36,42 L44,42 M40,38 L40,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
+                            <path d="M56,42 L64,42 M60,38 L60,46" stroke="rgba(0, 240, 255, 0.4)" stroke-width="0.8"/>
+                            <path d="M50,42 L50,58 L46,58" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
+                            <path d="M42,68 Q50,72 58,68" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.2" />
+                            <line x1="50" y1="15" x2="50" y2="85" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
+                            <line x1="28" y1="50" x2="72" y2="50" stroke="rgba(0, 240, 255, 0.15)" stroke-dasharray="2,2"/>
+                        </svg>
+
+                        <!-- Holographic Rotating Circle Cross Reticle -->
+                        <svg class="scanner-circle-cross-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+                            <!-- Group 1: Outer Clockwise Rotating Tech Circle with Cardinal Brackets -->
+                            <g class="reticle-orbit-cw">
+                                <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5" stroke-dasharray="10 8 20 8 45 8" />
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(0, 240, 255, 0.25)" stroke-width="1" stroke-dasharray="4 8" />
+                                <path d="M88,12 L100,6 L112,12" fill="none" stroke="#00f0ff" stroke-width="2" />
+                                <path d="M188,88 L194,100 L188,112" fill="none" stroke="#00f0ff" stroke-width="2" />
+                                <path d="M88,188 L100,194 L112,188" fill="none" stroke="#00f0ff" stroke-width="2" />
+                                <path d="M12,88 L6,100 L12,112" fill="none" stroke="#00f0ff" stroke-width="2" />
+                            </g>
+
+                            <!-- Group 2: Rotating Circle Cross (Counter-Clockwise) -->
+                            <g class="reticle-orbit-ccw">
+                                <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(0, 240, 255, 0.8)" stroke-width="1.6" stroke-dasharray="16 10 30 10" />
+                                
+                                <!-- Extended Crosshair Lines (Cross: Vertical & Horizontal) -->
+                                <line x1="100" y1="18" x2="100" y2="72" stroke="#00f0ff" stroke-width="1.8" />
+                                <line x1="100" y1="128" x2="100" y2="182" stroke="#00f0ff" stroke-width="1.8" />
+                                <line x1="18" y1="100" x2="72" y2="100" stroke="#00f0ff" stroke-width="1.8" />
+                                <line x1="128" y1="100" x2="182" y2="100" stroke="#00f0ff" stroke-width="1.8" />
+
+                                <!-- Crosshair Ticks -->
+                                <line x1="95" y1="45" x2="105" y2="45" stroke="#00f0ff" stroke-width="1.5" />
+                                <line x1="95" y1="155" x2="105" y2="155" stroke="#00f0ff" stroke-width="1.5" />
+                                <line x1="45" y1="95" x2="45" y2="105" stroke="#00f0ff" stroke-width="1.5" />
+                                <line x1="155" y1="95" x2="155" y2="105" stroke="#00f0ff" stroke-width="1.5" />
+                                
+                                <!-- Diagonal 45-deg cross markers -->
+                                <circle cx="56" cy="56" r="2.5" fill="#00f0ff" />
+                                <circle cx="144" cy="56" r="2.5" fill="#00f0ff" />
+                                <circle cx="144" cy="144" r="2.5" fill="#00f0ff" />
+                                <circle cx="56" cy="144" r="2.5" fill="#00f0ff" />
+                            </g>
+
+                            <!-- Group 3: Center Cross Target Reticle (Clockwise Spin) -->
+                            <g class="reticle-core-spin">
+                                <circle cx="100" cy="100" r="24" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="6 6" />
+                                <circle cx="100" cy="100" r="6" fill="none" stroke="#00f0ff" stroke-width="1.5" />
+                                <line x1="100" y1="84" x2="100" y2="92" stroke="#00f0ff" stroke-width="2" />
+                                <line x1="100" y1="108" x2="100" y2="116" stroke="#00f0ff" stroke-width="2" />
+                                <line x1="84" y1="100" x2="92" y2="100" stroke="#00f0ff" stroke-width="2" />
+                                <line x1="108" y1="100" x2="116" y2="100" stroke="#00f0ff" stroke-width="2" />
+                            </g>
+                        </svg>
+
+                        <div class="scanner-data-left"><i class="fa-solid fa-crosshairs"></i> RETINAL SYS: 09</div>
+                        <div class="scanner-data-right">MATCH: <span id="match-val-display">00%</span></div>
+                    </div>
+
+                    <!-- Live Scanner Status Beacon Bar -->
+                    <div class="lock-status-display" id="lock-status">INITIALIZING BIOMETRIC SCANNER...</div>
+                </div>
             </div>
 
-            <!-- PIN Pad Fallback -->
-            <div class="passcode-container" id="passcode-fallback" style="display: none;">
-                <p class="pin-hint-text">BIOMETRIC ERROR // INPUT MANUAL SECURITY VECTOR PIN:</p>
-                <div class="pin-display" id="pin-dots">
-                    <span class="pin-dot"></span>
-                    <span class="pin-dot"></span>
-                    <span class="pin-dot"></span>
-                    <span class="pin-dot"></span>
-                </div>
-                <div class="pin-pad">
-                    <button class="pin-key" data-key="1">1</button>
-                    <button class="pin-key" data-key="2">2</button>
-                    <button class="pin-key" data-key="3">3</button>
-                    <button class="pin-key" data-key="4">4</button>
-                    <button class="pin-key" data-key="5">5</button>
-                    <button class="pin-key" data-key="6">6</button>
-                    <button class="pin-key" data-key="7">7</button>
-                    <button class="pin-key" data-key="8">8</button>
-                    <button class="pin-key" data-key="9">9</button>
-                    <button class="pin-btn-clear" id="pin-clear">CLEAR</button>
-                    <button class="pin-key" data-key="0">0</button>
-                    <button class="pin-btn-bypass" id="pin-bypass">BYPASS</button>
-                </div>
-            </div>
+            <!-- TAB 2: SECURITY PIN MATRIX -->
+            <div class="lock-tab-content" id="tab-content-pin" style="display: none;">
+                <div class="passcode-container" id="passcode-fallback">
+                    <p class="pin-hint-text">INPUT 4-DIGIT SECURITY VECTOR PASSCODE:</p>
 
-            <div class="lock-actions">
-                <button id="scan-trigger-btn" class="hud-btn primary">INITIATE FACE SCAN</button>
-                <button id="passcode-toggle-btn" class="hud-btn secondary">PIN ENTRY BYPASS</button>
+                    <div class="pin-display" id="pin-dots">
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+                        <span class="pin-dot"></span>
+                    </div>
+
+                    <div class="pin-pad">
+                        <button class="pin-key" data-key="1">1</button>
+                        <button class="pin-key" data-key="2">2</button>
+                        <button class="pin-key" data-key="3">3</button>
+                        <button class="pin-key" data-key="4">4</button>
+                        <button class="pin-key" data-key="5">5</button>
+                        <button class="pin-key" data-key="6">6</button>
+                        <button class="pin-key" data-key="7">7</button>
+                        <button class="pin-key" data-key="8">8</button>
+                        <button class="pin-key" data-key="9">9</button>
+                        <button class="pin-btn-clear" id="pin-clear" title="Clear PIN Entry"><i class="fa-solid fa-delete-left"></i> CLEAR</button>
+                        <button class="pin-key" data-key="0">0</button>
+                        <button class="pin-btn-bypass" id="pin-bypass" title="Bypass with Tony Stark Administrator clearance"><i class="fa-solid fa-bolt"></i> BYPASS</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -930,39 +1012,110 @@
         </footer>
     </div>
 
-    <!-- HOLOGRAM CALL MODULE -->
-    <div class="call-overlay" id="call-overlay">
-        <div class="call-card">
-            <div class="call-grid-effect"></div>
-            <div class="call-header">
-                <span class="call-mode-badge" id="call-mode-text">SECURE VOICE CONNECT</span>
-                <div class="call-timer" id="call-timer-display">00:00</div>
+    <!-- DIRECT COMMS LINK MODAL (CALL / WHATSAPP) -->
+    <div class="settings-modal-overlay" id="comms-choice-modal" onclick="if(event.target === this) closeCommsModal()" style="display: none; z-index: 10001; background: rgba(2, 5, 12, 0.92); backdrop-filter: blur(10px);">
+        <div class="settings-modal" style="max-width: 480px; width: 92%; animation: modal-slide-down 0.3s ease; border: 1.5px solid var(--theme-primary); box-shadow: 0 0 35px rgba(0, 240, 255, 0.3); border-radius: 12px; overflow: hidden; background: rgba(4, 10, 24, 0.98);">
+            <div class="settings-header" style="padding: 12px 18px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.18); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-family: var(--font-hud); font-size: 0.88rem; color: var(--theme-primary); letter-spacing: 1.5px; margin: 0;">
+                    <i class="fa-solid fa-satellite-dish" style="margin-right: 8px;"></i>INITIATE DIRECT COMMS LINK
+                </h2>
+                <button onclick="closeCommsModal()" class="close-modal-btn" id="close-comms-btn" title="Close Link (Esc)"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="call-body">
-                <div class="call-participant-container">
-                    <div class="participant-glow-ring"></div>
-                    <div class="video-call-feeds" id="video-feeds-box" style="display: none;">
-                        <video id="call-video-user" autoplay playsinline muted></video>
-                        <div class="video-overlay-tint"></div>
-                        <div class="video-feed-label">USER FEED (SECURE)</div>
+            <div class="settings-body" style="padding: 20px 18px; display: flex; flex-direction: column; gap: 14px;">
+                <!-- 2 Primary Direct Action Buttons -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <!-- Direct WhatsApp Button -->
+                    <button id="btn-direct-whatsapp" class="hud-btn" style="background: rgba(37, 211, 102, 0.15); border: 1.5px solid #25d366; color: #ffffff; padding: 14px 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(37, 211, 102, 0.25);">
+                        <i class="fa-brands fa-whatsapp" style="font-size: 1.8rem; color: #25d366;"></i>
+                        <span style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;">WHATSAPP DIRECT</span>
+                        <span style="font-size: 0.65rem; color: #94a3b8;">Web &amp; Desktop Relay</span>
+                    </button>
+
+                    <!-- Direct Hologram Call Button -->
+                    <button id="btn-direct-call" class="hud-btn" style="background: rgba(0, 240, 255, 0.15); border: 1.5px solid var(--theme-primary); color: #ffffff; padding: 14px 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);">
+                        <i class="fa-solid fa-phone-volume" style="font-size: 1.8rem; color: var(--theme-primary);"></i>
+                        <span style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;">DIRECT CALL</span>
+                        <span style="font-size: 0.65rem; color: #94a3b8;">Hologram Video &amp; Voice</span>
+                    </button>
+                </div>
+
+                <!-- Custom Direct Phone / Contact input -->
+                <div style="margin-top: 4px; border-top: 1px solid rgba(0, 240, 255, 0.12); padding-top: 12px;">
+                    <label style="display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--theme-primary); margin-bottom: 6px;">DIRECT DIAL BY NUMBER OR NAME:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="comms-contact-input" placeholder="e.g. +1 555-0199 or Pepper Potts" style="flex: 1; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 6px; padding: 8px 12px; color: #ffffff; font-family: var(--font-mono); font-size: 0.8rem; outline: none;">
+                        <button id="btn-comms-dial" class="hud-btn primary" style="padding: 8px 14px; font-size: 0.75rem; white-space: nowrap;"><i class="fa-solid fa-paper-plane"></i> DIAL</button>
                     </div>
-                    <div class="avatar-frame" id="avatar-frame-box">
-                        <img src="assets/images/avatar.png" alt="Participant" class="participant-avatar">
-                    </div>
-                    <div class="participant-name" id="call-target-name">Tony Stark</div>
-                    <div class="call-status-label" id="call-status-text">CONNECTING VIA SATELLITE...</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- HOLOGRAM CALL MODULE (STARK INDUSTRIES MARK XLVII TACTICAL COMMS) -->
+    <div class="call-overlay" id="call-overlay">
+        <div class="call-card">
+            <!-- Tactical HUD Corner Brackets -->
+            <div class="call-card-hud-corner tl"></div>
+            <div class="call-card-hud-corner tr"></div>
+            <div class="call-card-hud-corner bl"></div>
+            <div class="call-card-hud-corner br"></div>
+            <div class="call-grid-effect"></div>
+
+            <!-- Hidden for JS compatibility -->
+            <span id="call-mode-text" style="display: none;"></span>
+
+            <!-- Call Body -->
+            <div class="call-body">
+                <div class="call-participant-container">
+                    <!-- Video Feeds Container (Expanded Size, Crystal Clear Face Feed with Top-Right Call Timer) -->
+                    <div class="video-call-feeds" id="video-feeds-box" style="display: none;">
+                        <video id="call-video-user" autoplay playsinline muted></video>
+                        <div class="call-timer" id="call-timer-display"><i class="fa-regular fa-clock" style="margin-right: 5px; font-size: 0.72rem;"></i>00:00</div>
+                    </div>
+
+                    <!-- Voice Avatar Container -->
+                    <div class="avatar-frame-wrapper" id="avatar-frame-box">
+                        <div class="call-timer voice-call-timer" id="call-voice-timer-display"><i class="fa-regular fa-clock" style="margin-right: 5px; font-size: 0.72rem;"></i>00:00</div>
+                        <div class="participant-glow-ring ring-1"></div>
+                        <div class="participant-glow-ring ring-2"></div>
+                        <div class="participant-glow-ring ring-3"></div>
+                        <div class="avatar-frame">
+                            <img src="assets/images/avatar.png" alt="Participant" class="participant-avatar" id="call-avatar-img">
+                        </div>
+                        <div class="voice-wave-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <!-- Participant Name (Small sleek title) & Status Pill -->
+                    <div class="participant-name" id="call-target-name">ROHIT GUPTA</div>
+                    <div class="call-status-pill">
+                        <span class="status-pulse-dot"></span>
+                        <span class="call-status-label" id="call-status-text">CONNECTING VIA SATELLITE...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Footer Controls -->
             <div class="call-footer">
-                <button class="call-btn btn-mute" id="btn-call-mute" title="Mute Mic">
-                    <i class="fa-solid fa-microphone-slash"></i>
-                </button>
-                <button class="call-btn btn-video" id="btn-call-video" title="Enable Video Link">
-                    <i class="fa-solid fa-video"></i>
-                </button>
-                <button class="call-btn btn-end" id="btn-call-end" title="Terminate Link">
-                    <i class="fa-solid fa-phone-slash"></i>
-                </button>
+                <div class="call-control-col">
+                    <button class="call-btn btn-mute" id="btn-call-mute" title="Mute / Unmute Microphone">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <span class="call-control-text">MIC</span>
+                </div>
+                <div class="call-control-col">
+                    <button class="call-btn btn-video" id="btn-call-video" title="Toggle Video Link">
+                        <i class="fa-solid fa-video"></i>
+                    </button>
+                    <span class="call-control-text">CAMERA</span>
+                </div>
+                <div class="call-control-col">
+                    <button class="call-btn btn-end" id="btn-call-end" title="Terminate Link">
+                        <i class="fa-solid fa-phone-slash"></i>
+                    </button>
+                    <span class="call-control-text text-danger">END CALL</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1127,9 +1280,9 @@
         <div class="settings-modal" style="max-width: 90%; width: 1200px; height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.3); box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);">
             <div class="settings-header" style="padding: 12px 20px; background: rgba(0, 240, 255, 0.08); border-bottom: 1px solid rgba(0, 240, 255, 0.15); display: flex; justify-content: space-between; align-items: center;">
                 <h2 style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--theme-primary); text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);"><i class="fa-solid fa-code" style="margin-right: 8px;"></i>J.A.R.V.I.S. SECURE CODE VIEWER</h2>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button class="code-zoom-copy-btn" id="code-zoom-copy" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 0.95rem; transition: all 0.2s;" title="Copy code"><i class="fa-regular fa-copy"></i></button>
-                    <button class="close-modal-btn" id="close-zoom-btn" style="background: none; border: none; color: var(--text-primary); cursor: pointer; font-size: 1.1rem;"><i class="fa-solid fa-xmark"></i></button>
+                <div style="display: flex; gap: 14px; align-items: center;">
+                    <button class="code-zoom-copy-btn" id="code-zoom-copy" title="Copy code"><i class="fa-solid fa-copy"></i></button>
+                    <button class="close-modal-btn" id="close-zoom-btn" title="Close Viewer (Esc)"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
             <div class="settings-body" style="flex: 1; padding: 20px; overflow: hidden; background: #02050c; display: flex; flex-direction: column;">
@@ -1181,10 +1334,6 @@
                     </div>
                 </div>
                 <div class="reactor-header-actions">
-                    <div class="reactor-status-beacon">
-                        <span class="beacon-dot"></span>
-                        <span id="reactor-status-text">CORE ONLINE</span>
-                    </div>
                     <button class="reactor-close-btn" onclick="closeLogoZoomModal()" title="Close Core Matrix (Esc)">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -1212,93 +1361,6 @@
                     </div>
                 </div>
 
-                <!-- LIVE TELEMETRY MATRIX HUD GRID -->
-                <div class="reactor-telemetry-grid">
-                    <!-- Power Output Card -->
-                    <div class="reactor-telemetry-card">
-                        <div class="telemetry-card-header">
-                            <span class="telemetry-card-label"><i class="fa-solid fa-bolt"></i> POWER OUTPUT</span>
-                            <span class="telemetry-card-badge" id="reactor-power-badge">NOMINAL</span>
-                        </div>
-                        <div class="telemetry-card-value highlight-cyan" id="reactor-val-power">3.24 GW</div>
-                        <div class="telemetry-bar-wrap" id="reactor-power-bars">
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                        </div>
-                    </div>
-
-                    <!-- Core Temperature Card -->
-                    <div class="reactor-telemetry-card">
-                        <div class="telemetry-card-header">
-                            <span class="telemetry-card-label"><i class="fa-solid fa-temperature-half"></i> CORE TEMP</span>
-                            <span class="telemetry-card-badge">OPTIMAL</span>
-                        </div>
-                        <div class="telemetry-card-value highlight-green" id="reactor-val-temp">38.4 °C</div>
-                        <div class="telemetry-bar-wrap">
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                            <div class="telemetry-bar-segment"></div>
-                        </div>
-                    </div>
-
-                    <!-- Magnetic Confinement Card -->
-                    <div class="reactor-telemetry-card">
-                        <div class="telemetry-card-header">
-                            <span class="telemetry-card-label"><i class="fa-solid fa-magnet"></i> CONFINEMENT FLUX</span>
-                            <span class="telemetry-card-badge">STABLE</span>
-                        </div>
-                        <div class="telemetry-card-value highlight-cyan" id="reactor-val-flux">99.98 %</div>
-                        <div class="telemetry-bar-wrap">
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment"></div>
-                        </div>
-                    </div>
-
-                    <!-- Synapse Resonance Frequency Card -->
-                    <div class="reactor-telemetry-card">
-                        <div class="telemetry-card-header">
-                            <span class="telemetry-card-label"><i class="fa-solid fa-wave-square"></i> HARMONIC FREQ</span>
-                            <span class="telemetry-card-badge">LOCKED</span>
-                        </div>
-                        <div class="telemetry-card-value highlight-green" id="reactor-val-freq">100.00 Hz</div>
-                        <div class="telemetry-bar-wrap">
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                            <div class="telemetry-bar-segment active"></div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Secondary Architecture Spec Strip -->
                 <div class="reactor-spec-strip">
                     <div class="reactor-spec-item">
@@ -1314,39 +1376,23 @@
                         <span class="cyan">100% ELECTRON FLUX</span>
                     </div>
                 </div>
-
-                <!-- Interactive Tactical Action Row -->
-                <div class="reactor-action-row">
-                    <button class="reactor-action-btn overdrive" id="btn-reactor-overdrive" onclick="toggleReactorOverdrive()">
-                        <i class="fa-solid fa-bolt-lightning"></i>
-                        <span id="btn-overdrive-text">OVERDRIVE BOOST</span>
-                    </button>
-                    <button class="reactor-action-btn calibrate" onclick="triggerReactorCalibration()">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                        <span>CALIBRATE SYNAPSE</span>
-                    </button>
-                    <button class="reactor-action-btn dismiss" onclick="closeLogoZoomModal()">
-                        <i class="fa-solid fa-xmark"></i>
-                        <span>CLOSE MATRIX</span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
     <!-- JS Scripts (Modular Structure) -->
-    <script src="js/utils.js?v=6.6.1" defer></script>
+    <script src="js/utils.js?v=6.6.2" defer></script>
     <script src="js/storage.js?v=6.0.0" defer></script>
     <script src="js/animations.js?v=6.0.0" defer></script>
     <script src="js/settings.js?v=6.4.0" defer></script>
-    <script src="js/lockscreen.js?v=6.0.0" defer></script>
-    <script src="js/chat.js?v=6.0.0" defer></script>
+    <script src="js/lockscreen.js?v=7.5.0" defer></script>
+    <script src="js/chat.js?v=6.1.0" defer></script>
     <script src="js/weather.js?v=6.0.0" defer></script>
     <script src="js/dashboard.js?v=6.0.0" defer></script>
-    <script src="js/commands.js?v=6.7.0" defer></script>
-    <script src="js/ai.js?v=6.6.0" defer></script>
+    <script src="js/commands.js?v=6.9.1" defer></script>
+    <script src="js/ai.js?v=6.8.1" defer></script>
     <script src="js/voice.js?v=6.3.0" defer></script>
-    <script src="js/app.js?v=6.3.0" defer></script>
+    <script src="js/app.js?v=6.6.0" defer></script>
 
     <!-- HOLOGRAPHIC AUTH TERMINAL MODAL (PILOT AUTH TERMINAL INTEGRATED) -->
     <div class="settings-modal-overlay" id="auth-terminal-modal" onclick="if(event.target === this) closeAuthTerminalModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">

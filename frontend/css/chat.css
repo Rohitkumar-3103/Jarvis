@@ -186,14 +186,66 @@ code[class*="language-"] {
 }
 
 /* Hover effects for individual code zoom button */
-.code-zoom-btn:hover,
-.code-zoom-copy-btn:hover {
+.code-zoom-btn:hover {
     color: var(--theme-primary) !important;
     transform: scale(1.15);
     text-shadow: 0 0 6px var(--theme-primary);
 }
 
-.code-zoom-btn:active,
-.code-zoom-copy-btn:active {
+.code-zoom-btn:active {
     transform: scale(0.9);
+}
+
+/* J.A.R.V.I.S. Secure Code Viewer Header Buttons (Image 4) */
+.code-zoom-copy-btn {
+    background: rgba(0, 240, 255, 0.1) !important;
+    border: 1px solid rgba(0, 240, 255, 0.35) !important;
+    border-radius: 5px;
+    color: var(--theme-primary, #00f0ff) !important;
+    cursor: pointer;
+    font-size: 1.05rem !important;
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.code-zoom-copy-btn:hover {
+    color: #ffffff !important;
+    background: rgba(0, 240, 255, 0.25) !important;
+    border-color: var(--theme-primary, #00f0ff) !important;
+    box-shadow: 0 0 14px var(--theme-primary, #00f0ff) !important;
+    transform: scale(1.08);
+}
+
+.code-zoom-copy-btn:active {
+    transform: scale(0.95);
+}
+
+#close-zoom-btn {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-radius: 5px;
+    color: #ffffff !important;
+    cursor: pointer;
+    font-size: 1.15rem !important;
+    padding: 5px 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#close-zoom-btn:hover {
+    color: #ff4d4d !important;
+    background: rgba(255, 77, 77, 0.2) !important;
+    border-color: rgba(255, 77, 77, 0.5) !important;
+    box-shadow: 0 0 14px rgba(255, 77, 77, 0.4) !important;
+    transform: rotate(90deg) scale(1.08);
+}
+
+#close-zoom-btn:active {
+    transform: scale(0.95);
 }

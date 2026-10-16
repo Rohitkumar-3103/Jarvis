@@ -190,7 +190,10 @@ async function initiateSystemCall(contactName, isVideo = false) {
             callConnectionStateText.textContent = "DIALING SECURE LINK VIA SATELLITE...";
         }
     }
-    if (callTimerDisplay) callTimerDisplay.textContent = "00:00";
+    const initTimerHtml = `<i class="fa-regular fa-clock" style="margin-right: 5px; font-size: 0.72rem;"></i>00:00`;
+    if (callTimerDisplay) callTimerDisplay.innerHTML = initTimerHtml;
+    const voiceTimerInit = document.getElementById('call-voice-timer-display');
+    if (voiceTimerInit) voiceTimerInit.innerHTML = initTimerHtml;
     
     if (isVideo) {
         if (callModeText) callModeText.textContent = "SECURE VIDEO CONNECT";
@@ -244,11 +247,14 @@ function startCallTimer() {
         callDuration++;
         const mins = String(Math.floor(callDuration / 60)).padStart(2, '0');
         const secs = String(callDuration % 60).padStart(2, '0');
-        if (callTimerDisplay) callTimerDisplay.textContent = `${mins}:${secs}`;
+        const timeHtml = `<i class="fa-regular fa-clock" style="margin-right: 5px; font-size: 0.72rem;"></i>${mins}:${secs}`;
+        if (callTimerDisplay) callTimerDisplay.innerHTML = timeHtml;
+        const voiceTimer = document.getElementById('call-voice-timer-display');
+        if (voiceTimer) voiceTimer.innerHTML = timeHtml;
     }, 1000);
 }
 
-function terminateSystemCall() {
+window.terminateSystemCall = function() {
     clearInterval(callTimerInterval);
     callDuration = 0;
 
@@ -259,11 +265,13 @@ function terminateSystemCall() {
     if (callVideoUserVideo) callVideoUserVideo.srcObject = null;
 
     if (callOverlay && callOverlay.style.display === 'flex') {
+        if (typeof playClickSound === 'function') playClickSound();
         speak("Communication link terminated.");
         callOverlay.style.display = 'none';
     }
-}
+};
 
+const terminateSystemCall = window.terminateSystemCall;
 if (callEndTriggerBtn) callEndTriggerBtn.addEventListener('click', terminateSystemCall);
 
 // Mute and Video toggles
@@ -310,24 +318,92 @@ if (micTriggerBtn) micTriggerBtn.addEventListener('click', toggleVoiceListen);
 if (commandMicBtn) commandMicBtn.addEventListener('click', toggleVoiceListen);
 if (reactorCoreBtn) reactorCoreBtn.addEventListener('click', toggleVoiceListen);
 
+// Direct Comms Link Modal Controller (Call / WhatsApp)
+window.closeCommsModal = function() {
+    if (typeof playClickSound === 'function') playClickSound();
+    const modal = document.getElementById('comms-choice-modal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('comms-choice-modal');
+        if (modal && modal.style.display !== 'none') {
+            closeCommsModal();
+        }
+    }
+});
+
 const dockChatBtn = document.getElementById('dock-chat');
 if (dockChatBtn) {
-    dockChatBtn.addEventListener('click', async () => {
-        const contact = await showSystemPrompt("Enter contact name or phone number:", "Tony Stark");
-        if (contact) {
-            const cleanPhone = contact.startsWith('+') 
-                ? '+' + contact.replace(/\D/g, '') 
-                : contact.replace(/\D/g, '');
-            const isPhoneNumber = cleanPhone.replace(/\D/g, '').length >= 7; 
-            
-            if (isPhoneNumber) {
-                const url = `https://api.whatsapp.com/send?phone=${cleanPhone}`;
-                window.open(url, "_blank");
-                initiateSystemCall(contact + " (WHATSAPP)", false);
-            } else {
-                const isVideo = await showSystemConfirm("Enable Video calling link?");
-                initiateSystemCall(contact, isVideo);
+    dockChatBtn.addEventListener('click', () => {
+        if (typeof playClickSound === 'function') playClickSound();
+        const modal = document.getElementById('comms-choice-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            const input = document.getElementById('comms-contact-input');
+            if (input) {
+                input.value = '';
+                setTimeout(() => input.focus(), 150);
             }
+        }
+    });
+}
+
+// 1. Direct WhatsApp Launch Button
+const btnDirectWhatsapp = document.getElementById('btn-direct-whatsapp');
+if (btnDirectWhatsapp) {
+    btnDirectWhatsapp.addEventListener('click', () => {
+        if (typeof playClickSound === 'function') playClickSound();
+        closeCommsModal();
+        window.open('https://web.whatsapp.com', '_blank');
+        speak("Opening WhatsApp workspace, Sir.");
+        appendChatBubble('JARVIS', "Initiating secure WhatsApp Web workspace channel...");
+    });
+}
+
+// 2. Direct Hologram Call Launch Button
+const btnDirectCall = document.getElementById('btn-direct-call');
+if (btnDirectCall) {
+    btnDirectCall.addEventListener('click', () => {
+        if (typeof playClickSound === 'function') playClickSound();
+        closeCommsModal();
+        initiateSystemCall("TONY STARK (DIRECT SATELLITE)", true);
+    });
+}
+
+// 3. Direct Contact Dial Button & Enter Key
+const btnCommsDial = document.getElementById('btn-comms-dial');
+const commsContactInput = document.getElementById('comms-contact-input');
+
+function handleCommsDirectDial() {
+    if (!commsContactInput) return;
+    const val = commsContactInput.value.trim();
+    if (!val) {
+        closeCommsModal();
+        initiateSystemCall("TONY STARK", true);
+        return;
+    }
+    
+    closeCommsModal();
+    const cleanPhone = val.replace(/\D/g, '');
+    const isPhoneNumber = cleanPhone.length >= 7;
+
+    if (isPhoneNumber) {
+        window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}`, '_blank');
+        initiateSystemCall(val + " (WHATSAPP)", false);
+    } else {
+        initiateSystemCall(val, true);
+    }
+}
+
+if (btnCommsDial) {
+    btnCommsDial.addEventListener('click', handleCommsDirectDial);
+}
+if (commsContactInput) {
+    commsContactInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleCommsDirectDial();
         }
     });
 }

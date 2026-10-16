@@ -23,10 +23,10 @@ function formatMessageText(text) {
             <div class="code-header" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(0, 240, 255, 0.05); border-bottom: 1px solid rgba(0, 240, 255, 0.1); font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">
                 <span class="code-lang">${language}</span>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="code-copy-btn" onclick="copyCodeBlock(this)" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px 6px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" title="Copy code">
-                        <i class="fa-regular fa-copy"></i>
+                    <button class="code-copy-btn" onclick="copyCodeBlock(this)" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--theme-primary, #00f0ff); cursor: pointer; padding: 4px 7px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" title="Copy code">
+                        <i class="fa-solid fa-copy"></i>
                     </button>
-                    <button class="code-zoom-btn" onclick="zoomCodeBlock(this)" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px 6px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" title="Zoom code">
+                    <button class="code-zoom-btn" onclick="zoomCodeBlock(this)" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; cursor: pointer; padding: 4px 7px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.2s;" title="Zoom code">
                         <i class="fa-solid fa-expand"></i>
                     </button>
                 </div>
@@ -373,7 +373,7 @@ window.copyCodeBlock = function(buttonElement) {
         if (window.playClickSound) window.playClickSound();
 
         setTimeout(() => {
-            icon.className = 'fa-regular fa-copy';
+            icon.className = 'fa-solid fa-copy';
             buttonElement.style.color = '';
         }, 2000);
     }).catch(err => {
@@ -434,14 +434,16 @@ document.addEventListener('DOMContentLoaded', () => {
         zoomCopyBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(zoomCode.textContent).then(() => {
                 const icon = zoomCopyBtn.querySelector('i');
-                icon.className = 'fa-solid fa-check';
+                if (icon) icon.className = 'fa-solid fa-check';
                 zoomCopyBtn.style.color = '#00ff66';
+                zoomCopyBtn.style.borderColor = '#00ff66';
 
                 if (window.playClickSound) window.playClickSound();
 
                 setTimeout(() => {
-                    icon.className = 'fa-regular fa-copy';
+                    if (icon) icon.className = 'fa-solid fa-copy';
                     zoomCopyBtn.style.color = '';
+                    zoomCopyBtn.style.borderColor = '';
                 }, 2000);
             });
         });

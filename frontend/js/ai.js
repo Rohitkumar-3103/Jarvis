@@ -663,3 +663,4 @@ window.triggerSuggestedLanguage = function(algoName, lang) {
     const prompt = `Write ${lang} code for ${algoName} algorithm`;
     triggerCodeAutomation(prompt, lang);
 };
+

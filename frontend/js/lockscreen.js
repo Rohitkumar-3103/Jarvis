@@ -34,12 +34,59 @@ const profileClearance = document.getElementById('profile-clearance');
 const profileAvatarImg = document.getElementById('profile-avatar-img');
 const profileLogoutBtn = document.getElementById('profile-logout-btn');
 
+// Switch between Biometric Face ID and Security PIN Matrix tabs
+window.switchLockTab = function(tabName) {
+    const btnFace = document.getElementById('tab-btn-face');
+    const btnPin = document.getElementById('tab-btn-pin');
+    const tabFace = document.getElementById('tab-content-face');
+    const tabPin = document.getElementById('tab-content-pin');
+    
+    if (typeof playClickSound === 'function') {
+        playClickSound();
+    }
+    
+    if (tabName === 'face') {
+        if (btnFace) btnFace.classList.add('active');
+        if (btnPin) btnPin.classList.remove('active');
+        if (tabFace) tabFace.style.display = 'flex';
+        if (tabPin) tabPin.style.display = 'none';
+        
+        if (lockStatusDisplay) {
+            lockStatusDisplay.textContent = "BIOMETRIC NEURAL SCANNER ACTIVE // ALIGN RETINA";
+        }
+        startFacialScan();
+    } else {
+        if (btnFace) btnFace.classList.remove('active');
+        if (btnPin) btnPin.classList.add('active');
+        if (tabFace) tabFace.style.display = 'none';
+        if (tabPin) tabPin.style.display = 'flex';
+        
+        stopLockWebcam();
+        if (lockStatusDisplay) {
+            lockStatusDisplay.textContent = "SECURITY PIN MATRIX ACTIVE // ENTER 4-DIGIT PASSCODE";
+        }
+    }
+};
+
 function initializeLockScreen() {
     if (lockScreenOverlay) lockScreenOverlay.style.display = 'flex';
-    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'none';
     if (authFormsBox) authFormsBox.style.display = 'none';
     if (otpVerificationBox) otpVerificationBox.style.display = 'none';
     
+    // Default to Biometric Face ID tab
+    const btnFace = document.getElementById('tab-btn-face');
+    const btnPin = document.getElementById('tab-btn-pin');
+    const tabFace = document.getElementById('tab-content-face');
+    const tabPin = document.getElementById('tab-content-pin');
+    if (btnFace) btnFace.classList.add('active');
+    if (btnPin) btnPin.classList.remove('active');
+    if (tabFace) tabFace.style.display = 'flex';
+    if (tabPin) tabPin.style.display = 'none';
+    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'flex';
+    
+    // Reset PIN dots
+    clearPin();
+
     // Check if there is an active session
     const savedUser = localStorage.getItem('jarvis_user');
     if (savedUser) {
@@ -48,14 +95,17 @@ function initializeLockScreen() {
         if (profileWidget) profileWidget.style.display = 'none';
     }
 
-    lockStatusDisplay.textContent = "SECURITY SYSTEM ACTIVE // INITIALIZING BIOMETRIC SCANNER...";
+    if (lockStatusDisplay) lockStatusDisplay.textContent = "INITIALIZING BIOMETRIC RETINAL SCAN & PIN SYNAPSE...";
     speak("App access locked. Secure biometric authentication is required.");
     
     setTimeout(() => {
-        if (lockScreenOverlay && lockScreenOverlay.style.display === 'flex' && passcodeFallbackBox.style.display === 'none' && authFormsBox.style.display === 'none') {
-            startFacialScan();
+        if (lockScreenOverlay && lockScreenOverlay.style.display === 'flex') {
+            const currentTabFace = document.getElementById('tab-content-face');
+            if (currentTabFace && currentTabFace.style.display !== 'none') {
+                startFacialScan();
+            }
         }
-    }, 1500);
+    }, 1200);
 }
 
 function loadUserProfile(user) {
@@ -85,6 +135,7 @@ function logoutUser() {
 }
 
 function bypassLockScreen() {
+    stopLockWebcam();
     if (lockScreenOverlay) lockScreenOverlay.style.display = 'none';
     updateCoreState('IDLE');
     
@@ -125,7 +176,7 @@ async function startFacialScan() {
     if (matchValDisplay) matchValDisplay.textContent = '00%';
 
     lockStatusDisplay.textContent = "ACCESSING INTERNAL CAMERA FEED...";
-    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'none';
+    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'flex';
     if (authFormsBox) authFormsBox.style.display = 'none';
     if (otpVerificationBox) otpVerificationBox.style.display = 'none';
     
@@ -210,18 +261,27 @@ async function startFacialScan() {
         }, 2000);
 
     } catch (err) {
-        lockStatusDisplay.textContent = "BIOMETRIC LINK FAIL // ENCRYPTED PIN REQUIRED";
-        speak("Facial recognition link failed. Please enter security passcode.");
-        showPasscodeFallback();
+        console.warn("Facial recognition camera access:", err);
+        if (lockStatusDisplay) {
+            lockStatusDisplay.textContent = "BIOMETRIC FEED STANDBY // PIN MATRIX AVAILABLE";
+        }
     }
 }
 
 async function showPasscodeFallback() {
     stopLockWebcam();
+    const btnFace = document.getElementById('tab-btn-face');
+    const btnPin = document.getElementById('tab-btn-pin');
+    const tabFace = document.getElementById('tab-content-face');
+    const tabPin = document.getElementById('tab-content-pin');
+    if (btnFace) btnFace.classList.remove('active');
+    if (btnPin) btnPin.classList.add('active');
+    if (tabFace) tabFace.style.display = 'none';
+    if (tabPin) tabPin.style.display = 'flex';
     if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'flex';
     if (authFormsBox) authFormsBox.style.display = 'none';
     if (otpVerificationBox) otpVerificationBox.style.display = 'none';
-    lockStatusDisplay.textContent = "BIOMETRIC LOCKOUT // ENTER PIN SECURITY VECTOR";
+    if (lockStatusDisplay) lockStatusDisplay.textContent = "BIOMETRIC LOCKOUT // ENTER PIN SECURITY VECTOR";
 }
 
 function showCredentialsBox() {
@@ -250,39 +310,92 @@ function handlePinKeyPress(digit) {
     if (enteredPin.length < 4) {
         enteredPin += digit;
         updatePinDisplay();
-        playClickSound();
+        if (typeof playClickSound === 'function') playClickSound();
     }
 
+    // Ready indicator on the green bypass button - NO AUTO-BYPASS (user must click manually)
     if (enteredPin.length === 4) {
-        setTimeout(() => {
-            if (enteredPin === correctPin) {
-                lockStatusDisplay.textContent = "PIN CORRECT. SYSTEM UNLOCKED.";
-                speak("Security passcode verified.");
-                
-                // Set default user session on PIN bypass
-                const defaultUser = {
-                    username: "ironman",
-                    fullname: "Tony Stark",
-                    role: "Primary User // Administrator",
-                    avatar: "assets/images/avatar.png"
-                };
-                localStorage.setItem('jarvis_user', JSON.stringify(defaultUser));
-                loadUserProfile(defaultUser);
+        if (pinBypassBtn) {
+            pinBypassBtn.classList.add('active');
+            pinBypassBtn.style.transform = 'scale(1.06)';
+            pinBypassBtn.style.boxShadow = '0 0 22px #00ff88, inset 0 0 10px #00ff88';
+        }
+        if (lockStatusDisplay) {
+            lockStatusDisplay.textContent = "PIN ENTERED // CLICK BYPASS TO AUTHORIZE";
+        }
+    } else {
+        if (pinBypassBtn) {
+            pinBypassBtn.classList.remove('active');
+            pinBypassBtn.style.transform = '';
+            pinBypassBtn.style.boxShadow = '';
+        }
+    }
+}
 
-                bypassLockScreen();
-                clearPin();
-            } else {
-                lockStatusDisplay.textContent = "VECTOR CODE ERROR. ACCESS DENIED.";
-                speak("Passcode incorrect. Access denied.");
-                clearPin();
-            }
-        }, 300);
+function handlePinBypassSubmit() {
+    if (typeof playClickSound === 'function') playClickSound();
+    
+    const expectedPin = (typeof correctPin !== 'undefined') ? correctPin : '2710';
+    
+    if (enteredPin === expectedPin) {
+        if (lockStatusDisplay) lockStatusDisplay.textContent = "PIN 2710 VERIFIED // ACCESS GRANTED";
+        if (typeof speak === 'function') speak("Passcode 2710 verified. Welcome back, Sir.");
+        
+        // Ensure user session on valid PIN bypass
+        const savedUser = localStorage.getItem('jarvis_user');
+        if (!savedUser) {
+            const defaultUser = {
+                username: "ironman",
+                fullname: "Tony Stark",
+                role: "Primary User // Administrator",
+                avatar: "assets/images/avatar.png"
+            };
+            localStorage.setItem('jarvis_user', JSON.stringify(defaultUser));
+            loadUserProfile(defaultUser);
+        }
+        
+        if (pinBypassBtn) {
+            pinBypassBtn.classList.remove('active');
+            pinBypassBtn.style.transform = '';
+            pinBypassBtn.style.boxShadow = '';
+        }
+        
+        bypassLockScreen();
+        clearPin();
+    } else if (enteredPin.length > 0) {
+        if (lockStatusDisplay) lockStatusDisplay.textContent = "ACCESS DENIED // INVALID PIN VECTOR";
+        if (typeof speak === 'function') speak("Access denied. Invalid PIN.");
+        
+        // Visual alert feedback on PIN dots
+        pinDots.forEach(dot => {
+            dot.style.background = '#ff003c';
+            dot.style.borderColor = '#ff003c';
+            dot.style.boxShadow = '0 0 14px #ff003c';
+        });
+        
+        setTimeout(() => {
+            pinDots.forEach(dot => {
+                dot.style.background = '';
+                dot.style.borderColor = '';
+                dot.style.boxShadow = '';
+            });
+            clearPin();
+            if (lockStatusDisplay) lockStatusDisplay.textContent = "ENTER PIN SECURITY VECTOR (2710)";
+        }, 750);
+    } else {
+        if (lockStatusDisplay) lockStatusDisplay.textContent = "PLEASE INPUT PIN 2710 BEFORE BYPASS";
+        if (typeof speak === 'function') speak("Please enter PIN 2710 to bypass.");
     }
 }
 
 function clearPin() {
     enteredPin = '';
     updatePinDisplay();
+    if (pinBypassBtn) {
+        pinBypassBtn.classList.remove('active');
+        pinBypassBtn.style.transform = '';
+        pinBypassBtn.style.boxShadow = '';
+    }
 }
 
 function updatePinDisplay() {
@@ -417,7 +530,7 @@ async function handleRegister() {
 
 // Bind Lock screen actions
 if (scanTriggerBtn) scanTriggerBtn.addEventListener('click', () => {
-    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'none';
+    if (passcodeFallbackBox) passcodeFallbackBox.style.display = 'flex';
     if (authFormsBox) authFormsBox.style.display = 'none';
     startFacialScan();
 });
@@ -496,9 +609,7 @@ if (profileLogoutBtn) profileLogoutBtn.addEventListener('click', logoutUser);
 
 if (pinClearBtn) pinClearBtn.addEventListener('click', clearPin);
 if (pinBypassBtn) {
-    pinBypassBtn.addEventListener('click', () => {
-        bypassLockScreen();
-    });
+    pinBypassBtn.addEventListener('click', handlePinBypassSubmit);
 }
 
 // Bind numeric pad keys
@@ -507,4 +618,34 @@ pinKeys.forEach(btn => {
         const digit = btn.getAttribute('data-key');
         handlePinKeyPress(digit);
     });
+});
+
+// Physical Keyboard Support for PIN Entry
+window.addEventListener('keydown', (e) => {
+    if (!lockScreenOverlay || lockScreenOverlay.style.display === 'none') return;
+    
+    // Ignore keystrokes if the user is typing into input fields
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    
+    if (e.key >= '0' && e.key <= '9') {
+        handlePinKeyPress(e.key);
+    } else if (e.key === 'Backspace') {
+        if (enteredPin.length > 0) {
+            enteredPin = enteredPin.slice(0, -1);
+            updatePinDisplay();
+            if (typeof playClickSound === 'function') playClickSound();
+            if (pinBypassBtn) {
+                pinBypassBtn.classList.remove('active');
+                pinBypassBtn.style.transform = '';
+                pinBypassBtn.style.boxShadow = '';
+            }
+        }
+    } else if (e.key === 'Delete') {
+        clearPin();
+        if (typeof playClickSound === 'function') playClickSound();
+    } else if (e.key === 'Escape') {
+        clearPin();
+    } else if (e.key === 'Enter') {
+        handlePinBypassSubmit();
+    }
 });

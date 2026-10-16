@@ -51,7 +51,7 @@ let speechVoices = [];
 // App Access (Lock Screen) variables
 let lockStream = null;
 let enteredPin = '';
-const correctPin = '3000'; // "I love you 3000"
+const correctPin = '2710'; // Stark Master Access PIN
 
 // Call system variables
 let callStream = null;
