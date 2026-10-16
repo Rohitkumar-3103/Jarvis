@@ -10,7 +10,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8") if
 
 setup(
     name="jarvis-ai-os",
-    version="3.2.0",
+    version="3.2.5",
     description="Full-stack AI assistant and tactical Sci-Fi Operating System",
     long_description=long_description,
     long_description_content_type="text/markdown",

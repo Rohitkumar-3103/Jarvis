@@ -1,10 +1,10 @@
-# 🌐 J.A.R.V.I.S. AI OS v3.2.0
+# 🌐 J.A.R.V.I.S. AI OS v3.2.5
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Rohit_Kumar_Gupta-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
 [![GitHub](https://img.shields.io/badge/GitHub-Rohitkumar--3103-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Rohitkumar-3103/Jarvis)
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-v3.2.0-00f0ff?style=flat-square)](https://github.com/Rohitkumar-3103/Jarvis)
+[![Version](https://img.shields.io/badge/Version-v3.2.5-00f0ff?style=flat-square)](https://github.com/Rohitkumar-3103/Jarvis)
 
 Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advanced automated full-stack AI assistant and tactical desktop operating system inspired by the Stark Industries Mark XLVII interface.
 

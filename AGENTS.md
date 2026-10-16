@@ -1,7 +1,7 @@
 # 🤖 AGENTS.md — AI Agent Context & System Blueprint
 
 > **For AI Assistants & Autonomous Coding Agents (Antigravity, Gemini, Claude, GPT, Cursor, Copilot)**
-> This document provides the complete mental model, architectural rules, execution flows, and technical invariants required to navigate, maintain, debug, and extend the **J.A.R.V.I.S. AI OS v3.2.0** codebase.
+> This document provides the complete mental model, architectural rules, execution flows, and technical invariants required to navigate, maintain, debug, and extend the **J.A.R.V.I.S. AI OS v3.2.5** codebase.
 
 ---
 
@@ -11,7 +11,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           J.A.R.V.I.S. AI OS v3.2.0                         │
+│                           J.A.R.V.I.S. AI OS v3.2.5                         │
 ├──────────────────────────────────────┬──────────────────────────────────────┤
 │       FRONTEND HUD (Port 8080)       │       BACKEND API (Port 5000)        │
 │  - Glassmorphic Neon HUD Dashboard  │  - Python 3.12 / Flask REST Node     │
