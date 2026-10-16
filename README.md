@@ -118,124 +118,150 @@ graph TD
 ### 1. Download the Project
 Clone or download the project files into your local directory. The final project structure consists of:
 ```text
-JARVIS-AI/
+Jarvis/
 │
-├── README.md
-├── LICENSE
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── requirements.txt
-├── package.json
-├── .gitignore
-├── setup.py
-├── main.py
-├── run_dashboard.py
+├── 🚀 ORCHESTRATION & PACKAGING
+│   ├── run_dashboard.py            # Main Full-Stack Launcher (Backend Port 5000 + Web HUD Port 8080)
+│   ├── main.py                     # Standalone PyQt6 Live Gemini Multimodal Audio Client
+│   ├── ui.py                       # Sci-Fi PyQt6 Desktop Client GUI
+│   ├── setup.py                    # Setuptools Packaging Specification
+│   ├── package.json                # Project Metadata & NPM Scripts
+│   ├── requirements.txt            # Python Dependencies Manifest
+│   ├── requirements-docker.txt     # Minimal Containerized Dependencies
+│   ├── Dockerfile                  # Container Deployment Blueprint
+│   ├── docker-compose.yml          # Multi-Container Compose Configuration
+│   ├── .env                        # Local Secret Variables (Ignored by Git)
+│   ├── .env.example                # Sample Environment Configuration Template
+│   └── .gitignore                  # Git Version Control Ignore Rules
 │
-├── frontend/
-│   ├── index.html
-│   ├── favicon.ico
+├── 📚 DOCUMENTATION & BLUEPRINTS
+│   ├── README.md                   # Primary GitHub Presentation & Quickstart Guide
+│   ├── AGENTS.md                   # AI Assistant Mental Model, Architecture Rules & Invariants
+│   ├── PROJECT_OVERVIEW.md         # Full Subsystem Architecture & Module Mapping
+│   ├── JARVIS_TECHNICAL_PROJECT_REPORT.md  # Formal Technical & Academic System Report
+│   ├── LICENSE                     # MIT Open-Source License
+│   ├── CHANGELOG.md                # Release History & Version Logs
+│   ├── CONTRIBUTING.md             # Developer Contribution Guidelines
+│   └── docs/                       # Technical Manuals & Subsystem Specifications
+│       ├── API_DOCUMENTATION.md    # Complete REST API Endpoint Reference
+│       ├── ARCHITECTURE.md         # Multi-Tier System Topology & Sequence Diagrams
+│       ├── DESIGN.md               # Mark XLVII HUD Design Specifications & Tokens
+│       ├── DEVELOPER_GUIDE.md      # Developer Setup & Extension Handbook
+│       ├── INSTALLATION.md         # Step-by-Step Installation Handbook
+│       ├── PYTHON_TUTORIAL.md      # Python Codebase Tutorial & Scripting Guide
+│       └── USER_GUIDE.md           # User Operation & Voice Commands Handbook
+│
+├── 🖥️ FRONTEND (TACTICAL HUD WEB CLIENT — PORT 8080)
+│   ├── index.html                  # Main Glassmorphic Tactical HUD Dashboard
+│   ├── auth.html                   # Biometric Auth Terminal (WebGL GLSL Shader)
+│   ├── favicon.ico                 # App Favicon
 │   │
-│   ├── assets/
-│   │   ├── images/
-│   │   ├── icons/
-│   │   ├── sounds/
-│   │   ├── videos/
-│   │   └── fonts/
+│   ├── css/                        # Modular Stylesheets
+│   │   ├── style.css               # Core Styles & Layout Tokens
+│   │   ├── dashboard.css           # HUD Panels, Arc Reactor & Tactical Call Comms
+│   │   ├── chat.css                # AI Chat Bubbles & Code Prism Viewers
+│   │   ├── lockscreen.css          # Biometric Face Scan & Passcode Pad
+│   │   ├── settings.css            # Tactical Slide-Out Settings Panel
+│   │   ├── widgets.css             # Circular Gauges & Telemetry Blocks
+│   │   ├── themes.css              # 360° Theme Engine & Color Swatches
+│   │   ├── animations.css          # Keyframes, Radar Pulses, Glowing Effects
+│   │   ├── responsive.css          # Mobile / Tablet Viewport Queries
+│   │   └── all.min.css             # Local FontAwesome 6.5.2 Icon Suite
 │   │
-│   ├── css/
-│   │   ├── style.css
-│   │   ├── dashboard.css
-│   │   ├── animations.css
-│   │   ├── chat.css
-│   │   ├── lockscreen.css
-│   │   ├── settings.css
-│   │   ├── widgets.css
-│   │   ├── themes.css
-│   │   └── responsive.css
+│   ├── js/                         # Frontend Execution Engines
+│   │   ├── app.js                  # Master Controller, Comms & Audio Routing
+│   │   ├── ai.js                   # Gemini LLM Bridge & Pollinations 4K Flux Engine
+│   │   ├── voice.js                # Bilingual Web Speech Recognition & TTS
+│   │   ├── commands.js             # Voice & Text Intent Classifier
+│   │   ├── dashboard.js            # HUD Widgets, Drawer & Telemetry Streams
+│   │   ├── chat.js                 # Message Stream, PDF Export & Code Zoom
+│   │   ├── lockscreen.js           # Biometric Face Verification & Master PIN (2710)
+│   │   ├── settings.js             # Profile Sync & Color Wheel Controller
+│   │   ├── weather.js              # Live Radar & Atmospheric Resolver
+│   │   ├── reactor3d.js            # 3D Arc Reactor State Machine
+│   │   ├── storage.js              # LocalStorage Persistent Sync
+│   │   ├── animations.js           # Micro-Interactions & Particle Dynamics
+│   │   └── utils.js                # DOM Selectors, Audio Chimes & Helpers
 │   │
-│   └── js/
-│       ├── app.js
-│       ├── voice.js
-│       ├── ai.js
-│       ├── chat.js
-│       ├── commands.js
-│       ├── dashboard.js
-│       ├── weather.js
-│       ├── lockscreen.js
-│       ├── reactor3d.js
-│       ├── settings.js
-│       ├── storage.js
-│       ├── animations.js
-│       └── utils.js
+│   └── assets/                     # Media & Static Assets
+│       ├── images/                 # Avatars, Logos, App Icons
+│       ├── icons/                  # HUD Vector Icons
+│       └── sounds/                 # Tactical HUD Sound Effects
 │
-├── backend/
-│   ├── server.py                   # Flask API entry point (Port 5000)
-│   ├── server_config.py
-│   ├── api/                        # REST Blueprints (Auth, Chat, System, Weather, AI, Files, Code)
-│   ├── automation/                 # OS automation, media & hardware telemetry
-│   ├── database/                   # Chat history database manager
-│   └── data/                       # Local account records
+├── ⚙️ BACKEND (FLASK REST MICROSERVICES — PORT 5000)
+│   ├── server.py                   # Primary Flask WSGI Application Entry Point
+│   ├── server_config.py            # Server Ports, Host & Environment Flags
+│   │
+│   ├── api/                        # REST Blueprints
+│   │   ├── __init__.py             # Blueprint Package Export
+│   │   ├── ai.py                   # Google Gemini REST Relay
+│   │   ├── auth.py                 # Face Verification, Hybrid Auth & OTP
+│   │   ├── calls.py                # Direct Satellite Voice/Video Call Relay
+│   │   ├── chat.py                 # Chat History Persistence & Flushes
+│   │   ├── code.py                 # Python Code Interpreter Sandbox
+│   │   ├── files.py                # Dataset Upload & Document Processing
+│   │   ├── system.py               # Hardware Diagnostics & OS Automation
+│   │   └── weather.py              # Atmospheric Open-Meteo Gateway
+│   │
+│   ├── automation/                 # Native OS Automation
+│   │   ├── os_controls.py          # Windows Application & Master Controls
+│   │   └── media_player.py         # Native Audio & Media Stream Dispatcher
+│   │
+│   ├── database/                   # Storage Layer
+│   │   └── chat_db.py              # SQLite / JSON Conversation Store
+│   │
+│   └── data/                       # User Records
+│       └── users.json.example      # Sample User Account Blueprint
 │
-├── core/
-│   ├── __init__.py
-│   ├── llm.py                      # LLM provider orchestration
-│   ├── prompt.txt                  # System prompt definitions
-│   ├── stt.py                      # Offline Whisper & Vosk STT
-│   ├── tts.py                      # EdgeTTS, Kokoro, ElevenLabs TTS
-│   ├── installer.py
-│   └── startup.py
+├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
+│   ├── __init__.py                 # Engine Package Exports
+│   ├── llm.py                      # Multi-Model LLM Orchestration
+│   ├── stt.py                      # Offline Whisper & Vosk Speech-to-Text
+│   ├── tts.py                      # EdgeTTS, Kokoro & ElevenLabs Voices
+│   ├── prompt.txt                  # Master Persona & System Instructions
+│   ├── installer.py                # Dynamic Dependency Installer
+│   └── startup.py                  # Initialization & System Boot Sequence
 │
-├── actions/
-│   ├── __init__.py                 # Tool exports
-│   ├── browser_control.py          # Browser automation
-│   ├── code_helper.py              # Competitive programming sandbox
-│   ├── computer_control.py         # System control
-│   ├── computer_settings.py        # Windows settings
-│   ├── desktop.py                  # Desktop automation
-│   ├── dev_agent.py                # Developer agent
-│   ├── file_controller.py          # File management & search
-│   ├── flight_finder.py            # Travel search
-│   ├── game_updater.py             # Game supervisor
-│   ├── messaging.py                # Secure email & notifications
-│   ├── music.py                    # Audio/video playback
-│   ├── open_app.py                 # Application launcher
-│   ├── proactive.py                # Background proactive engine
-│   ├── reminder.py                 # Task reminders
-│   ├── screen_processor.py         # Vision & screen OCR
-│   ├── system_monitor.py           # Hardware telemetry
-│   ├── weather.py                  # Weather provider
-│   ├── web_search.py               # Web & news search
-│   └── youtube.py                  # YouTube streaming & transcripts
+├── ⚡ ACTIONS (NATIVE AGENT TOOL SUITE)
+│   ├── __init__.py                 # Tool Exports
+│   ├── browser_control.py          # Playwright Headless Web Automation
+│   ├── code_helper.py              # Local Python Sandbox & CP Helper
+│   ├── computer_control.py         # Process Supervisor & System Power
+│   ├── computer_settings.py        # Windows Audio, Display & Network
+│   ├── desktop.py                  # Window Placement & Desktop Automation
+│   ├── dev_agent.py                # Autonomous Coding Workflow Agent
+│   ├── file_controller.py          # Safe Filesystem Controller & Search
+│   ├── file_processor.py           # Document Summarization & Parsing
+│   ├── flight_finder.py            # Flight Schedules & Travel Lookups
+│   ├── game_updater.py             # Game Supervisor & Launcher
+│   ├── messaging.py                # Encrypted Comms & Email Dispatch
+│   ├── music.py                    # Multi-Directory Music Scanner & Player
+│   ├── open_app.py                 # Application & URI Dispatcher
+│   ├── proactive.py                # Background Context Monitoring
+│   ├── reminder.py                 # Task Scheduling & Event Reminders
+│   ├── screen_processor.py         # .NET GDI Screen Capture & OCR
+│   ├── system_monitor.py           # Real-Time CPU/RAM/Temp Telemetry
+│   ├── weather.py                  # Meteorological Data Provider
+│   ├── web_search.py               # Live News & Web Intelligence
+│   └── youtube.py                  # YouTube Audio/Video Streaming
 │
-├── memory/
-│   ├── __init__.py
-│   ├── config_manager.py           # API key & setting resolver
-│   ├── memory_manager.py           # Conversation memory
-│   └── user_profile.json
+├── 💾 MEMORY & CONFIG
+│   ├── memory/
+│   │   ├── memory_manager.py       # Conversation Context Store
+│   │   ├── config_manager.py       # Setting & API Key Resolver
+│   │   └── user_profile.json       # Active Profile Manifest
+│   └── config/
+│       ├── api_keys.json.example   # Configuration Template
+│       ├── environment.py          # Cross-Platform Resolver
+│       └── jarvis.ico              # Native App Icon
 │
-├── config/
-│   ├── __init__.py
-│   ├── api_keys.json.example       # API configuration blueprint
-│   ├── environment.py              # Cross-platform environment resolution
-│   └── jarvis.ico                  # Application icon
-│
-├── docs/
-│   ├── API_DOCUMENTATION.md        # REST API endpoint reference
-│   ├── ARCHITECTURE.md             # System architecture & diagrams
-│   ├── DESIGN.md                   # HUD Design & Theme specifications
-│   ├── DEVELOPER_GUIDE.md          # Developer onboarding guide
-│   ├── INSTALLATION.md             # Step-by-step setup handbook
-│   ├── PYTHON_TUTORIAL.md          # Python codebase tutorial
-│   └── USER_GUIDE.md               # User & voice commands handbook
-│
-├── screenshots/                    # High-resolution HUD interface captures
-├── demo/                           # Demos & animated previews
-├── tests/                          # Automated unit & integration tests
-├── run_dashboard.py                # 🚀 Unified Full-Stack Launcher (Backend + Web HUD)
-├── main.py                         # 🎙️ Live Audio Multimodal Desktop Client
-├── ui.py                           # 🖥️ PyQt6 Desktop Client GUI
-├── setup.py                        # Setuptools packaging specification
-└── package.json                    # Project metadata & npm scripts
+└── 🧪 TESTS & VERIFICATION
+    ├── tests/
+    │   ├── test_actions.py         # Native Agent Tool Unit Tests
+    │   ├── test_api.py             # Flask REST Routes Verification
+    │   └── test_auth.py            # Authentication & OTP Unit Tests
+    ├── screenshots/                # High-Resolution HUD Interface Captures
+    └── demo/                       # Video Previews & Animation Assets
 ```
 
 ---
