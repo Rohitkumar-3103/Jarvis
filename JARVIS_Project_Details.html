@@ -860,98 +860,118 @@
     </table>
 </div>
 
-<!-- PAGE 5: REPOSITORY STRUCTURE & QUICKSTART GUIDE -->
 <div class="page">
     <h2>8. Modular Repository Architecture</h2>
-    <div class="grid-2" style="margin-bottom: 2pt;">
-        <div class="code-block" style="font-size: 5.4pt; line-height: 1.16; margin: 0; padding: 3px 5px;">Jarvis/
+    <div class="grid-2" style="margin-bottom: 3pt;">
+        <div class="code-block" style="font-size: 5.5pt; line-height: 1.24; margin: 0; padding: 4px 6px;">Jarvis/
 ├── 🚀 ORCHESTRATION & PACKAGING
-│   ├── run_dashboard.py        # Full-Stack Launcher (5000+8080)
+│   ├── run_dashboard.py        # Main Full-Stack Launcher (5000+8080)
 │   ├── main.py                 # PyQt6 Live Multimodal Client
 │   ├── ui.py                   # Sci-Fi PyQt6 Desktop Client GUI
-│   ├── setup.py                # Setuptools Packaging Spec
+│   ├── setup.py                # Setuptools Packaging Specification
 │   ├── package.json            # Project Metadata & NPM Scripts
 │   ├── requirements.txt        # Python Dependencies Manifest
 │   ├── requirements-docker.txt # Minimal Docker Dependencies
 │   ├── Dockerfile              # Container Deployment Blueprint
-│   ├── docker-compose.yml      # Multi-Container Compose
-│   ├── .env / .env.example     # Local Secret / Template Vars
+│   ├── docker-compose.yml      # Multi-Container Compose Configuration
+│   ├── .env / .env.example     # Secrets & Template Configuration
 │   └── .gitignore              # Git Ignore Rules
 ├── 📚 DOCUMENTATION & BLUEPRINTS
 │   ├── README.md               # GitHub Presentation & Quickstart
 │   ├── AGENTS.md               # AI Assistant Architecture & Invariants
 │   ├── PROJECT_OVERVIEW.md     # Subsystem Architecture Mapping
-│   ├── JARVIS_TECHNICAL_PROJECT_REPORT.md # Technical Report
+│   ├── JARVIS_TECHNICAL_REPORT # Formal System Technical Report
+│   ├── JARVIS_Project_Details.pdf # Master PDF Documentation Specification
 │   ├── LICENSE / CHANGELOG.md / CONTRIBUTING.md
 │   └── docs/                   # Technical Subsystem Manuals
-│       ├── API_DOCUMENTATION.md / ARCHITECTURE.md
-│       ├── DESIGN.md / DEVELOPER_GUIDE.md / INSTALLATION.md
-│       └── PYTHON_TUTORIAL.md / USER_GUIDE.md
+│       ├── API_Documentation.md # REST API Endpoint Reference
+│       ├── ARCHITECTURE.md     # Multi-Tier System Topology & Flows
+│       ├── DESIGN.md           # Mark XLVII HUD Design System Tokens
+│       ├── DEVELOPER_GUIDE.md  # Extension & Setup Manual
+│       ├── INSTALLATION.md     # Step-by-Step Installation Handbook
+│       ├── PYTHON_TUTORIAL.md  # Codebase Scripting Guide
+│       └── USER_GUIDE.md       # Voice Commands & User Guide
 ├── 🖥️ FRONTEND (PORT 8080)
 │   ├── index.html / auth.html / favicon.ico
-│   ├── css/ (style, dashboard, chat, lockscreen, settings...)
-│   ├── js/ (app, ai, voice, commands, dashboard, chat...)
+│   ├── css/ (style, dashboard, chat, lockscreen, settings, themes...)
+│   ├── js/ (app, ai, voice, commands, dashboard, chat, lockscreen...)
 │   └── assets/ (images, icons, sounds)
 └── ⚙️ BACKEND (PORT 5000)
     ├── server.py / server_config.py
     ├── api/ (ai, auth, calls, chat, code, files, system, weather)
-    ├── automation/ (os_controls.py, system_monitoring.py)
-    ├── database/ (db_manager.py) & data/ (users.json)</div>
-        <div class="code-block" style="font-size: 5.4pt; line-height: 1.16; margin: 0; padding: 3px 5px;">├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
+    ├── automation/ (os_controls, system_monitoring, adb_controls, voice_commands)
+    ├── database/ (db_manager.py, favorites.json, reminders.json, settings.json)
+    └── data/ (users.json, users.json.example)</div>
+        <div class="code-block" style="font-size: 5.5pt; line-height: 1.24; margin: 0; padding: 4px 6px;">├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
 │   ├── __init__.py             # Engine Package Exports
 │   ├── llm.py                  # Multi-Model LLM Orchestration
-│   ├── stt.py                  # Offline Whisper & Vosk STT
+│   ├── stt.py                  # Offline Whisper & Vosk Speech-to-Text
 │   ├── tts.py                  # EdgeTTS, Kokoro & ElevenLabs Voices
 │   ├── prompt.txt              # Master System Persona Prompt
-│   ├── installer.py / startup.py
-├── ⚡ ACTIONS (NATIVE AGENT TOOL SUITE)
-│   ├── browser_control.py      # Playwright Web Automation
+│   └── installer.py / startup.py # Dynamic Dependency & Boot Sequence
+├── ⚡ ACTIONS (NATIVE AGENT TOOL SUITE — 20 TOOLS)
+│   ├── browser_control.py      # Playwright Headless Web Automation
 │   ├── code_helper.py          # Python Sandbox & CP Helper
-│   ├── computer_control.py     # Process & System Power
-│   ├── computer_settings.py    # Windows Audio & Display
+│   ├── computer_control.py     # Process Supervisor & System Power
+│   ├── computer_settings.py    # Windows Audio, Display & Network
 │   ├── desktop.py / dev_agent.py / file_controller.py
 │   ├── file_processor.py       # Document Parsing & Summarization
 │   ├── flight_finder.py / game_updater.py / messaging.py
 │   ├── music.py / open_app.py / proactive.py / reminder.py
 │   ├── screen_processor.py     # Screen Capture OCR & Vision
 │   ├── system_monitor.py       # Real-Time CPU/RAM Telemetry
-│   ├── weather.py / web_search.py / youtube.py
+│   └── weather.py / web_search.py / youtube.py
 ├── 💾 MEMORY & CONFIG
-│   ├── memory/ (memory_manager, config_manager, user_profile)
-│   └── config/ (api_keys.json.example, environment, jarvis.ico)
+│   ├── memory/ (memory_manager.py, config_manager.py)
+│   ├── memory/ (user_profile.json, conversation.json)
+│   └── config/ (api_keys.json.example, environment.py, jarvis.ico)
 └── 🧪 TESTS & VERIFICATION
-    ├── tests/ (test_actions, test_ai, test_api, test_auth, test_backend, test_voice)
+    ├── tests/ (test_actions.py, test_ai.py, test_api.py)
+    ├── tests/ (test_auth.py, test_backend.py, test_voice.py)
     ├── screenshots/            # High-Resolution HUD Captures
     └── demo/                   # Video Previews & Animation Assets</div>
     </div>
 
     <h2>9. Installation, Quickstart & Launch Guide</h2>
 
-    <div class="grid-2">
-        <div class="card">
+    <div class="grid-2" style="margin-bottom: 2.5pt;">
+        <div class="card" style="padding: 4px 7px;">
             <div class="card-header"><span class="badge badge-cyan">STEP 1</span> Prerequisites</div>
             <p style="font-size: 6.8pt; margin: 0;">Windows 10/11, Python 3.12+ (or 3.10+), modern browser (Chrome, Edge, Brave).</p>
         </div>
-        <div class="card">
-            <div class="card-header"><span class="badge badge-green">STEP 2</span> Dependencies</div>
-            <div class="code-block" style="margin: 1pt 0; padding: 2px 4px;">pip install -r requirements.txt</div>
+        <div class="card" style="padding: 4px 7px;">
+            <div class="card-header"><span class="badge badge-green">STEP 2</span> Dependencies Installation</div>
+            <div class="code-block" style="margin: 1pt 0; padding: 2px 5px; font-size: 6.2pt;">pip install -r requirements.txt</div>
         </div>
     </div>
 
-    <div class="card" style="margin-bottom: 3pt;">
-        <div class="card-header"><span class="badge badge-amber">STEP 3</span> Single-Command Full-Stack Launch</div>
-        <p style="font-size: 6.8pt; margin-bottom: 1.5pt;">Starts the Flask backend on <strong>Port 5000</strong> and the Tactical Web HUD on <strong>Port 8080</strong> simultaneously:</p>
-        <div class="code-block" style="margin: 1pt 0; padding: 2px 4px;">py -3.12 run_dashboard.py
-# Or standard launcher:
-python run_dashboard.py</div>
+    <div class="grid-2" style="margin-bottom: 2.5pt;">
+        <div class="card" style="padding: 4px 7px;">
+            <div class="card-header"><span class="badge badge-amber">STEP 3</span> Single-Command Full-Stack Launch</div>
+            <p style="font-size: 6.6pt; margin-bottom: 1.5pt;">Starts Flask API (Port 5000) & Tactical HUD (Port 8080) simultaneously:</p>
+            <div class="code-block" style="margin: 1pt 0; padding: 2px 5px; font-size: 6.2pt;">py -3.12 run_dashboard.py   # Or: python run_dashboard.py</div>
+        </div>
+        <div class="card" style="padding: 4px 7px;">
+            <div class="card-header"><span class="badge badge-purple">STEP 4</span> Access Operating System in Browser</div>
+            <p style="font-size: 6.6pt; margin-bottom: 1.5pt;">Connect to Tactical Glassmorphic HUD Dashboard:</p>
+            <div class="code-block" style="margin: 1pt 0; padding: 2px 5px; font-size: 6.2pt;">http://127.0.0.1:8080   (API: http://127.0.0.1:5000)</div>
+        </div>
     </div>
 
-    <div class="card">
-        <div class="card-header"><span class="badge badge-purple">STEP 4</span> Access Operating System in Browser</div>
-        <p style="font-size: 6.8pt; margin: 0;">Open <strong><code>http://127.0.0.1:8080</code></strong>. Enter your Gemini API key in Settings or immediately use the built-in offline fallback engine.</p>
+    <div class="card" style="padding: 4px 7px; margin-bottom: 3pt;">
+        <div class="card-header"><span class="badge badge-cyan">VERIFY</span> Terminal Health & Diagnostics Commands</div>
+        <div class="grid-2" style="margin: 1pt 0 0 0; gap: 4px;">
+            <div class="code-block" style="font-size: 5.8pt; line-height: 1.22; margin: 0; padding: 2px 5px;"># REST API Health Check
+curl -s http://127.0.0.1:5000/
+# Run Full Test Suite
+pytest tests/</div>
+            <div class="code-block" style="font-size: 5.8pt; line-height: 1.22; margin: 0; padding: 2px 5px;"># Live Hardware Telemetry
+curl -s -X POST http://127.0.0.1:5000/api/system/command \
+  -H "Content-Type: application/json" -d "{\"command\":\"diagnostics\"}"</div>
+        </div>
     </div>
 
-    <div style="margin-top: 4mm; border-top: 1px solid rgba(0, 240, 255, 0.3); padding-top: 3px; display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 6.2pt; color: #64748b;">
+    <div style="margin-top: 3mm; border-top: 1px solid rgba(0, 240, 255, 0.3); padding-top: 3px; display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 6.2pt; color: #64748b;">
         <span>STARK INDUSTRIES AI DIVISION // ALL RIGHTS RESERVED</span>
         <span>J.A.R.V.I.S. OS v3.2.5 MASTER BLUEPRINT SPECIFICATION</span>
     </div>
