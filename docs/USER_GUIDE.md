@@ -63,7 +63,7 @@ J.A.R.V.I.S. features bilingual understanding (English & Hindi / Hinglish). You 
    - Look at the webcam frame; OpenCV Haar Cascades automatically scan and unlock upon detection.
 2. **Emergency Passcode Fallback**:
    - Click **Enter Passcode Mode** on the lockscreen overlay.
-   - Enter default emergency PIN: **`3000`** (*"I love you 3000"*).
+   - Enter Master PIN: **`2710`**, then click **BYPASS** (or press Enter). Bypasses biometric scan with zero auto-advance delay.
 3. **Tactical Auth Terminal (`auth.html`)**:
    - Access the standalone biometric terminal at `http://127.0.0.1:8080/auth.html`.
    - Features dynamic GLSL shader canvas, pull-cord theme switcher, and 2FA OTP verification.
@@ -75,3 +75,25 @@ J.A.R.V.I.S. features bilingual understanding (English & Hindi / Hinglish). You 
 - **Theme Presets**: Cyan (Stark Original), Emerald Green, Crimson Red, Arc Gold, Amethyst Purple.
 - **360° Custom Color Wheel**: Pick any color hex code via HUD Settings (`⚙️`).
 - **Voice Customization**: Adjust speech synthesis pitch, speed rate, and master volume from 0% to 100%.
+
+---
+
+## 🛰️ 5. Tactical Hologram Communications (Direct Satellite Calls)
+
+J.A.R.V.I.S. includes a direct satellite communication interface modeled after the Stark Industries Mark XLVII tactical link:
+
+1. **Initiate Comms**:
+   - Click the **Comms Link** dock icon or say *"Call Tony Stark"* / *"Initiate video link"*.
+   - Enter contact name or target identity (default: `TONY STARK (DIRECT SATELLITE)`).
+   - Choose between **Voice Connect** (audio avatar) or **Video Connect** (live camera).
+2. **Crystal Clear Video Stage**:
+   - Expansive widescreen stage (`540px` width, `310px` height) with zero dark scanlines, vignetting, or intrusive corner reticles on the face area.
+3. **Top-Right Video Call Timer Overlay**:
+   - Live call duration (`🕒 00:00`) is neatly overlaid directly inside the top-right corner of the video frame.
+4. **Stark Tactical HUD Identity Banner**:
+   - Framed title plate with vertical cyan accent pillars, glowing diamond HUD reticles (`◈ CONTACT NAME ◈`), and neon Orbitron typography.
+5. **In-Call Controls**:
+   - **MIC**: Toggle microphone mute/unmute.
+   - **CAMERA**: Suspend/resume live video feed.
+   - **END CALL**: Instantly terminate communication link and release hardware devices.
+

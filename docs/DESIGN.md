@@ -159,3 +159,10 @@ Action buttons and chips should utilize a **Pill-shape (rounded-xl)** for tactil
 - **Arc Reactor (Core Node):** A multi-ringed circular component in the center of the UI. Rings should rotate at varying speeds to indicate CPU load.
 - **Progress Bars:** Segmented bars rather than solid fills. Each segment represents a data packet.
 - **Telemetry Cards:** Small panels containing a `telemetry-label` at the top-left and `data-mono-lg` value in the center, framed by a subtle grid texture.
+- **Tactical Hologram Communications Module (Mark XLVII Direct Comms):**
+  - **Stage Geometry:** High-impact `540px` width tactical card with outer hairline cyan corner brackets and `310px` height widescreen video container (`border-radius: 14px`).
+  - **Crystal Clear Video Feed:** Pure, unhindered camera feed (`object-fit: cover; filter: contrast(1.04) brightness(1.02)`) with zero obstructive scanlines, vignetting, or target reticles across the face area.
+  - **Top-Right HUD Timer Overlay:** Live ticking duration pill (`🕒 00:00`) positioned directly inside the video feed (`top: 12px; right: 14px; z-index: 10`) using glassmorphic dark cyan backdrop (`rgba(4, 12, 28, 0.78)`), `1px` cyan border, and `blur(8px)`.
+  - **Stark Tactical HUD Identity Banner:** Contact title framed in a cybernetic identity plate with vertical cyan accent pillars (`border-left: 2px solid #00f0ff; border-right: 2px solid #00f0ff;`), subtle top/bottom scanlines, glowing diamond reticles (`◈ CONTACT NAME ◈`), and glowing Orbitron typography (`font-weight: 700; letter-spacing: 2px`).
+  - **Tactical Footer Controls:** High-visibility circular action pods for Microphone Mute, Camera Video Suspend, and End Call termination with reactive hover animations.
+

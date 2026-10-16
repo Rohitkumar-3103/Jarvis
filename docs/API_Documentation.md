@@ -25,6 +25,8 @@ The J.A.R.V.I.S. backend runs as a modular Flask microservice node on `http://12
 | **Files** | `GET` | `/api/files/list` | List all uploaded dataset files |
 | **Weather** | `GET` | `/api/weather` | Resolve live temperature & atmospheric conditions |
 | **Calls** | `POST` | `/api/calls/dispatch` | Dispatch encrypted mail / comms payload |
+| **Calls** | `POST` | `/api/calls/call` | Initiate direct satellite voice/video call session |
+| **Auth** | `POST` | `/api/auth/update-avatar` | Persist user identity profile picture / avatar |
 
 ---
 
@@ -166,5 +168,53 @@ Appends a message to persistent storage.
   "sender": "USER",
   "text": "Hello J.A.R.V.I.S.",
   "time": "10:02 AM"
+}
+```
+
+---
+
+### 6. Communications Link API (`/api/calls/call`)
+
+#### `POST /api/calls/call`
+Dispatches a communication request to initiate an encrypted voice or video link session with the specified contact.
+
+**Request Body:**
+```json
+{
+  "contact": "TONY STARK (DIRECT SATELLITE)",
+  "video": true
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Call initiated to TONY STARK (DIRECT SATELLITE)",
+  "mode": "video",
+  "synapse_link": "established"
+}
+```
+
+---
+
+### 7. Identity Photo API (`/api/auth/update-avatar`)
+
+#### `POST /api/auth/update-avatar`
+Persists the cropped, optimized base64 identity avatar to the local database and profile store.
+
+**Request Body:**
+```json
+{
+  "username": "ironman",
+  "avatar": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Avatar updated successfully."
 }
 ```

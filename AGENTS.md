@@ -192,6 +192,15 @@ When modifying this repository, you **MUST** adhere to the following rules:
 - **2D Only Rule**: All image generation requests MUST be formatted as **strictly 2D** (flat vector art, clean cel-shaded anime illustration, 2D graphic novel art, crisp linework). 
 - Explicitly exclude 3D models, 3D CGI, octane renders, and photorealism in prompt engineering.
 
+### 7. 🔒 Master PIN & Manual Bypass Protocol
+- The emergency lockscreen bypass PIN is strictly **`2710`** (not 3000).
+- **Manual Click Required**: The system must NOT automatically bypass on 4 digits; the user must explicitly click the **BYPASS** button or hit the **Enter** key.
+
+### 8. 🛰️ Tactical Hologram Communications Module Rules
+- **Widescreen Clear Video Stage**: Container width is `540px` and video height is `310px` (`border-radius: 14px`). The video face must remain crystal clear without intrusive reticles, dark vignettes, or scanlines.
+- **Top-Right HUD Timer Overlay**: The call timer (`#call-timer-display`) MUST be embedded directly inside the top-right corner of the video container (`position: absolute; top: 12px; right: 14px`), avoiding dead empty space above the video feed.
+- **Stark Tactical HUD Identity Banner**: The `.participant-name` element is framed with dual vertical cyan pillars, top/bottom scanlines, glowing diamond reticles (`◈`), and glowing Orbitron title typography.
+
 ---
 
 ## 🔍 5. Global State & LocalStorage Schema

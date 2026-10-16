@@ -100,6 +100,8 @@ graph TD
   | `/api/code/helper` | `POST` | `backend/api/code.py` | Python sandbox runner with compiler returncode validation |
   | `/api/chat/history` | `GET/POST/DEL` | `backend/api/chat.py` | Message log retrieval, session persistence, and clear commands |
   | `/api/weather` | `POST` | `backend/api/weather.py` | Geolocation resolution and real-time atmospheric metrics |
+  | `/api/calls/call` | `POST` | `backend/api/calls.py` | Direct satellite audio/video call dispatch and telemetry sync |
+  | `/api/auth/update-avatar` | `POST` | `backend/api/auth.py` | Identity photo optimization and database persistence |
 
 ---
 
@@ -178,9 +180,19 @@ sequenceDiagram
     else Verification Failed
         CV-->>Flask: No matching face found
         Flask-->>Lock: { success: false, error: "Face not verified" }
-        Lock->>Lock: Switch to PIN Fallback Mode (Code: 3000)
+        Lock->>Lock: Switch to PIN Fallback Mode (Master PIN: 2710; explicit bypass)
     end
 ```
+
+---
+
+### 5. Tactical Hologram Communications Subsystem
+The communication engine links the client's `getUserMedia` hardware video/audio streams with the HUD:
+* **Audio/Video Tracks Isolation**: Independent track suspension for Microphone Mute (`t.enabled = false`) and Camera Suspend.
+* **Widescreen Clear Stage (`540px` x `310px`)**: Unobstructed camera rendering with `contrast(1.04)` and `brightness(1.02)`.
+* **Integrated HUD Timer Overlay**: Embedded directly at the top right of the live video stream (`position: absolute; top: 12px; right: 14px`) with a dark glassmorphic pill badge and live `🕒` ticking state.
+* **Stark Tactical HUD Identity Banner**: Features cybernetic cyan accent pillars, scanline borders, diamond HUD reticles (`◈`), and glowing Orbitron title typography.
+* **Voice Avatar Mode Fallback**: Automatically activates multi-ring ripple animations and synchronized audio bars when video feed is suspended or in audio-only mode.
 
 ---
 

@@ -30,6 +30,8 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 *   **Gemini Cognitive Integration**: Paste your Gemini API key inside the settings modal to unlock true generative AI conversation capabilities.
 *   **Local Action Routing**: Command J.A.R.V.I.S. to perform local machine operations like opening Google, YouTube, Calculator, setting/navigating to a favorite website, or reading out the current date and time.
 *   **Persistent Configuration**: Settings (voice models, rate, API keys, favorite URLs) are saved directly in your browser's local storage.
+*   **Tactical Hologram Communications (Direct Satellite Comms)**: Stark Industries Mark XLVII direct video & voice communication module featuring a widescreen crystal clear video stage (`540px` x `310px`), top-right live call duration timer overlay, Stark identity banner with glowing diamond reticles (`◈`), and dedicated mic/camera controls.
+*   **Tactical Biometric & Master PIN Security**: Dual-layer OpenCV Haar Cascade facial recognition coupled with an emergency Master PIN (`2710`) manual bypass terminal.
 
 ---
 

@@ -47,7 +47,7 @@
 - **Optical Face Verification**:
   - Captures real-time webcam frames and analyzes them using OpenCV Haar Cascade models (`haarcascade_frontalface_default.xml`) via `POST /api/auth/face`.
 - **Passcode Fallback**:
-  - PIN entry mode with default emergency bypass code (`3000`).
+  - Master PIN entry mode (`2710`) with explicit **BYPASS** button or Enter key execution (zero auto-advance delay).
 - **Tactical Auth Terminal (`auth.html`)**:
   - Embedded inside `#auth-terminal-modal` and available standalone at `http://127.0.0.1:8080/auth.html`.
   - Features a fullscreen WebGL GLSL shader background, interactive pull-cord lamp theme controller, 5 dynamic color swatches, and 2FA OTP verification.
@@ -57,6 +57,13 @@
 - **Native OS Automation**:
   - Launch applications: VS Code, Chrome, Notepad, Calculator, Spotify, Command Prompt.
   - System controls: Adjust Windows volume, take screenshots, lock workstation, system shutdown/restart.
+
+### 🛰️ 7. Tactical Hologram Communications Subsystem
+- **Direct Satellite Comms**: Direct voice or video calling link to external contacts via `POST /api/calls/call`.
+- **Crystal Clear Video Stage**: Expanded `540px` width HUD card with `310px` height widescreen video container, providing full-frame face clarity free of dark vignetting or target reticles.
+- **Top-Right HUD Timer Overlay**: Live ticking duration badge (`🕒 00:00`) neatly embedded directly in the top-right corner of the video stream.
+- **Stark Tactical HUD Identity Banner**: Framed participant identity banner with dual cyan pillars, scanline borders, diamond HUD reticles (`◈`), and glowing Orbitron typography.
+- **In-Call Pods**: Interactive Glassmorphic action buttons for Microphone Mute, Camera Video Suspend, and End Call termination.
 
 ---
 
