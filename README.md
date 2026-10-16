@@ -405,16 +405,6 @@ utterance.rate = voiceRate;
 window.speechSynthesis.speak(utterance);
 ```
 
-## 🔄 Recent Updates (Version 3.2.5 — Tactical Comms & HUD Overhaul)
-
-*   **Tactical Hologram Communications Link (`#call-overlay`)**: Built an encrypted direct satellite video and audio communication module modeled after the Stark Industries Mark XLVII comms interface. Supports direct routing via `/api/calls/call`.
-*   **Widescreen Crystal Clear Video Stage**: Expanded `.call-card` width to `540px` and `.video-call-feeds` height to `310px` (`border-radius: 14px`), removing dark vignetting, scanline filters, and intrusive corner target brackets across the face area for a pristine, cinematic camera view.
-*   **Top-Right HUD Timer Overlay**: Embedded the live duration timer (`🕒 00:00`) directly inside the top-right corner of the video container (`position: absolute; top: 12px; right: 14px; z-index: 10`), eliminating awkward dead space above the feed and preserving real-time ticking clock synchronization.
-*   **Stark Tactical HUD Identity Banner**: Redesigned `.participant-name` with dual vertical cyan pillars (`border-left: 2px solid #00f0ff; border-right: 2px solid #00f0ff;`), glowing diamond reticles (`◈ TONY STARK (DIRECT SATELLITE) ◈`), glassmorphic backdrop glow, and glowing Orbitron title typography.
-*   **Master PIN `2710` Manual Bypass Protocol**: Upgraded emergency lockscreen passcode fallback to Master PIN `2710`. Requires explicit user execution via the **BYPASS** button or `Enter` key, completely eliminating 4-digit auto-bypass latency and accidental triggers.
-*   **Voice Avatar Concentric Waves**: Smooth audio fallback mode displaying animated concentric ripple rings (`ring-1`, `ring-2`, `ring-3`) and live bouncing voice frequency wave bars when video link is suspended or in audio-only mode.
-*   **Identity Photo Optimization & Sync**: Added client-side HTML5 Canvas 256x256 avatar cropping with seamless backend database persistence via `POST /api/auth/update-avatar`.
-
 ---
 
 ## 👨‍💻 Author & Connect
