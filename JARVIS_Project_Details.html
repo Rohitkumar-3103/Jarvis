@@ -895,8 +895,8 @@
 └── ⚙️ BACKEND (PORT 5000)
     ├── server.py / server_config.py
     ├── api/ (ai, auth, calls, chat, code, files, system, weather)
-    ├── automation/ (os_controls.py, media_player.py)
-    ├── database/ (chat_db.py) & data/ (users.json.example)</div>
+    ├── automation/ (os_controls.py, system_monitoring.py)
+    ├── database/ (db_manager.py) & data/ (users.json)</div>
         <div class="code-block" style="font-size: 5.4pt; line-height: 1.16; margin: 0; padding: 3px 5px;">├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
 │   ├── __init__.py             # Engine Package Exports
 │   ├── llm.py                  # Multi-Model LLM Orchestration
@@ -920,7 +920,7 @@
 │   ├── memory/ (memory_manager, config_manager, user_profile)
 │   └── config/ (api_keys.json.example, environment, jarvis.ico)
 └── 🧪 TESTS & VERIFICATION
-    ├── tests/ (test_actions.py, test_api.py, test_auth.py)
+    ├── tests/ (test_actions, test_ai, test_api, test_auth, test_backend, test_voice)
     ├── screenshots/            # High-Resolution HUD Captures
     └── demo/                   # Video Previews & Animation Assets</div>
     </div>

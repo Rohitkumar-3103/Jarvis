@@ -91,11 +91,12 @@ Jarvis/
 │   ├── AGENTS.md                   # AI Assistant Mental Model, Architecture Rules & Invariants
 │   ├── PROJECT_OVERVIEW.md         # Full Subsystem Architecture & Module Mapping
 │   ├── JARVIS_TECHNICAL_PROJECT_REPORT.md  # Formal Technical & Academic System Report
+│   ├── JARVIS_Project_Details.pdf  # Master PDF Documentation Specification
 │   ├── LICENSE                     # MIT Open-Source License
 │   ├── CHANGELOG.md                # Release History & Version Logs
 │   ├── CONTRIBUTING.md             # Developer Contribution Guidelines
 │   └── docs/                       # Technical Manuals & Subsystem Specifications
-│       ├── API_DOCUMENTATION.md    # Complete REST API Endpoint Reference
+│       ├── API_Documentation.md    # Complete REST API Endpoint Reference
 │       ├── ARCHITECTURE.md         # Multi-Tier System Topology & Sequence Diagrams
 │       ├── DESIGN.md               # Mark XLVII HUD Design Specifications & Tokens
 │       ├── DEVELOPER_GUIDE.md      # Developer Setup & Extension Handbook
@@ -108,7 +109,7 @@ Jarvis/
 │   ├── auth.html                   # Biometric Auth Terminal (WebGL GLSL Shader)
 │   ├── favicon.ico                 # App Favicon
 │   │
-│   ├── css/                        # Modular Stylesheets
+│   ├── css/                        # Modular Stylesheets (10 Files)
 │   │   ├── style.css               # Core Styles & Layout Tokens
 │   │   ├── dashboard.css           # HUD Panels, Arc Reactor & Tactical Call Comms
 │   │   ├── chat.css                # AI Chat Bubbles & Code Prism Viewers
@@ -120,7 +121,7 @@ Jarvis/
 │   │   ├── responsive.css          # Mobile / Tablet Viewport Queries
 │   │   └── all.min.css             # Local FontAwesome 6.5.2 Icon Suite
 │   │
-│   ├── js/                         # Frontend Execution Engines
+│   ├── js/                         # Frontend Execution Engines (13 Modules)
 │   │   ├── app.js                  # Master Controller, Comms & Audio Routing
 │   │   ├── ai.js                   # Gemini LLM Bridge & Pollinations 4K Flux Engine
 │   │   ├── voice.js                # Bilingual Web Speech Recognition & TTS
@@ -157,12 +158,18 @@ Jarvis/
 │   │
 │   ├── automation/                 # Native OS Automation
 │   │   ├── os_controls.py          # Windows Application & Master Controls
-│   │   └── media_player.py         # Native Audio & Media Stream Dispatcher
+│   │   ├── system_monitoring.py    # Real-Time Telemetry & Hardware Diagnostics
+│   │   ├── adb_controls.py         # Android Debug Bridge Device Controls
+│   │   └── voice_commands.py       # Local Voice Command Dispatcher
 │   │
 │   ├── database/                   # Storage Layer
-│   │   └── chat_db.py              # SQLite / JSON Conversation Store
+│   │   ├── db_manager.py           # SQLite & JSON Conversation Database Manager
+│   │   ├── favorites.json          # Quick-Launch Favorite Applications
+│   │   ├── reminders.json          # Scheduled Reminders & Events
+│   │   └── settings.json           # Backend Runtime Configuration Cache
 │   │
 │   └── data/                       # User Records
+│       ├── users.json              # Local Biometric & User Profile Store
 │       └── users.json.example      # Sample User Account Blueprint
 │
 ├── 🧠 CORE (MULTIMODAL LIVE ENGINES)
@@ -201,7 +208,8 @@ Jarvis/
 │   ├── memory/
 │   │   ├── memory_manager.py       # Conversation Context Store
 │   │   ├── config_manager.py       # Setting & API Key Resolver
-│   │   └── user_profile.json       # Active Profile Manifest
+│   │   ├── user_profile.json       # Active Profile Manifest
+│   │   └── conversation.json       # Local Conversation Session Logs
 │   └── config/
 │       ├── api_keys.json.example   # Configuration Template
 │       ├── environment.py          # Cross-Platform Resolver
@@ -210,8 +218,11 @@ Jarvis/
 └── 🧪 TESTS & VERIFICATION
     ├── tests/
     │   ├── test_actions.py         # Native Agent Tool Unit Tests
+    │   ├── test_ai.py              # AI Provider & Fallback Tests
     │   ├── test_api.py             # Flask REST Routes Verification
-    │   └── test_auth.py            # Authentication & OTP Unit Tests
+    │   ├── test_auth.py            # Authentication & OTP Unit Tests
+    │   ├── test_backend.py         # Hardware Diagnostics & OS Tests
+    │   └── test_voice.py           # STT & TTS Configuration Tests
     ├── screenshots/                # High-Resolution HUD Interface Captures
     └── demo/                       # Video Previews & Animation Assets
 ```
