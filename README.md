@@ -113,10 +113,7 @@ graph TD
 
 ---
 
-## 📦 Getting Started
-
-### 1. Download the Project
-Clone or download the project files into your local directory. The final project structure consists of:
+## 📁 Project Structure
 ```text
 Jarvis/
 │

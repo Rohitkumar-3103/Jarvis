@@ -39,23 +39,38 @@ wheels/
 .env.development.local
 .env.test.local
 .env.production.local
+!.env.example
 config/api_keys.json
 config/certificates/
 config/certs/*.pem
 config/certs/*.key
 config/certs/*.crt
+*.pem
+*.key
 
 # 4. User Databases & Sensitive Local Data
 backend/data/users.json
+!backend/data/users.json.example
 backend/database/chat_history.json
 chat_history_db.json
 memory/conversation.json
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
 
 # 5. Logs & Temporary Runtime Files
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 temp/
 scratch/
+*.tmp
+*_tmp.pdf
 uploads/*
 !uploads/.gitkeep
 
@@ -66,6 +81,9 @@ uploads/*
 htmlcov/
 .tox/
 .nox/
+test-results/
+playwright-report/
+blob-report/
 
 # 7. Node / Frontend Dependencies
 node_modules/
@@ -74,8 +92,11 @@ node_modules/
 # 8. Editor & IDE Settings
 .vscode/
 .idea/
+.cursor/
+.windsurf/
 *.sublime-project
 *.sublime-workspace
+*.code-workspace
 *.swp
 *.swo
 *~
@@ -89,18 +110,27 @@ node_modules/
 ehthumbs.db
 Thumbs.db
 desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# 10. AI Agent Caches
+# 10. AI Agent & Assistant Caches
 .gemini/
+.claude/
 
-# 11. Jupyter Notebook Checkpoints
+# 11. Type Checking & Linter Caches
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+
+# 12. Jupyter Notebook Checkpoints
 .ipynb_checkpoints/
 */.ipynb_checkpoints/
 
-# 12. Local Documentation Templates
+# 13. Local Documentation Templates
 thesis_template_0.1/
 
-# 13. Presentation & Academic Thesis Documents
+# 14. Presentation & Academic Thesis Documents
 *.pptx
 *JARVIS_Presentation*
 *JARVIS_Thesis_Report*
