@@ -1,6 +1,6 @@
 # 🏛️ J.A.R.V.I.S. AI OS — Architecture & System Design Specification
 
-This document provides the complete multi-tiered architecture, communication flows, component boundaries, execution pipelines, design systems, and security specifications for **J.A.R.V.I.S. AI OS v3.2.0**.
+This document provides the complete multi-tiered architecture, communication flows, component boundaries, execution pipelines, design systems, and security specifications for **J.A.R.V.I.S. AI OS v3.2.5**.
 
 ---
 
@@ -126,10 +126,10 @@ graph TD
 ---
 
 ### 4. Native OS Agent Automation Tier (`actions/`)
-* **Hardware Telemetry** ([system_monitor.py](file:///d:/code/html/Project/AI%20chat/Jarvis/actions/system_monitor.py)): Periodic polling of CPU utilization (%), memory usage, core temperatures, and storage health via `psutil`.
-* **OS & Window Supervisor** ([desktop.py](file:///d:/code/html/Project/AI%20chat/Jarvis/actions/desktop.py), [open_app.py](file:///d:/code/html/Project/AI%20chat/Jarvis/actions/open_app.py)): Spawns applications (VS Code, Chrome, Terminal, Calculator), manages active focus, and adjusts master system audio.
-* **Browser Automation** ([browser_control.py](file:///d:/code/html/Project/AI%20chat/Jarvis/actions/browser_control.py)): Headless Playwright script execution for automated web extraction and page interactions.
-* **Screen Processing** ([screen_processor.py](file:///d:/code/html/Project/AI%20chat/Jarvis/actions/screen_processor.py)): High-fidelity screen capture via Windows `.NET` GDI `CopyFromScreen` API and camera frame extraction via OpenCV.
+* **Hardware Telemetry** ([system_monitor.py](../actions/system_monitor.py)): Periodic polling of CPU utilization (%), memory usage, core temperatures, and storage health via `psutil`.
+* **OS & Window Supervisor** ([desktop.py](../actions/desktop.py), [open_app.py](../actions/open_app.py)): Spawns applications (VS Code, Chrome, Terminal, Calculator), manages active focus, and adjusts master system audio.
+* **Browser Automation** ([browser_control.py](../actions/browser_control.py)): Headless Playwright script execution for automated web extraction and page interactions.
+* **Screen Processing** ([screen_processor.py](../actions/screen_processor.py)): High-fidelity screen capture via Windows `.NET` GDI `CopyFromScreen` API and camera frame extraction via OpenCV.
 
 ---
 
@@ -170,17 +170,17 @@ sequenceDiagram
     participant CV as OpenCV Haar Cascade Engine
 
     User->>Lock: Enters Biometric Scan Mode
-    Lock->>Lock: Capture webcam frame from <video> canvas
+    Lock->>Lock: Capture webcam frame from video canvas
     Lock->>Flask: POST /api/auth/face (base64 image)
     Flask->>CV: Decode frame & run haarcascade_frontalface_default.xml
     alt Face Detected & Verified
         CV-->>Flask: Face Coordinates & Confidence Score
-        Flask-->>Lock: { success: true, user: "Tony Stark", role: "Admin" }
+        Flask-->>Lock: Verification Success (Tony Stark Admin)
         Lock->>Lock: Play unlocked sound & trigger HUD entrance
     else Verification Failed
         CV-->>Flask: No matching face found
-        Flask-->>Lock: { success: false, error: "Face not verified" }
-        Lock->>Lock: Switch to PIN Fallback Mode (Master PIN: 2710; explicit bypass)
+        Flask-->>Lock: Verification Failed (Face not verified)
+        Lock->>Lock: Switch to PIN Fallback Mode (Master PIN 2710 - manual bypass)
     end
 ```
 
@@ -236,8 +236,8 @@ Layer 1: [ The Void ]          --> Base matte black background (#0a0a0a / #13131
 ---
 
 ## 📚 Related Documentation Links
-* 🎨 Visual Design Specifications: [docs/DESIGN.md](file:///d:/code/html/Project/AI%20chat/Jarvis/docs/DESIGN.md)
-* 🔌 REST API Reference: [docs/API_DOCUMENTATION.md](file:///d:/code/html/Project/AI%20chat/Jarvis/docs/API_DOCUMENTATION.md)
-* 🤖 AI Assistant Mental Model & Invariants: [AGENTS.md](file:///d:/code/html/Project/AI%20chat/Jarvis/AGENTS.md)
-* 🛠️ Developer Setup & Extension Guide: [docs/DEVELOPER_GUIDE.md](file:///d:/code/html/Project/AI%20chat/Jarvis/docs/DEVELOPER_GUIDE.md)
-* 📖 User Operation & Voice Handbook: [docs/USER_GUIDE.md](file:///d:/code/html/Project/AI%20chat/Jarvis/docs/USER_GUIDE.md)
+* 🎨 Visual Design Specifications: [docs/DESIGN.md](DESIGN.md)
+* 🔌 REST API Reference: [docs/API_Documentation.md](API_Documentation.md)
+* 🤖 AI Assistant Mental Model & Invariants: [AGENTS.md](../AGENTS.md)
+* 🛠️ Developer Setup & Extension Guide: [docs/DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+* 📖 User Operation & Voice Handbook: [docs/USER_GUIDE.md](USER_GUIDE.md)
