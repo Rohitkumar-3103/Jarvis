@@ -657,30 +657,34 @@
 .outer-ring {
     width: 340px;
     height: 340px;
-    border: 1.5px dashed rgba(0, 240, 255, 0.22);
-    border-top-color: rgba(0, 240, 255, 0.65);
-    border-bottom-color: rgba(0, 240, 255, 0.65);
+    border: 2px dashed rgba(0, 240, 255, 0.28);
+    border-top-color: var(--theme-primary, #00f0ff);
+    border-bottom-color: var(--theme-primary, #00f0ff);
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.75));
     animation: spin-clockwise 25s linear infinite;
-    transition: border-color 0.4s ease;
+    transition: border-color 0.4s ease, filter 0.4s ease;
 }
 
 .middle-ring {
     width: 280px;
     height: 280px;
-    border: 1.5px solid rgba(0, 240, 255, 0.08);
-    border-left-color: rgba(0, 240, 255, 0.55);
-    border-right-color: rgba(0, 240, 255, 0.55);
+    border: 2px solid rgba(0, 240, 255, 0.12);
+    border-left-color: var(--theme-primary, #00f0ff);
+    border-right-color: var(--theme-primary, #00f0ff);
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.85));
     animation: spin-counter-clockwise 20s linear infinite;
-    transition: border-color 0.4s ease;
+    transition: border-color 0.4s ease, filter 0.4s ease;
 }
 
 .inner-ring {
     width: 220px;
     height: 220px;
-    border: 1.5px dotted rgba(0, 240, 255, 0.18);
-    border-top-color: rgba(0, 240, 255, 0.6);
+    border: 2px dotted rgba(0, 240, 255, 0.35);
+    border-top-color: var(--theme-primary, #00f0ff);
+    border-bottom-color: var(--theme-primary, #00f0ff);
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.75));
     animation: spin-clockwise 15s linear infinite;
-    transition: border-color 0.4s ease;
+    transition: border-color 0.4s ease, filter 0.4s ease;
 }
 
 .core-orb-wrapper {
@@ -700,13 +704,13 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 15%, transparent 70%);
-    opacity: 0.12;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 15%, transparent 70%);
+    opacity: 0.2;
     transition: opacity 0.3s ease, background 0.4s ease;
 }
 
 .core-orb-wrapper:hover .core-orb-glow {
-    opacity: 0.25;
+    opacity: 0.35;
 }
 
 .core-image-container {
@@ -714,7 +718,8 @@
     height: 152px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.75), inset 0 0 10px rgba(0, 240, 255, 0.35);
 }
 
 .core-image {
