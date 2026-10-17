@@ -1914,23 +1914,33 @@
     100% { transform: scale(1.9); opacity: 0; }
 }
 
+.dash-header-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.dash-header-badge {
+    font-family: var(--font-mono);
+    font-size: 0.60rem;
+    letter-spacing: 2px;
+    color: var(--theme-primary, #00f0ff);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 1;
+}
+
 .dash-header-title {
     font-family: var(--font-hud);
     font-size: 0.95rem;
     font-weight: 800;
-    letter-spacing: 2px;
-    background: linear-gradient(90deg, var(--theme-primary, #00f0ff), #ffffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    letter-spacing: 1.8px;
+    color: #ffffff;
+    line-height: 1.2;
     text-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
-}
-
-.dash-header-subtitle {
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    color: #64748b;
-    letter-spacing: 1px;
-    font-weight: 500;
 }
 
 .dash-header-subtag {
