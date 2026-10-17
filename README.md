@@ -50,6 +50,8 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 
 J.A.R.V.I.S. operates on a decoupled multi-tier architecture uniting a low-latency client-side Web HUD with a local Python Flask REST node and cloud AI services:
 
+![J.A.R.V.I.S. AI OS Master Architecture Diagram](docs/Architecture.png)
+
 ```mermaid
 graph TD
     User([👤 User: Voice / Text / Camera / Mouse])

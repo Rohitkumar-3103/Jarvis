@@ -156,7 +156,9 @@ Action buttons and chips should utilize a **Pill-shape (rounded-xl)** for tactil
 - **Status LEDs:** Small circular elements. They should pulse slowly (2s duration) when in "Active" or "Warning" states.
 - **Scanner Corners:** Hairline brackets (1px width) positioned at the four corners of high-priority panels.
 - **Input Fields:** Bottom-border only, using `Share Tech Mono`. The cursor should be a solid cyan block that blinks.
-- **Arc Reactor (Core Node):** A multi-ringed circular component in the center of the UI. Rings should rotate at varying speeds to indicate CPU load.
+- **Arc Reactor (Core Node):** Multi-ringed circular component in the center of the UI with 4 synchronized operational color states: Standby/Idle (Stark Cyan), Listening (Alert Crimson), Thinking (Quantum Violet), and Vocalizing (Emerald Green).
+  
+  ![Arc Reactor Reactive States](arc_reactor_reactive_states.png)
 - **Progress Bars:** Segmented bars rather than solid fills. Each segment represents a data packet.
 - **Telemetry Cards:** Small panels containing a `telemetry-label` at the top-left and `data-mono-lg` value in the center, framed by a subtle grid texture.
 - **Tactical Hologram Communications Module (Mark XLVII Direct Comms):**

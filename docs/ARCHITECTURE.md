@@ -6,6 +6,8 @@ This document provides the complete multi-tiered architecture, communication flo
 
 ## 🏗️ 1. High-Level Multi-Tier Architecture
 
+![J.A.R.V.I.S. AI OS Master Architecture Diagram](Architecture.png)
+
 ```mermaid
 graph TD
     User([👤 User: Voice / Text / Camera / Mouse])
@@ -78,10 +80,12 @@ graph TD
 * **Serving Mechanism**: Python static HTTP server (`http.server 8080`) bound to IPv4 loopback (`127.0.0.1`).
 * **Visual Engine**: Vanilla HTML5/CSS3/JavaScript (ES6+ modular architecture) without heavy runtime framework overhead, guaranteeing <16ms frame times.
 * **Arc Reactor Reactive State Machine**:
-  * `STANDBY / IDLE`: Concentric rings rotate smoothly at 0.5 rad/s with cyan emission (`#00f0ff`).
-  * `LISTENING`: Real-time audio waveform modulation using Web Audio Analyser nodes; emerald glow (`#00ff66`).
-  * `THINKING / SYNAPSING`: Acceleration of opposing concentric matrix rings with violet glow (`#a855f7`).
-  * `VOCALIZING / SPEAKING`: Amplitude-matched ripple pulses synchronized with TTS audio buffer output.
+  * `STANDBY / IDLE`: Concentric matrix rings rotate smoothly at 0.5 rad/s with neon Stark cyan emission (`#00f0ff`).
+  * `LISTENING`: Real-time audio receptor online with crimson alert glow (`#ef4444`) and waveform modulation.
+  * `THINKING / SYNAPSING`: Acceleration of opposing concentric matrix rings with quantum violet/purple glow (`#ab46ff`).
+  * `VOCALIZING / SPEAKING`: Amplitude-matched ripple pulses synchronized with TTS audio buffer output in emerald green (`#10b981`).
+
+  ![Arc Reactor Reactive States](arc_reactor_reactive_states.png)
 * **Bilingual Speech Engine**:
   * **STT**: Browser `webkitSpeechRecognition` supporting `en-IN`, `hi-IN`, and `en-US`.
   * **TTS**: Evaluates text for Devanagari script `[\u0900-\u097F]` or Hinglish vocabulary (`namaste`, `kaise`, `main`, `aapka`) to dynamically switch between Hindi speech engines and English OS voice profiles.
