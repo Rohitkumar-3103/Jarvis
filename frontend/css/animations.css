@@ -32,12 +32,12 @@
 
 @keyframes core-orb-pulse {
     0% {
-        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2), inset 0 0 10px rgba(0, 240, 255, 0.1);
+        box-shadow: 0 0 6px rgba(0, 240, 255, 0.12), inset 0 0 6px rgba(0, 240, 255, 0.08);
         transform: scale(0.98);
     }
     100% {
-        box-shadow: 0 0 25px var(--theme-glow), inset 0 0 15px var(--theme-glow);
-        transform: scale(1.02);
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.2), inset 0 0 8px rgba(0, 240, 255, 0.12);
+        transform: scale(1.01);
     }
 }
 

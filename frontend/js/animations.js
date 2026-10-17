@@ -95,10 +95,10 @@ function animateParticles() {
         }
     }
 
-    // Mouse glow effect
+    // Mouse glow effect (subtle low-light ambiance)
     if (mouse.x !== null && mouse.y !== null) {
         let glowGrad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius);
-        glowGrad.addColorStop(0, themeColor.replace(')', ', 0.08)').replace('rgb', 'rgba').replace('#00f0ff', 'rgba(0, 240, 255, 0.08)'));
+        glowGrad.addColorStop(0, themeColor.replace(')', ', 0.025)').replace('rgb', 'rgba').replace('#00f0ff', 'rgba(0, 240, 255, 0.025)'));
         glowGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = glowGrad;
         ctx.beginPath();

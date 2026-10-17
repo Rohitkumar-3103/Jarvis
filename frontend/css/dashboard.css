@@ -622,6 +622,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: radial-gradient(circle at center, rgba(3, 8, 20, 0.92) 0%, rgba(2, 5, 14, 0.96) 100%) !important;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.85);
 }
 
 .core-container {
@@ -642,6 +644,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: radial-gradient(circle at center, rgba(2, 5, 14, 0.75) 0%, rgba(2, 5, 14, 0.4) 60%, transparent 80%);
+    border-radius: 50%;
 }
 
 .outer-ring, .middle-ring, .inner-ring {
@@ -653,9 +657,9 @@
 .outer-ring {
     width: 340px;
     height: 340px;
-    border: 2px dashed rgba(0, 240, 255, 0.12);
-    border-top-color: var(--theme-primary);
-    border-bottom-color: var(--theme-primary);
+    border: 1.5px dashed rgba(0, 240, 255, 0.22);
+    border-top-color: rgba(0, 240, 255, 0.65);
+    border-bottom-color: rgba(0, 240, 255, 0.65);
     animation: spin-clockwise 25s linear infinite;
     transition: border-color 0.4s ease;
 }
@@ -663,9 +667,9 @@
 .middle-ring {
     width: 280px;
     height: 280px;
-    border: 2px solid rgba(0, 240, 255, 0.06);
-    border-left-color: var(--theme-primary);
-    border-right-color: var(--theme-primary);
+    border: 1.5px solid rgba(0, 240, 255, 0.08);
+    border-left-color: rgba(0, 240, 255, 0.55);
+    border-right-color: rgba(0, 240, 255, 0.55);
     animation: spin-counter-clockwise 20s linear infinite;
     transition: border-color 0.4s ease;
 }
@@ -673,8 +677,8 @@
 .inner-ring {
     width: 220px;
     height: 220px;
-    border: 2px dotted rgba(0, 240, 255, 0.15);
-    border-top-color: var(--theme-primary);
+    border: 1.5px dotted rgba(0, 240, 255, 0.18);
+    border-top-color: rgba(0, 240, 255, 0.6);
     animation: spin-clockwise 15s linear infinite;
     transition: border-color 0.4s ease;
 }
@@ -696,13 +700,13 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--theme-primary) 20%, transparent 70%);
-    opacity: 0.35;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 15%, transparent 70%);
+    opacity: 0.12;
     transition: opacity 0.3s ease, background 0.4s ease;
 }
 
 .core-orb-wrapper:hover .core-orb-glow {
-    opacity: 0.65;
+    opacity: 0.25;
 }
 
 .core-image-container {
