@@ -744,13 +744,21 @@
 .core-container.listening .outer-ring {
     border-top-color: var(--neon-red);
     border-bottom-color: var(--neon-red);
+    filter: drop-shadow(0 0 8px var(--neon-red));
 }
 .core-container.listening .middle-ring {
     border-left-color: var(--neon-red);
     border-right-color: var(--neon-red);
+    filter: drop-shadow(0 0 10px var(--neon-red));
 }
 .core-container.listening .inner-ring {
     border-top-color: var(--neon-red);
+    border-bottom-color: var(--neon-red);
+    filter: drop-shadow(0 0 6px var(--neon-red));
+}
+.core-container.listening .core-image-container {
+    border-color: var(--neon-red) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.85), inset 0 0 12px rgba(239, 68, 68, 0.45) !important;
 }
 .core-container.listening .core-orb-glow {
     background: radial-gradient(circle, var(--neon-red) 20%, transparent 70%);
@@ -762,13 +770,21 @@
 .core-container.thinking .outer-ring {
     border-top-color: var(--neon-purple);
     border-bottom-color: var(--neon-purple);
+    filter: drop-shadow(0 0 8px var(--neon-purple));
 }
 .core-container.thinking .middle-ring {
     border-left-color: var(--neon-purple);
     border-right-color: var(--neon-purple);
+    filter: drop-shadow(0 0 10px var(--neon-purple));
 }
 .core-container.thinking .inner-ring {
     border-top-color: var(--neon-purple);
+    border-bottom-color: var(--neon-purple);
+    filter: drop-shadow(0 0 6px var(--neon-purple));
+}
+.core-container.thinking .core-image-container {
+    border-color: var(--neon-purple) !important;
+    box-shadow: 0 0 20px rgba(171, 70, 255, 0.85), inset 0 0 12px rgba(171, 70, 255, 0.45) !important;
 }
 .core-container.thinking .core-orb-glow {
     background: radial-gradient(circle, var(--neon-purple) 20%, transparent 70%);
@@ -780,13 +796,21 @@
 .core-container.speaking .outer-ring {
     border-top-color: var(--neon-green);
     border-bottom-color: var(--neon-green);
+    filter: drop-shadow(0 0 8px var(--neon-green));
 }
 .core-container.speaking .middle-ring {
     border-left-color: var(--neon-green);
     border-right-color: var(--neon-green);
+    filter: drop-shadow(0 0 10px var(--neon-green));
 }
 .core-container.speaking .inner-ring {
     border-top-color: var(--neon-green);
+    border-bottom-color: var(--neon-green);
+    filter: drop-shadow(0 0 6px var(--neon-green));
+}
+.core-container.speaking .core-image-container {
+    border-color: var(--neon-green) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.85), inset 0 0 12px rgba(16, 185, 129, 0.45) !important;
 }
 .core-container.speaking .core-orb-glow {
     background: radial-gradient(circle, var(--neon-green) 20%, transparent 70%);
