@@ -1,4 +1,4 @@
-# 🌐 J.A.R.V.I.S. AI OS v3.2.0 — Project Overview & Architecture Specification
+# 🌐 J.A.R.V.I.S. AI OS v3.2.5 — Project Overview & Architecture Specification
 
 ## 🌟 1. System Vision & Purpose
 **J.A.R.V.I.S. (Just A Rather Very Intelligent System)** is an automated full-stack AI assistant and tactical desktop operating system. It merges cutting-edge Large Language Models (Google Gemini), high-resolution AI image generation (Pollinations Flux 4K), biometric facial verification (OpenCV Haar Cascades), real-time system diagnostic telemetry, and bilingual voice synthesis into a Glassmorphic Sci-Fi HUD inspired by the Stark Industries Mark XLVII interface.

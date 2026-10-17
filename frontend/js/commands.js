@@ -35,7 +35,7 @@ async function takeCommand(message) {
         document.body.removeChild(link);
 
         const summaryText = `========================================================
-    J.A.R.V.I.S. AI OS v3.2.0 — TECHNICAL BLUEPRINT & SPECS
+    J.A.R.V.I.S. AI OS v3.2.5 — TECHNICAL BLUEPRINT & SPECS
 ========================================================
 📄 DOCUMENT    : JARVIS_Project_Details.pdf
 ⚡ ARCHITECTURE: Tactical Glassmorphic Web HUD + Flask REST Node

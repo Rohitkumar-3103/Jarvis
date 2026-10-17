@@ -9,9 +9,10 @@
 Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advanced automated full-stack AI assistant and tactical desktop operating system inspired by the Stark Industries Mark XLVII interface.
 
 > 📚 **Context & Architecture Documentation for AI Agents & Developers:**
+>
 > - 🤖 **[AGENTS.md](AGENTS.md)** — Core Mental Model, System Invariants & AI Agent Context
 > - 🏗️ **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** — Full Subsystem Architecture & Module Mapping
-> - 🔌 **[API Documentation](docs/API_DOCUMENTATION.md)** — Complete REST API Reference
+> - 🔌 **[API Documentation](docs/API_Documentation.md)** — Complete REST API Reference
 > - 🛠️ **[Developer Guide](docs/DEVELOPER_GUIDE.md)** — Setup, Extension & Testing Handbook
 > - 🎨 **[Design Specifications](docs/DESIGN.md)** — UI/UX, Typography & Color Wheel System
 
@@ -19,29 +20,29 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 
 ## 🚀 Key Features
 
-*   **Holographic Glassmorphic UI**: A desktop dashboard featuring neon glowing accents, diagnostic status logs, a digital clock, battery metrics, and animated HUD scanning lines.
-*   **Dual Input Modes**: Interact via voice commands (Web Speech Recognition) or direct text commands in the terminal bar.
-*   **Interactive Arc Reactor Core**: A central reactor orb that reacts visually to different states:
-    *   🔵 `STANDBY` (Pulsing Cyan)
-    *   🔴 `LISTENING` (Active Ring Pulsing Red)
-    *   🟣 `SYNAPSING` (Fast Rotating Purple)
-    *   🟢 `VOCALIZING` (Speech-synced Green)
-*   **Speech Synthesis (TTS)**: J.A.R.V.I.S. speaks back to you with custom speed (synaptic rate) and pitch controls, using your device's built-in system voices.
-*   **Gemini Cognitive Integration**: Paste your Gemini API key inside the settings modal to unlock true generative AI conversation capabilities.
-*   **Local Action Routing**: Command J.A.R.V.I.S. to perform local machine operations like opening Google, YouTube, Calculator, setting/navigating to a favorite website, or reading out the current date and time.
-*   **Persistent Configuration**: Settings (voice models, rate, API keys, favorite URLs) are saved directly in your browser's local storage.
-*   **Tactical Hologram Communications (Direct Satellite Comms)**: Stark Industries Mark XLVII direct video & voice communication module featuring a widescreen crystal clear video stage (`540px` x `310px`), top-right live call duration timer overlay, Stark identity banner with glowing diamond reticles (`◈`), and dedicated mic/camera controls.
-*   **Tactical Biometric & Master PIN Security**: Dual-layer OpenCV Haar Cascade facial recognition coupled with an emergency Master PIN (`2710`) manual bypass terminal.
+- **Holographic Glassmorphic UI**: A desktop dashboard featuring neon glowing accents, diagnostic status logs, a digital clock, battery metrics, and animated HUD scanning lines.
+- **Dual Input Modes**: Interact via voice commands (Web Speech Recognition) or direct text commands in the terminal bar.
+- **Interactive Arc Reactor Core**: A central reactor orb that reacts visually to different states:
+  - 🔵 `STANDBY` (Pulsing Cyan)
+  - 🔴 `LISTENING` (Active Ring Pulsing Red)
+  - 🟣 `SYNAPSING` (Fast Rotating Purple)
+  - 🟢 `VOCALIZING` (Speech-synced Green)
+- **Speech Synthesis (TTS)**: J.A.R.V.I.S. speaks back to you with custom speed (synaptic rate) and pitch controls, using your device's built-in system voices.
+- **Gemini Cognitive Integration**: Paste your Gemini API key inside the settings modal to unlock true generative AI conversation capabilities.
+- **Local Action Routing**: Command J.A.R.V.I.S. to perform local machine operations like opening Google, YouTube, Calculator, setting/navigating to a favorite website, or reading out the current date and time.
+- **Persistent Configuration**: Settings (voice models, rate, API keys, favorite URLs) are saved directly in your browser's local storage.
+- **Tactical Hologram Communications (Direct Satellite Comms)**: Stark Industries Mark XLVII direct video & voice communication module featuring a widescreen crystal clear video stage (`540px` x `310px`), top-right live call duration timer overlay, Stark identity banner with glowing diamond reticles (`◈`), and dedicated mic/camera controls.
+- **Tactical Biometric & Master PIN Security**: Dual-layer OpenCV Haar Cascade facial recognition coupled with an emergency Master PIN (`2710`) manual bypass terminal.
 
 ---
 
 ## 🛠️ Technology Stack
 
-*   **Structure**: HTML5 (Semantic modules, modal dialogues)
-*   **Styling**: CSS3 (Custom properties, CSS Grid/Flexbox layouts, Backdrop blur filters, Keyframe animations)
-*   **Logic**: JavaScript (ES6+, asynchronous fetch API, Web Speech API integration)
-*   **Backend Services**: Python 3.12 Flask REST API, OpenCV Biometrics, `psutil` Telemetry
-*   **AI Engine**: Google Gemini API (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`), Pollinations Flux 4K Generator
+- **Structure**: HTML5 (Semantic modules, modal dialogues)
+- **Styling**: CSS3 (Custom properties, CSS Grid/Flexbox layouts, Backdrop blur filters, Keyframe animations)
+- **Logic**: JavaScript (ES6+, asynchronous fetch API, Web Speech API integration)
+- **Backend Services**: Python 3.12 Flask REST API, OpenCV Biometrics, `psutil` Telemetry
+- **AI Engine**: Google Gemini API (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`), Pollinations Flux 4K Generator
 
 ---
 
@@ -107,13 +108,14 @@ graph TD
 ```
 
 > 📖 **Deep-Dive Architecture & Design Specifications:**
-> * 🏛️ **[System Architecture Blueprint](docs/ARCHITECTURE.md)** — Multi-tier topology, microservices mapping, execution flows, and security invariants.
-> * 🎨 **[Tactical HUD Design System](docs/DESIGN.md)** — Glassmorphic styling, 360° theme palettes, tonal stacking, and typography tokens.
-
+>
+> - 🏛️ **[System Architecture Blueprint](docs/ARCHITECTURE.md)** — Multi-tier topology, microservices mapping, execution flows, and security invariants.
+> - 🎨 **[Tactical HUD Design System](docs/DESIGN.md)** — Glassmorphic styling, 360° theme palettes, tonal stacking, and typography tokens.
 
 ---
 
 ## 📁 Project Structure
+
 ```text
 Jarvis/
 │
@@ -279,6 +281,7 @@ Jarvis/
 ### 1. Create and Activate `.venv`
 
 #### 🪟 Windows (PowerShell)
+
 ```powershell
 # 1. Create Python 3.12 Virtual Environment
 py -3.12 -m venv .venv
@@ -291,6 +294,7 @@ pip install -r requirements.txt
 ```
 
 #### 🪟 Windows (Command Prompt)
+
 ```cmd
 # 1. Create Virtual Environment
 py -3.12 -m venv .venv
@@ -303,6 +307,7 @@ pip install -r requirements.txt
 ```
 
 #### 🐧 Linux / 🍎 macOS
+
 ```bash
 # 1. Create Virtual Environment
 python3 -m venv .venv
@@ -319,21 +324,27 @@ pip install -r requirements.txt
 ## 🚀 Launching J.A.R.V.I.S.
 
 ### 🌟 Unified Dual-Server Launcher (Recommended)
+
 With your virtual environment active, run:
+
 ```powershell
 python .\run_dashboard.py
 ```
+
 This automatically initializes:
-* ⚙️ **Flask REST API Service**: `http://127.0.0.1:5000`
-* 🖥️ **Tactical Glassmorphic Web HUD**: `http://127.0.0.1:8080` (or `8081`)
-* 🌐 **Auto-opens** your default browser directly into the HUD.
+
+- ⚙️ **Flask REST API Service**: `http://127.0.0.1:5000`
+- 🖥️ **Tactical Glassmorphic Web HUD**: `http://127.0.0.1:8080` (or `8081`)
+- 🌐 **Auto-opens** your default browser directly into the HUD.
 
 ### 🎙️ Standalone Multimodal Live Audio Client (PyQt6 Desktop)
+
 ```powershell
 python main.py
 ```
 
 ### 🧪 Run Automated Tests
+
 ```powershell
 pytest
 ```
@@ -342,27 +353,27 @@ pytest
 
 ## 🗣️ Voice Commands Guide
 
-| Command | Action / Response |
-| :--- | :--- |
-| `"Hey J.A.R.V.I.S."` / `"Hello"` | Greets you and checks system diagnostic logs. |
-| `"What time is it?"` | Reads out and prints the current system time. |
-| `"What is the date?"` | Reads out and prints today's date. |
-| `"Open Google"` | Opens Google in a new browser tab. |
-| `"Open YouTube"` | Opens YouTube in a new browser tab. |
-| `"Open WhatsApp"` | Opens WhatsApp Web and calls backend launch. |
-| `"Open GitHub"` | Opens GitHub in a new browser tab. |
-| `"Open File Explorer"` / `"Open File"` | Launches native Windows File Explorer. |
-| `"Open VS Code"` / `"Open code file"` | Opens VS Code editor in the current project workspace. |
-| `"Open Calculator"` | Launches your operating system's native calculator application. |
-| `"Play Music"` / `"Music"` | Opens YouTube Music and executes backend play. |
-| `"Send Email"` / `"Email"` | Opens Gmail composer and launches local mail. |
-| `"Open Notepad"` / `"Notepad"` | Opens native Windows Notepad application. |
-| `"Take Screenshot"` / `"Screenshot"` | Captures full screen and saves to `Assets/screenshot.png`. |
-| `"Shutdown System"` / `"Shutdown"` | Initiates a 60-second host computer shutdown countdown. |
-| `"Abort Shutdown"` / `"Cancel Shutdown"` | Cancels the active system shutdown timer. |
-| `"Set favorite website to [URL]"` | Registers a target URL in localStorage (e.g. `set favorite website to github.com`). |
-| `"Open favorite website"` | Opens your registered favorite URL. |
-| *[Any general query]* | If a Gemini API key is configured, queries the LLM. If offline, launches a Google search scan. |
+| Command                                  | Action / Response                                                                              |
+| :--------------------------------------- | :--------------------------------------------------------------------------------------------- |
+| `"Hey J.A.R.V.I.S."` / `"Hello"`         | Greets you and checks system diagnostic logs.                                                  |
+| `"What time is it?"`                     | Reads out and prints the current system time.                                                  |
+| `"What is the date?"`                    | Reads out and prints today's date.                                                             |
+| `"Open Google"`                          | Opens Google in a new browser tab.                                                             |
+| `"Open YouTube"`                         | Opens YouTube in a new browser tab.                                                            |
+| `"Open WhatsApp"`                        | Opens WhatsApp Web and calls backend launch.                                                   |
+| `"Open GitHub"`                          | Opens GitHub in a new browser tab.                                                             |
+| `"Open File Explorer"` / `"Open File"`   | Launches native Windows File Explorer.                                                         |
+| `"Open VS Code"` / `"Open code file"`    | Opens VS Code editor in the current project workspace.                                         |
+| `"Open Calculator"`                      | Launches your operating system's native calculator application.                                |
+| `"Play Music"` / `"Music"`               | Opens YouTube Music and executes backend play.                                                 |
+| `"Send Email"` / `"Email"`               | Opens Gmail composer and launches local mail.                                                  |
+| `"Open Notepad"` / `"Notepad"`           | Opens native Windows Notepad application.                                                      |
+| `"Take Screenshot"` / `"Screenshot"`     | Captures full screen and saves to `Assets/screenshot.png`.                                     |
+| `"Shutdown System"` / `"Shutdown"`       | Initiates a 60-second host computer shutdown countdown.                                        |
+| `"Abort Shutdown"` / `"Cancel Shutdown"` | Cancels the active system shutdown timer.                                                      |
+| `"Set favorite website to [URL]"`        | Registers a target URL in localStorage (e.g. `set favorite website to github.com`).            |
+| `"Open favorite website"`                | Opens your registered favorite URL.                                                            |
+| _[Any general query]_                    | If a Gemini API key is configured, queries the LLM. If offline, launches a Google search scan. |
 
 ---
 
@@ -372,39 +383,48 @@ pytest
 2.  Open the settings slider panel in the bottom-right corner of the J.A.R.V.I.S. dashboard.
 3.  Paste your API key into the **Gemini Intelligence Link** field.
 4.  Click **Apply Configuration**.
-5.  *J.A.R.V.I.S.* is now fully sentient! Ask him complex questions, write code, or have general conversations.
+5.  _J.A.R.V.I.S._ is now fully sentient! Ask him complex questions, write code, or have general conversations.
 
 ---
 
 ## 🔍 How It Works (Code Architecture)
 
 ### Speech Recognition (Speech-to-Text)
+
 Browser audio is processed via the `webkitSpeechRecognition` constructor. J.A.R.V.I.S. listens, outputs text to the chat bubble, and forwards it to the command processor:
+
 ```javascript
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 
 recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    takeCommand(transcript);
+  const transcript = event.results[0][0].transcript;
+  takeCommand(transcript);
 };
 ```
 
 ### Cognitive API Routing
+
 If an API key exists, J.A.R.V.I.S. sends a payload containing a system role instruction to ensure the AI speaks under the J.A.R.V.I.S. persona:
+
 ```javascript
 const requestPayload = {
-    contents: [{ parts: [{ text: promptText }] }],
-    systemInstruction: {
-        parts: [{ 
-            text: "You are J.A.R.V.I.S., the legendary advanced AI system. Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max) so they translate perfectly to voice feedback." 
-        }]
-    }
+  contents: [{ parts: [{ text: promptText }] }],
+  systemInstruction: {
+    parts: [
+      {
+        text: "You are J.A.R.V.I.S., the legendary advanced AI system. Speak politely, use terms like 'Sir', and keep responses extremely crisp, informative, and to-the-point (under 3-4 sentences max) so they translate perfectly to voice feedback.",
+      },
+    ],
+  },
 };
 ```
 
 ### Speech Synthesis (Text-to-Speech)
+
 Responses are spoken back using custom voice options populated from `window.speechSynthesis.getVoices()`:
+
 ```javascript
 const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
 utterance.voice = selectedVoiceProfile;
@@ -418,14 +438,14 @@ window.speechSynthesis.speak(utterance);
 ## 👨‍💻 Author & Connect
 
 **Rohit Kumar Gupta**  
-*Creator & Lead Developer of J.A.R.V.I.S. AI OS*
+_Creator & Lead Developer of J.A.R.V.I.S. AI OS_
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect_on_LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Rohitkumar-3103/Jarvis)
 
-* 💼 **LinkedIn**: [linkedin.com/in/rohit-kumar-gupta-a96b8428a](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
-* 🐙 **GitHub**: [github.com/Rohitkumar-3103](https://github.com/Rohitkumar-3103)
-* 🚀 **Project Repository**: [github.com/Rohitkumar-3103/Jarvis](https://github.com/Rohitkumar-3103/Jarvis)
+- 💼 **LinkedIn**: [linkedin.com/in/rohit-kumar-gupta-a96b8428a](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
+- 🐙 **GitHub**: [github.com/Rohitkumar-3103](https://github.com/Rohitkumar-3103)
+- 🚀 **Project Repository**: [github.com/Rohitkumar-3103/Jarvis](https://github.com/Rohitkumar-3103/Jarvis)
 
 ---
 

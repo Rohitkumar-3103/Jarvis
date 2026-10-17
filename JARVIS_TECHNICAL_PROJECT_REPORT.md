@@ -1,11 +1,11 @@
-# 🤖 J.A.R.V.I.S. AI OS v3.2.0 — Comprehensive Technical Project Report & Architectural Blueprint
+# 🤖 J.A.R.V.I.S. AI OS v3.2.5 — Comprehensive Technical Project Report & Architectural Blueprint
 
 **Lead Developer:** **Rohit Kumar Gupta** ([LinkedIn](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/) | [GitHub](https://github.com/Rohitkumar-3103/Jarvis))  
 **Project Workspace:** [`d:\code\Web Development\Project\AI auto\Jarvis`](file:///d:/code/Web%20Development/Project/AI%20auto/Jarvis)  
 **Interactive Jupyter Pipeline:** [`JARVIS_Architecture_and_Pipeline.ipynb`](file:///d:/code/Web%20Development/Project/AI%20auto/Jarvis/JARVIS_Architecture_and_Pipeline.ipynb)  
 **Standalone HTML Pipeline View:** [`JARVIS_Architecture_and_Pipeline.html`](file:///d:/code/Web%20Development/Project/AI%20auto/Jarvis/JARVIS_Architecture_and_Pipeline.html)  
 **Full Specification Document:** [`JARVIS_Project_Details.html`](file:///d:/code/Web%20Development/Project/AI%20auto/Jarvis/JARVIS_Project_Details.html) / [`JARVIS_Project_Details.pdf`](file:///d:/code/Web%20Development/Project/AI%20auto/Jarvis/JARVIS_Project_Details.pdf)  
-**Version:** `v3.2.0 (Mark XLVII Release)`  
+**Version:** `v3.2.5 (Mark XLVII Release)`  
 **System Architecture:** Asynchronous Dual-Server Microservices (Flask REST Node @ `5000` + Tactical HUD @ `8080`)  
 
 ---
@@ -261,4 +261,4 @@ curl -s -X POST http://127.0.0.1:5000/api/system/command -H "Content-Type: appli
 
 ---
 
-*Report prepared autonomously for Stark Industries J.A.R.V.I.S. AI OS v3.2.0. All pipelines and operational benchmarks verified.*
+*Report prepared autonomously for Stark Industries J.A.R.V.I.S. AI OS v3.2.5. All pipelines and operational benchmarks verified.*
