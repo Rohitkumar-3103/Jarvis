@@ -1917,20 +1917,7 @@
 .dash-header-text-group {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-}
-
-.dash-header-badge {
-    font-family: var(--font-mono);
-    font-size: 0.60rem;
-    letter-spacing: 2px;
-    color: var(--theme-primary, #00f0ff);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-    font-weight: 600;
-    line-height: 1;
+    gap: 2px;
 }
 
 .dash-header-title {
@@ -1938,9 +1925,29 @@
     font-size: 0.95rem;
     font-weight: 800;
     letter-spacing: 1.8px;
-    color: #ffffff;
+    background: linear-gradient(90deg, var(--theme-primary, #00f0ff), #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     line-height: 1.2;
     text-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
+}
+
+.dash-header-badge {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 1.8px;
+    color: var(--theme-primary, #00f0ff);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.dash-header-badge i {
+    color: var(--theme-primary, #00f0ff);
+    font-size: 0.62rem;
 }
 
 .dash-header-subtag {
