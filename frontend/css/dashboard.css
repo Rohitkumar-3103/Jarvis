@@ -1925,6 +1925,14 @@
     text-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
 }
 
+.dash-header-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    color: #64748b;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
 .dash-header-subtag {
     font-family: var(--font-mono);
     font-size: 0.62rem;
