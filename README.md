@@ -23,10 +23,14 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 - **Holographic Glassmorphic UI**: A desktop dashboard featuring neon glowing accents, diagnostic status logs, a digital clock, battery metrics, and animated HUD scanning lines.
 - **Dual Input Modes**: Interact via voice commands (Web Speech Recognition) or direct text commands in the terminal bar.
 - **Interactive Arc Reactor Core**: A central reactor orb that reacts visually to different states:
-  - 🔵 `STANDBY` (Pulsing Cyan)
+  - 🔵 `IDLE / STANDBY` (Pulsing Cyan)
   - 🔴 `LISTENING` (Active Ring Pulsing Red)
-  - 🟣 `SYNAPSING` (Fast Rotating Purple)
-  - 🟢 `VOCALIZING` (Speech-synced Green)
+  - 🟣 `THINKING / SYNAPSING` (Fast Rotating Purple)
+  - 🟢 `SPEAKING / VOCALIZING` (Speech-synced Green)
+
+  <p align="center">
+    <img src="frontend/assets/images/all_states_test.png" alt="J.A.R.V.I.S. Arc Reactor Visualizer State Transitions" width="100%">
+  </p>
 - **Speech Synthesis (TTS)**: J.A.R.V.I.S. speaks back to you with custom speed (synaptic rate) and pitch controls, using your device's built-in system voices.
 - **Gemini Cognitive Integration**: Paste your Gemini API key inside the settings modal to unlock true generative AI conversation capabilities.
 - **Local Action Routing**: Command J.A.R.V.I.S. to perform local machine operations like opening Google, YouTube, Calculator, setting/navigating to a favorite website, or reading out the current date and time.
@@ -160,7 +164,11 @@ Jarvis/
 │   ├── auth.html                   # Biometric Auth Terminal (WebGL GLSL Shader)
 │   ├── favicon.ico                 # App Favicon
 │   │
-│   ├── css/                        # Modular Stylesheets (10 Files)
+│   ├── brahmastra/                 # 3D Celestial Core & Neural Matrix (Keplerian Solar Engine)
+│   │   ├── index.html              # Dedicated 3D Celestial Core Viewport
+│   │   └── assets/                 # Three.js Celestial Shaders, Orbits & Vision Workers
+│   │
+│   ├── css/                        # Modular Stylesheets (11 Files)
 │   │   ├── style.css               # Core Styles & Layout Tokens
 │   │   ├── dashboard.css           # HUD Panels, Arc Reactor & Tactical Call Comms
 │   │   ├── chat.css                # AI Chat Bubbles & Code Prism Viewers
@@ -169,16 +177,18 @@ Jarvis/
 │   │   ├── widgets.css             # Circular Gauges & Telemetry Blocks
 │   │   ├── themes.css              # 360° Theme Engine & Color Swatches
 │   │   ├── animations.css          # Keyframes, Radar Pulses, Glowing Effects
+│   │   ├── gestures.css            # Touchless Optical Air Gesture HUD Overlays
 │   │   ├── responsive.css          # Mobile / Tablet Viewport Queries
 │   │   └── all.min.css             # Local FontAwesome 6.5.2 Icon Suite
 │   │
-│   ├── js/                         # Frontend Execution Engines (13 Modules)
+│   ├── js/                         # Frontend Execution Engines (14 Modules)
 │   │   ├── app.js                  # Master Controller, Comms & Audio Routing
 │   │   ├── ai.js                   # Gemini LLM Bridge & Pollinations 4K Flux Engine
 │   │   ├── voice.js                # Bilingual Web Speech Recognition & TTS
 │   │   ├── commands.js             # Voice & Text Intent Classifier
 │   │   ├── dashboard.js            # HUD Widgets, Drawer & Telemetry Streams
 │   │   ├── chat.js                 # Message Stream, PDF Export & Code Zoom
+│   │   ├── gestures.js             # Touchless Optical Air Gestures (MediaPipe ML Worker)
 │   │   ├── lockscreen.js           # Biometric Face Verification & Master PIN (2710)
 │   │   ├── settings.js             # Profile Sync & Color Wheel Controller
 │   │   ├── weather.js              # Live Radar & Atmospheric Resolver
@@ -188,7 +198,7 @@ Jarvis/
 │   │   └── utils.js                # DOM Selectors, Audio Chimes & Helpers
 │   │
 │   └── assets/                     # Media & Static Assets
-│       ├── images/                 # Avatars, Logos, App Icons
+│       ├── images/                 # Avatars, Logos, App Icons & Arc Reactor States
 │       ├── icons/                  # HUD Vector Icons
 │       └── sounds/                 # Tactical HUD Sound Effects
 │

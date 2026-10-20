@@ -75,7 +75,11 @@ Jarvis/
 │   ├── auth.html                   # Biometric Auth Terminal (WebGL GLSL Shader)
 │   ├── favicon.ico                 # App Favicon
 │   │
-│   ├── css/                        # Modular Stylesheets (10 Files)
+│   ├── brahmastra/                 # 3D Celestial Core & Neural Matrix (Keplerian Solar Engine)
+│   │   ├── index.html              # Dedicated 3D Celestial Core Viewport
+│   │   └── assets/                 # Three.js Celestial Shaders, Orbits & Vision Workers
+│   │
+│   ├── css/                        # Modular Stylesheets (11 Files)
 │   │   ├── style.css               # Core Styles & Layout Tokens
 │   │   ├── dashboard.css           # HUD Panels, Arc Reactor & Tactical Call Comms
 │   │   ├── chat.css                # AI Chat Bubbles & Code Prism Viewers
@@ -84,16 +88,18 @@ Jarvis/
 │   │   ├── widgets.css             # Circular Gauges & Telemetry Blocks
 │   │   ├── themes.css              # 360° Theme Engine & Color Swatches
 │   │   ├── animations.css          # Keyframes, Radar Pulses, Glowing Effects
+│   │   ├── gestures.css            # Touchless Optical Air Gesture HUD Overlays
 │   │   ├── responsive.css          # Mobile / Tablet Viewport Queries
 │   │   └── all.min.css             # Local FontAwesome 6.5.2 Icon Suite
 │   │
-│   ├── js/                         # Frontend Execution Engines (13 Modules)
+│   ├── js/                         # Frontend Execution Engines (14 Modules)
 │   │   ├── app.js                  # Master Controller, Comms & Audio Routing
 │   │   ├── ai.js                   # Gemini LLM Bridge & Pollinations 4K Flux Engine
 │   │   ├── voice.js                # Bilingual Web Speech Recognition & TTS
 │   │   ├── commands.js             # Voice & Text Intent Classifier
 │   │   ├── dashboard.js            # HUD Widgets, Drawer & Telemetry Streams
 │   │   ├── chat.js                 # Message Stream, PDF Export & Code Zoom
+│   │   ├── gestures.js             # Touchless Optical Air Gestures (MediaPipe ML Worker)
 │   │   ├── lockscreen.js           # Biometric Face Verification & Master PIN (2710)
 │   │   ├── settings.js             # Profile Sync & Color Wheel Controller
 │   │   ├── weather.js              # Live Radar & Atmospheric Resolver
@@ -103,7 +109,7 @@ Jarvis/
 │   │   └── utils.js                # DOM Selectors, Audio Chimes & Helpers
 │   │
 │   └── assets/                     # Media & Static Assets
-│       ├── images/                 # Avatars, Logos, App Icons
+│       ├── images/                 # Avatars, Logos, App Icons & Arc Reactor States
 │       ├── icons/                  # HUD Vector Icons
 │       └── sounds/                 # Tactical HUD Sound Effects
 │
