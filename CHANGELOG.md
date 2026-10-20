@@ -2,6 +2,16 @@
 
 All notable changes to the J.A.R.V.I.S. AI OS project are documented in this file.
 
+## [v3.3.0] - 2026-10-21
+### Added & Enhanced
+- **3D Celestial Core & Neural Matrix (`frontend/brahmastra/`)**: Integrated a high-performance WebGL / Three.js 3D Celestial Core featuring an interactive pulsating neural particle sphere, cybernetic gimbal rings, and dynamic particle clusters.
+- **9-Planet Keplerian Orbital Mechanics**: Implemented full astronomical simulation of Mercury, Venus, Earth, Mars, Jupiter, Saturn (with rings), Uranus, Neptune, and Pluto with Keplerian elliptical orbits, inclinations, semi-major axes, orbital periods, and procedural atmospheric textures.
+- **Touchless Optical Air Gestures Engine**: Integrated in-browser MediaPipe HandLandmarker worker enabling zero-latency touchless interaction (pan, orbit rotation, two-hand pinch-to-zoom, and view presets) with 100% on-device private processing.
+- **Stark Sci-Fi Glassmorphic Camera Module**: Redesigned the primary HUD camera control into a futuristic pill button with glowing optical lens aperture indicator, bold Orbitron typography, tactile state pill (`OFF` / `ON`), and animated holographic scanline sheen.
+- **Direct WhatsApp & Phone Call Routing**: Enabled 1-click interactive communication links on names (`wa.me`) and phone numbers (`tel:`) within chat responses and comms logs.
+- **Cleaned Tactical HUD Modal**: Embedded the 3D Celestial Core modal inside J.A.R.V.I.S. with automatic Air Gesture engagement, Fullscreen expand, and streamlined header styling.
+- **Codebase Optimization & Pruning**: Completely removed obsolete `Brahmastra-AI-main` development source directory; streamlined production assets into self-contained static modules under `frontend/brahmastra/`.
+
 ## [v3.2.5] - 2026-10-16
 ### Added & Enhanced
 - **Tactical Hologram Communications Link (`#call-overlay`)**: Built an encrypted direct satellite video and audio communication module modeled after the Stark Industries Mark XLVII comms interface. Supports direct routing via `/api/calls/call`.

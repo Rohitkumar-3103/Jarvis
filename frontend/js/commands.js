@@ -150,6 +150,33 @@ async function takeCommand(message) {
         updateCoreState('IDLE');
         return;
     }
+    // Brahmastra AI Neural Core & Celestial Simulation Modal Trigger
+    else if (query.includes('open brahmastra') || query.includes('launch brahmastra') || query.includes('brahmastra ai') || query.includes('celestial simulation') || query.includes('neural core') || query.includes('show solar system') || query.includes('9 planets') || query.includes('close brahmastra')) {
+        if (query.includes('close brahmastra') || query.includes('exit brahmastra')) {
+            if (typeof closeBrahmastraModal === 'function') closeBrahmastraModal();
+            appendChatBubble('JARVIS', "🪐 Dismissing Brahmastra Neural Core & Celestial Simulation module.");
+            speak("Brahmastra simulation dismissed, Sir.");
+        } else {
+            appendChatBubble('JARVIS', "🪐 Initializing Brahmastra AI Holographic Neural Core & 9-Planet Celestial Simulation...");
+            speak("Launching Brahmastra Neural Core and Celestial Simulation, Sir.");
+            if (typeof openBrahmastraModal === 'function') {
+                openBrahmastraModal();
+            }
+        }
+        updateCoreState('IDLE');
+        return;
+    }
+    // Touchless Air Gestures Sensory Controls
+    else if (query.includes('activate gesture') || query.includes('enable gesture') || query.includes('start gesture') || query.includes('turn on gesture') || query.includes('disable gesture') || query.includes('stop gesture') || query.includes('air gesture')) {
+        const isEnabling = !query.includes('disable') && !query.includes('stop') && !query.includes('turn off');
+        if (typeof toggleGestureControl === 'function') {
+            toggleGestureControl(isEnabling);
+        }
+        appendChatBubble('JARVIS', isEnabling ? "🖐️ Optical Air Gesture Sensory Controls: ONLINE." : "⏹️ Optical Air Gesture Sensory Controls: OFFLINE.");
+        speak(isEnabling ? "Touchless air gesture sensors activated, Sir." : "Air gesture sensors deactivated.");
+        updateCoreState('IDLE');
+        return;
+    }
     // Voice Output Volume Control
     else if (query.includes('voice volume') || query.includes('set volume') || query.includes('volume to') || query.includes('mute voice')) {
         let newVol = 1.0;

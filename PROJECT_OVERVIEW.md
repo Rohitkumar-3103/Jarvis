@@ -1,4 +1,4 @@
-# 🌐 J.A.R.V.I.S. AI OS v3.2.5 — Project Overview & Architecture Specification
+# 🌐 J.A.R.V.I.S. AI OS v3.3.0 — Project Overview & Architecture Specification
 
 ## 🌟 1. System Vision & Purpose
 **J.A.R.V.I.S. (Just A Rather Very Intelligent System)** is an automated full-stack AI assistant and tactical desktop operating system. It merges cutting-edge Large Language Models (Google Gemini), high-resolution AI image generation (Pollinations Flux 4K), biometric facial verification (OpenCV Haar Cascades), real-time system diagnostic telemetry, and bilingual voice synthesis into a Glassmorphic Sci-Fi HUD inspired by the Stark Industries Mark XLVII interface.
@@ -60,10 +60,17 @@
 
 ### 🛰️ 7. Tactical Hologram Communications Subsystem
 - **Direct Satellite Comms**: Direct voice or video calling link to external contacts via `POST /api/calls/call`.
+- **Interactive Routing**: 1-click WhatsApp (`wa.me`) and direct phone call (`tel:`) launching from names and phone numbers.
 - **Crystal Clear Video Stage**: Expanded `540px` width HUD card with `310px` height widescreen video container, providing full-frame face clarity free of dark vignetting or target reticles.
 - **Top-Right HUD Timer Overlay**: Live ticking duration badge (`🕒 00:00`) neatly embedded directly in the top-right corner of the video stream.
 - **Stark Tactical HUD Identity Banner**: Framed participant identity banner with dual cyan pillars, scanline borders, diamond HUD reticles (`◈`), and glowing Orbitron typography.
 - **In-Call Pods**: Interactive Glassmorphic action buttons for Microphone Mute, Camera Video Suspend, and End Call termination.
+
+### 🪐 8. 3D Celestial Core & Optical Air Gestures Subsystem
+- **3D Celestial Core**: Real-time WebGL / Three.js holographic matrix featuring a central pulsating neural particle orb and cybernetic gimbal rings.
+- **9-Planet Keplerian Solar Simulation**: Full astronomical orbital simulation of Mercury, Venus, Earth, Mars, Jupiter, Saturn (with rings), Uranus, Neptune, and Pluto with accurate Keplerian ellipses, inclinations, and procedural shaders.
+- **Touchless Optical Air Gestures**: Local in-browser MediaPipe hand tracking allowing zero-latency gesture manipulation (pan, orbit rotate, pinch zoom, and orientation reset) without external cloud transmission.
+- **Stark Sci-Fi Glassmorphic Camera Module**: Pill-shaped HUD camera button with pulsing optical aperture indicator, Orbitron typography, and tactile active/inactive states.
 
 ---
 

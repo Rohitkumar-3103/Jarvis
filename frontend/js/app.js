@@ -350,60 +350,80 @@ if (dockChatBtn) {
     });
 }
 
-// 1. Direct WhatsApp Launch Button
+// 1. Direct WhatsApp Launch Button (uses entered Phone Number)
 const btnDirectWhatsapp = document.getElementById('btn-direct-whatsapp');
 if (btnDirectWhatsapp) {
     btnDirectWhatsapp.addEventListener('click', () => {
         if (typeof playClickSound === 'function') playClickSound();
+        const input = document.getElementById('comms-contact-input');
+        const val = input ? input.value.trim() : '';
+
+        if (!val) {
+            if (typeof showSystemToast === 'function') {
+                showSystemToast("Please enter a phone number for WhatsApp, Sir.", "warning");
+            } else {
+                alert("Please enter a phone number for WhatsApp, Sir.");
+            }
+            if (input) input.focus();
+            return;
+        }
+
         closeCommsModal();
-        window.open('https://web.whatsapp.com', '_blank');
-        speak("Opening WhatsApp workspace, Sir.");
-        appendChatBubble('JARVIS', "Initiating secure WhatsApp Web workspace channel...");
+
+        const cleanPhone = val.replace(/\D/g, '');
+        const phoneToSend = (cleanPhone.length === 10) ? ('91' + cleanPhone) : cleanPhone;
+        window.open(`https://api.whatsapp.com/send?phone=${phoneToSend}`, '_blank');
+        speak(`Opening WhatsApp direct channel to ${val}, Sir.`);
+        appendChatBubble('JARVIS', `Initiating direct WhatsApp communication channel to ${val}...`);
     });
 }
 
-// 2. Direct Hologram Call Launch Button
+// 2. Direct Phone Call Launch Button (uses entered Phone Number)
 const btnDirectCall = document.getElementById('btn-direct-call');
 if (btnDirectCall) {
     btnDirectCall.addEventListener('click', () => {
         if (typeof playClickSound === 'function') playClickSound();
+        const input = document.getElementById('comms-contact-input');
+        const val = input ? input.value.trim() : '';
+
+        if (!val) {
+            if (typeof showSystemToast === 'function') {
+                showSystemToast("Please enter a phone number to dial, Sir.", "warning");
+            } else {
+                alert("Please enter a phone number to dial, Sir.");
+            }
+            if (input) input.focus();
+            return;
+        }
+
         closeCommsModal();
-        initiateSystemCall("TONY STARK (DIRECT SATELLITE)", true);
+
+        speak(`Initiating direct call to ${val}, Sir.`);
+        appendChatBubble('JARVIS', `Dialing direct secure satellite link to ${val}...`);
+
+        // Trigger native tel protocol for system phone dialer
+        const cleanPhone = val.replace(/\D/g, '');
+        if (cleanPhone.length >= 5) {
+            try {
+                const telLink = document.createElement('a');
+                telLink.href = `tel:${val.replace(/\s+/g, '')}`;
+                telLink.style.display = 'none';
+                document.body.appendChild(telLink);
+                telLink.click();
+                setTimeout(() => telLink.remove(), 500);
+            } catch (err) {}
+        }
+
+        initiateSystemCall(val, true);
     });
 }
 
-// 3. Direct Contact Dial Button & Enter Key
-const btnCommsDial = document.getElementById('btn-comms-dial');
+// 3. Enter key in phone number input defaults to Direct Call
 const commsContactInput = document.getElementById('comms-contact-input');
-
-function handleCommsDirectDial() {
-    if (!commsContactInput) return;
-    const val = commsContactInput.value.trim();
-    if (!val) {
-        closeCommsModal();
-        initiateSystemCall("TONY STARK", true);
-        return;
-    }
-    
-    closeCommsModal();
-    const cleanPhone = val.replace(/\D/g, '');
-    const isPhoneNumber = cleanPhone.length >= 7;
-
-    if (isPhoneNumber) {
-        window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}`, '_blank');
-        initiateSystemCall(val + " (WHATSAPP)", false);
-    } else {
-        initiateSystemCall(val, true);
-    }
-}
-
-if (btnCommsDial) {
-    btnCommsDial.addEventListener('click', handleCommsDirectDial);
-}
 if (commsContactInput) {
     commsContactInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            handleCommsDirectDial();
+            if (btnDirectCall) btnDirectCall.click();
         }
     });
 }

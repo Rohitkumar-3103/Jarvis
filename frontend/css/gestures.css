@@ -1,0 +1,374 @@
+/* ==========================================================================
+   J.A.R.V.I.S. 3.0 — TOUCHLESS AIR GESTURE SENSORY STYLES (MARK XLVII SPEC)
+   ========================================================================== */
+
+/* Floating Gesture Telemetry HUD Widget */
+.gesture-hud-widget {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 10006;
+    width: 250px;
+    background: linear-gradient(135deg, rgba(4, 12, 28, 0.94) 0%, rgba(2, 6, 16, 0.97) 100%);
+    border: 1px solid var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow: hidden;
+    font-family: var(--font-hud, 'Orbitron', sans-serif);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: none;
+    flex-direction: column;
+}
+
+.gesture-hud-widget.active {
+    display: flex !important;
+    animation: gestureWidgetFadeIn 0.35s ease forwards;
+}
+
+.gesture-hud-widget.minimized {
+    width: 180px;
+}
+
+.gesture-hud-widget.minimized .gesture-hud-body,
+.gesture-hud-widget.minimized .gesture-hud-canvas-wrap {
+    display: none !important;
+}
+
+@keyframes gestureWidgetFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Stark HUD Corner Brackets */
+.gesture-hud-widget::before,
+.gesture-hud-widget::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--theme-primary, #00f0ff);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 10;
+}
+.gesture-hud-widget::before {
+    top: 3px;
+    left: 3px;
+    border-width: 2px 0 0 2px;
+}
+.gesture-hud-widget::after {
+    bottom: 3px;
+    right: 3px;
+    border-width: 0 2px 2px 0;
+}
+
+/* Widget Header */
+.gesture-hud-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(0, 240, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.gesture-hud-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--theme-primary, #00f0ff);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+}
+
+.gesture-hud-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gesture-ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #94a3b8);
+    cursor: pointer;
+    font-size: 0.72rem;
+    padding: 2px 4px;
+    transition: color 0.2s;
+}
+.gesture-ctrl-btn:hover {
+    color: var(--theme-primary, #00f0ff);
+}
+
+/* Skeleton Canvas & Preview */
+.gesture-hud-canvas-wrap {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    background: #00040a;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+#gesture-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform: scaleX(-1); /* mirror view for natural interaction */
+}
+
+.gesture-hud-scanline {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 240, 255, 0.03) 0px,
+        rgba(0, 240, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+    pointer-events: none;
+}
+
+/* Widget Body */
+.gesture-hud-body {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gesture-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono, 'Share Tech Mono', monospace);
+    font-size: 0.65rem;
+}
+
+.gesture-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(0, 240, 255, 0.12);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    color: var(--theme-primary, #00f0ff);
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    font-size: 0.62rem;
+}
+
+.gesture-badge.listening {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+}
+
+.gesture-badge.silent {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #10b981;
+}
+
+.gesture-action-text {
+    font-family: var(--font-mono, 'Share Tech Mono', monospace);
+    font-size: 0.62rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Header Trigger Button */
+.btn-gesture-header {
+    background: rgba(0, 240, 255, 0.06);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    color: var(--text-primary, #e0f2fe);
+    font-family: var(--font-hud, 'Orbitron', sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.25s ease;
+}
+
+.btn-gesture-header:hover {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-gesture-header.active {
+    background: rgba(0, 240, 255, 0.22);
+    border-color: var(--theme-primary, #00f0ff);
+    color: var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.6), inset 0 0 8px rgba(0, 240, 255, 0.2);
+}
+
+.btn-gesture-header.active i {
+    animation: gestureHandPulse 1.4s infinite alternate;
+}
+
+@keyframes gestureHandPulse {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px var(--theme-primary, #00f0ff));
+    }
+    to {
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 8px var(--theme-primary, #00f0ff));
+    }
+}
+
+/* Holographic Air Reticle Cursor */
+.gesture-air-reticle {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 10007;
+    transform: translate(-50%, -50%);
+    display: none;
+    transition: transform 0.06s ease-out;
+}
+
+.gesture-air-reticle.active {
+    display: block !important;
+}
+
+.gesture-air-reticle-ring {
+    width: 100%;
+    height: 100%;
+    border: 1.5px dashed var(--theme-primary, #00f0ff);
+    border-radius: 50%;
+    box-shadow: 0 0 14px var(--theme-primary, #00f0ff);
+    animation: reticleSpin 6s linear infinite;
+}
+
+.gesture-air-reticle-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px var(--theme-primary, #00f0ff);
+}
+
+@keyframes reticleSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Gesture HUD Flash Alert */
+.gesture-hud-flash {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    z-index: 10006;
+    background: rgba(4, 12, 28, 0.94);
+    border: 1.5px solid var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.15);
+    border-radius: 8px;
+    padding: 9px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-hud, 'Orbitron', sans-serif);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gesture-hud-flash.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.gesture-flash-icon {
+    font-size: 1.2rem;
+    color: var(--theme-primary, #00f0ff);
+    text-shadow: 0 0 10px var(--theme-primary, #00f0ff);
+}
+
+.gesture-flash-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.gesture-flash-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1.2px;
+}
+
+.gesture-flash-desc {
+    font-family: var(--font-mono, 'Share Tech Mono', monospace);
+    font-size: 0.62rem;
+    color: var(--theme-primary, #00f0ff);
+    letter-spacing: 0.8px;
+}
+
+/* Side Drawer Card for Gestures */
+.gesture-drawer-card {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.05) 0%, rgba(4, 12, 28, 0.75) 100%);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s;
+}
+
+.gesture-drawer-card:hover {
+    border-color: rgba(0, 240, 255, 0.6);
+}
+
+.gesture-drawer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gesture-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    font-family: var(--font-mono, 'Share Tech Mono', monospace);
+    font-size: 0.62rem;
+    color: #94a3b8;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 240, 255, 0.12);
+}
+
+.gesture-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

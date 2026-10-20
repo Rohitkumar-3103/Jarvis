@@ -1,7 +1,7 @@
 # 🤖 AGENTS.md — AI Agent Context & System Blueprint
 
 > **For AI Assistants & Autonomous Coding Agents (Antigravity, Gemini, Claude, GPT, Cursor, Copilot)**
-> This document provides the complete mental model, architectural rules, execution flows, and technical invariants required to navigate, maintain, debug, and extend the **J.A.R.V.I.S. AI OS v3.2.5** codebase.
+> This document provides the complete mental model, architectural rules, execution flows, and technical invariants required to navigate, maintain, debug, and extend the **J.A.R.V.I.S. AI OS v3.3.0** codebase.
 
 ---
 
@@ -11,14 +11,15 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           J.A.R.V.I.S. AI OS v3.2.5                         │
+│                           J.A.R.V.I.S. AI OS v3.3.0                         │
 ├──────────────────────────────────────┬──────────────────────────────────────┤
 │       FRONTEND HUD (Port 8080)       │       BACKEND API (Port 5000)        │
 │  - Glassmorphic Neon HUD Dashboard  │  - Python 3.12 / Flask REST Node     │
 │  - Web Speech STT / TTS (Bilingual)  │  - OpenCV Biometric Haar Cascades    │
-│  - Pollinations 4K Flux AI Generator │  - PSUtil Live Diagnostic Telemetry  │
-│  - Tactical Auth Portal (auth.html)  │  - Code Interpreter Sandbox          │
-│  - Dynamic 360° Theme Engine         │  - MongoDB & users.json Hybrid Auth  │
+│  - 3D Celestial Core & Kepler Matrix │  - PSUtil Live Diagnostic Telemetry  │
+│  - Touchless Optical Air Gestures    │  - Code Interpreter Sandbox          │
+│  - Tactical Auth Portal (auth.html)  │  - MongoDB & users.json Hybrid Auth  │
+│  - Dynamic 360° Theme Engine         │  - Real-Time Comms Relay             │
 └──────────────────────────────────────┴──────────────────────────────────────┘
 ```
 

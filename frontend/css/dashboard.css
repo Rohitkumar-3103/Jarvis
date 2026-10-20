@@ -1086,6 +1086,45 @@
     animation: mic-pulse 1.2s infinite alternate !important;
 }
 
+/* Dock Celestial & Air Gestures Dynamic States */
+#dock-celestial {
+    color: var(--theme-primary, #00f0ff);
+    transition: all 0.3s ease;
+}
+
+#dock-celestial:hover {
+    color: #ffffff;
+    background: rgba(0, 240, 255, 0.2);
+    border-color: var(--theme-primary, #00f0ff);
+    box-shadow: 0 0 16px var(--theme-primary, #00f0ff), inset 0 0 8px rgba(0, 240, 255, 0.2);
+}
+
+#dock-celestial:hover i {
+    transform: rotate(30deg) scale(1.15);
+}
+
+#dock-gesture {
+    transition: all 0.3s ease;
+}
+
+#dock-gesture:hover {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+}
+
+#dock-gesture.active {
+    color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.22) !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.7), inset 0 0 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+#dock-gesture.active i {
+    animation: gestureHandPulse 1.4s infinite alternate;
+}
+
 /* HOLOGRAM CALL LAYOUTS (STARK MARK XLVII TACTICAL COMMS) */
 .call-overlay {
     position: fixed;

@@ -21,7 +21,7 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css?v=3.8.0">
-    <link rel="stylesheet" href="css/dashboard.css?v=5.0.0">
+    <link rel="stylesheet" href="css/dashboard.css?v=5.1.0">
     <link rel="stylesheet" href="css/animations.css?v=5.0.0">
     <link rel="stylesheet" href="css/lockscreen.css?v=5.7.0">
     <link rel="stylesheet" href="css/chat.css?v=3.5.0">
@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="css/widgets.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/gestures.css?v=1.1.0">
     
     <!-- Prism Syntax Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
@@ -506,6 +507,21 @@
             <span>TACTICAL DIRECTIVES</span>
         </div>
         <nav class="dash-action-list">
+
+            <!-- CELESTIAL CORE MATRIX (WITH INTEGRATED TOUCHLESS AIR GESTURES) -->
+            <a href="#" class="dash-action-card" onclick="closeDashboardSideMenu(); openBrahmastraModal();">
+                <div class="dash-action-card-left">
+                    <div class="dash-action-icon-pod" style="color: var(--theme-primary); border-color: rgba(0, 240, 255, 0.4); box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);">
+                        <i class="fa-solid fa-satellite"></i>
+                    </div>
+                    <div class="dash-action-text-box">
+                        <span class="dash-action-title">Celestial Core Matrix</span>
+                        <span class="dash-action-subtitle">Holographic 3D neural core &amp; Touchless Air Gestures</span>
+                    </div>
+                </div>
+                <span class="dash-action-badge"><i class="fa-solid fa-cube"></i> 3D CORE</span>
+            </a>
+
             <a href="JARVIS_Project_Details.pdf" download="JARVIS_Project_Details.pdf" target="_blank" class="dash-action-card" onclick="closeDashboardSideMenu();">
                 <div class="dash-action-card-left">
                     <div class="dash-action-icon-pod">
@@ -765,6 +781,7 @@
                     </svg>
                     <span class="battery-value font-mono" id="header-battery-display" style="font-size: 0.88rem; font-weight: 700; color: #00f0ff; letter-spacing: 0.5px;">100%</span>
                 </div>
+
                 <button id="btn-dash-menu-toggle" class="hud-menu-btn-icon" onclick="openDashboardSideMenu()" style="background: #040d1a !important; border: 1.5px solid rgba(0, 240, 255, 0.6) !important; box-shadow: 0 0 14px rgba(0, 240, 255, 0.3), inset 0 0 8px rgba(0, 240, 255, 0.15) !important;" title="Open Side Menu">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 0 6px #00f0ff) drop-shadow(0 0 12px rgba(0,240,255,0.6));">
                         <!-- Avatar Silhouette (Pure Neon Cyan) -->
@@ -1074,31 +1091,31 @@
                 </h2>
                 <button onclick="closeCommsModal()" class="close-modal-btn" id="close-comms-btn" title="Close Link (Esc)"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="settings-body" style="padding: 20px 18px; display: flex; flex-direction: column; gap: 14px;">
-                <!-- 2 Primary Direct Action Buttons -->
+            <div class="settings-body" style="padding: 20px 18px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- 1. Phone Number Input -->
+                <div>
+                    <label style="display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.72rem; color: var(--theme-primary); margin-bottom: 7px; letter-spacing: 1px; font-weight: 700;">
+                        <span><i class="fa-solid fa-phone" style="margin-right: 6px;"></i>PHONE NUMBER:</span>
+                        <span style="font-size: 0.6rem; color: #64748b; font-weight: 400;">DIRECT DIAL SATELLITE</span>
+                    </label>
+                    <input type="tel" id="comms-contact-input" placeholder="e.g. +91 98765 43210 or 9876543210" style="width: 100%; background: rgba(0, 240, 255, 0.06); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 8px; padding: 11px 14px; color: #ffffff; font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 1px; outline: none; transition: all 0.25s;" onfocus="this.style.borderColor='var(--theme-primary)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.25)';" onblur="this.style.borderColor='rgba(0, 240, 255, 0.35)'; this.style.boxShadow='none';">
+                </div>
+
+                <!-- 2. The 2 Direct One-Click Actions: WhatsApp or Direct Call -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <!-- Direct WhatsApp Button -->
-                    <button id="btn-direct-whatsapp" class="hud-btn" style="background: rgba(37, 211, 102, 0.15); border: 1.5px solid #25d366; color: #ffffff; padding: 14px 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(37, 211, 102, 0.25);">
-                        <i class="fa-brands fa-whatsapp" style="font-size: 1.8rem; color: #25d366;"></i>
-                        <span style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;">WHATSAPP DIRECT</span>
-                        <span style="font-size: 0.65rem; color: #94a3b8;">Web &amp; Desktop Relay</span>
+                    <button id="btn-direct-whatsapp" class="hud-btn" style="background: rgba(37, 211, 102, 0.12); border: 1.5px solid #25d366; color: #ffffff; padding: 18px 10px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(37, 211, 102, 0.2);" onmouseover="this.style.background='rgba(37, 211, 102, 0.25)'; this.style.boxShadow='0 0 25px rgba(37, 211, 102, 0.45)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(37, 211, 102, 0.12)'; this.style.boxShadow='0 0 15px rgba(37, 211, 102, 0.2)'; this.style.transform='translateY(0)';" title="Click to open WhatsApp directly with this phone number">
+                        <i class="fa-brands fa-whatsapp" style="font-size: 2.1rem; color: #25d366; filter: drop-shadow(0 0 8px rgba(37, 211, 102, 0.6));"></i>
+                        <span style="font-family: var(--font-hud); font-size: 0.82rem; font-weight: 700; letter-spacing: 1px;">WHATSAPP DIRECT</span>
+                        <span style="font-size: 0.64rem; color: #94a3b8; font-family: var(--font-mono);">Click to Chat / Message</span>
                     </button>
 
                     <!-- Direct Hologram Call Button -->
-                    <button id="btn-direct-call" class="hud-btn" style="background: rgba(0, 240, 255, 0.15); border: 1.5px solid var(--theme-primary); color: #ffffff; padding: 14px 10px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);">
-                        <i class="fa-solid fa-phone-volume" style="font-size: 1.8rem; color: var(--theme-primary);"></i>
-                        <span style="font-family: var(--font-hud); font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;">DIRECT CALL</span>
-                        <span style="font-size: 0.65rem; color: #94a3b8;">Hologram Video &amp; Voice</span>
+                    <button id="btn-direct-call" class="hud-btn" style="background: rgba(0, 240, 255, 0.12); border: 1.5px solid var(--theme-primary); color: #ffffff; padding: 18px 10px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: all 0.25s; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);" onmouseover="this.style.background='rgba(0, 240, 255, 0.25)'; this.style.boxShadow='0 0 25px rgba(0, 240, 255, 0.45)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.12)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.2)'; this.style.transform='translateY(0)';" title="Click to initiate Direct Phone Call">
+                        <i class="fa-solid fa-phone-volume" style="font-size: 2.1rem; color: var(--theme-primary); filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6));"></i>
+                        <span style="font-family: var(--font-hud); font-size: 0.82rem; font-weight: 700; letter-spacing: 1px;">DIRECT CALL</span>
+                        <span style="font-size: 0.64rem; color: #94a3b8; font-family: var(--font-mono);">Satellite Phone Call</span>
                     </button>
-                </div>
-
-                <!-- Custom Direct Phone / Contact input -->
-                <div style="margin-top: 4px; border-top: 1px solid rgba(0, 240, 255, 0.12); padding-top: 12px;">
-                    <label style="display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--theme-primary); margin-bottom: 6px;">DIRECT DIAL BY NUMBER OR NAME:</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="comms-contact-input" placeholder="e.g. +1 555-0199 or Pepper Potts" style="flex: 1; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 6px; padding: 8px 12px; color: #ffffff; font-family: var(--font-mono); font-size: 0.8rem; outline: none;">
-                        <button id="btn-comms-dial" class="hud-btn primary" style="padding: 8px 14px; font-size: 0.75rem; white-space: nowrap;"><i class="fa-solid fa-paper-plane"></i> DIAL</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1442,10 +1459,11 @@
     <script src="js/chat.js?v=6.1.0" defer></script>
     <script src="js/weather.js?v=6.0.0" defer></script>
     <script src="js/dashboard.js?v=6.0.0" defer></script>
-    <script src="js/commands.js?v=6.9.1" defer></script>
+    <script src="js/commands.js?v=6.9.2" defer></script>
     <script src="js/ai.js?v=6.8.1" defer></script>
     <script src="js/voice.js?v=6.3.0" defer></script>
-    <script src="js/app.js?v=6.6.0" defer></script>
+    <script src="js/gestures.js?v=1.1.0" defer></script>
+    <script src="js/app.js?v=6.8.0" defer></script>
 
     <!-- HOLOGRAPHIC AUTH TERMINAL MODAL (PILOT AUTH TERMINAL INTEGRATED) -->
     <div class="settings-modal-overlay" id="auth-terminal-modal" onclick="if(event.target === this) closeAuthTerminalModal()" style="display: none; z-index: 10002; background: rgba(2, 5, 12, 0.94); backdrop-filter: blur(12px);">
@@ -1528,6 +1546,69 @@
         </div>
     </div>
 
+    <!-- HOLOGRAPHIC AIR GESTURES TELEMETRY WIDGET -->
+    <div id="gesture-hud-widget" class="gesture-hud-widget">
+        <div class="gesture-hud-header">
+            <div class="gesture-hud-title">
+                <i class="fa-solid fa-hand-sparkles"></i>
+                <span>AIR SENSORY TELEMETRY</span>
+            </div>
+            <div class="gesture-hud-controls">
+                <button class="gesture-ctrl-btn" onclick="toggleGestureWidgetMinimize()" title="Minimize / Expand Widget">
+                    <i id="gesture-min-icon" class="fa-solid fa-minus"></i>
+                </button>
+                <button class="gesture-ctrl-btn" onclick="toggleGestureControl(false)" title="Stop Air Gestures">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="gesture-hud-canvas-wrap">
+            <canvas id="gesture-canvas"></canvas>
+            <div class="gesture-hud-scanline"></div>
+        </div>
+        <div class="gesture-hud-body">
+            <div class="gesture-status-row">
+                <span style="color: #94a3b8;">DETECTED:</span>
+                <span id="gesture-status-badge" class="gesture-badge">ONLINE</span>
+            </div>
+            <div id="gesture-action-text" class="gesture-action-text">Waiting for hand gesture...</div>
+        </div>
+    </div>
+
+    <!-- HOLOGRAPHIC AIR CURSOR RETICLE -->
+    <div id="gesture-air-reticle" class="gesture-air-reticle">
+        <div class="gesture-air-reticle-ring"></div>
+        <div class="gesture-air-reticle-center"></div>
+    </div>
+
+    <!-- HOLOGRAPHIC CELESTIAL CORE MODAL -->
+    <div class="settings-modal-overlay" id="brahmastra-modal" onclick="if(event.target === this) closeBrahmastraModal()" style="display: none; z-index: 10004; background: rgba(0, 2, 8, 0.94); backdrop-filter: blur(16px);">
+        <div class="settings-modal" style="max-width: 1360px; width: 97%; height: 94vh; background: #000205; border: 1.5px solid var(--theme-primary, #00f0ff); box-shadow: 0 0 70px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.06); border-radius: 14px; padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="settings-header" style="padding: 10px 22px; background: linear-gradient(90deg, rgba(0, 240, 255, 0.12) 0%, rgba(2, 8, 22, 0.95) 100%); border-bottom: 1.5px solid rgba(0, 240, 255, 0.3); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1.5px solid var(--theme-primary, #00f0ff); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.35);">
+                        <span style="font-size: 1.15rem; filter: drop-shadow(0 0 6px #00f0ff);">🪐</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--theme-primary, #00f0ff); font-size: 0.65rem;">◈</span>
+                            <h2 style="font-family: var(--font-hud); font-size: 0.92rem; color: #ffffff; letter-spacing: 2px; margin: 0; font-weight: 800; text-shadow: 0 0 10px var(--theme-primary, #00f0ff);">J.A.R.V.I.S. // 3D CELESTIAL CORE &amp; NEURAL MATRIX</h2>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button id="btn-modal-gesture" onclick="toggleGestureControl()" style="background: rgba(0,240,255,0.12); border: 1px solid rgba(0,240,255,0.4); color: var(--theme-primary); font-family: var(--font-mono); font-size: 0.7rem; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.25)'" onmouseout="this.style.background='rgba(0,240,255,0.12)'" title="Toggle Optical Touchless Air Gestures"><i class="fa-solid fa-hand"></i> AIR GESTURES</button>
+                    <button onclick="toggleBrahmastraFullscreen()" style="background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); font-family: var(--font-mono); font-size: 0.7rem; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.2)'" onmouseout="this.style.background='rgba(0,240,255,0.08)'"><i class="fa-solid fa-expand"></i> FULLSCREEN</button>
+                    <a href="brahmastra/index.html?v=9.0.0" target="_blank" style="background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.3); color: var(--theme-primary); font-family: var(--font-mono); font-size: 0.7rem; padding: 6px 14px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 7px; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.2)'" onmouseout="this.style.background='rgba(0,240,255,0.08)'" title="Open in dedicated full browser tab"><i class="fa-solid fa-up-right-from-square"></i> NEW TAB</a>
+                    <button onclick="closeBrahmastraModal()" style="background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff6666; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#ff3333'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255, 60, 60, 0.1)'; this.style.color='#ff6666';" title="Close Modal (Esc)"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="settings-body" style="padding: 0; flex: 1; overflow: hidden; background: #000205; position: relative;">
+                <iframe id="brahmastra-iframe" src="" style="width: 100%; height: 100%; border: none; display: block;" allow="camera; microphone; fullscreen"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openAuthTerminalModal() {
             const modal = document.getElementById('auth-terminal-modal');
@@ -1537,6 +1618,41 @@
         function closeAuthTerminalModal() {
             const modal = document.getElementById('auth-terminal-modal');
             if (modal) modal.style.display = 'none';
+        }
+
+        function openBrahmastraModal() {
+            const modal = document.getElementById('brahmastra-modal');
+            const iframe = document.getElementById('brahmastra-iframe');
+            if (modal) modal.style.display = 'flex';
+            if (iframe && (!iframe.src || !iframe.src.includes('brahmastra/index.html'))) {
+                iframe.src = 'brahmastra/index.html?v=9.0.0';
+            }
+            // Auto-engage Touchless Air Gestures process inside Celestial Core
+            if (typeof toggleGestureControl === 'function') {
+                toggleGestureControl(true);
+            }
+        }
+
+        function closeBrahmastraModal() {
+            const modal = document.getElementById('brahmastra-modal');
+            const iframe = document.getElementById('brahmastra-iframe');
+            if (modal) modal.style.display = 'none';
+            if (iframe) iframe.src = '';
+            // Disengage Touchless Air Gestures process on close
+            if (typeof toggleGestureControl === 'function') {
+                toggleGestureControl(false);
+            }
+        }
+
+        function toggleBrahmastraFullscreen() {
+            const modal = document.getElementById('brahmastra-modal');
+            if (!document.fullscreenElement) {
+                if (modal && modal.requestFullscreen) {
+                    modal.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+                }
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
         }
 
         function toggleAuthModalTab(tab) {
@@ -1674,6 +1790,10 @@
                 const drawer = document.getElementById('dash-side-drawer');
                 if (drawer && (drawer.classList.contains('open') || drawer.style.display === 'flex')) {
                     closeDashboardSideMenu();
+                }
+                const brahmastraModal = document.getElementById('brahmastra-modal');
+                if (brahmastraModal && brahmastraModal.style.display === 'flex') {
+                    closeBrahmastraModal();
                 }
             }
         });

@@ -1,10 +1,10 @@
-# 🌐 J.A.R.V.I.S. AI OS v3.2.5
+# 🌐 J.A.R.V.I.S. AI OS v3.3.0
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Rohit_Kumar_Gupta-0077B5?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rohit-kumar-gupta-a96b8428a/)
 [![GitHub](https://img.shields.io/badge/GitHub-Rohitkumar--3103-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Rohitkumar-3103/Jarvis)
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-v3.2.5-00f0ff?style=flat-square)](https://github.com/Rohitkumar-3103/Jarvis)
+[![Version](https://img.shields.io/badge/Version-v3.3.0-00f0ff?style=flat-square)](https://github.com/Rohitkumar-3103/Jarvis)
 
 Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advanced automated full-stack AI assistant and tactical desktop operating system inspired by the Stark Industries Mark XLVII interface.
 
@@ -31,7 +31,9 @@ Welcome to **J.A.R.V.I.S. (Just A Rather Very Intelligent System)**—an advance
 - **Gemini Cognitive Integration**: Paste your Gemini API key inside the settings modal to unlock true generative AI conversation capabilities.
 - **Local Action Routing**: Command J.A.R.V.I.S. to perform local machine operations like opening Google, YouTube, Calculator, setting/navigating to a favorite website, or reading out the current date and time.
 - **Persistent Configuration**: Settings (voice models, rate, API keys, favorite URLs) are saved directly in your browser's local storage.
-- **Tactical Hologram Communications (Direct Satellite Comms)**: Stark Industries Mark XLVII direct video & voice communication module featuring a widescreen crystal clear video stage (`540px` x `310px`), top-right live call duration timer overlay, Stark identity banner with glowing diamond reticles (`◈`), and dedicated mic/camera controls.
+- **3D Celestial Core & 9-Planet Keplerian Matrix**: Real-time WebGL/Three.js celestial orb surrounded by authentic Keplerian elliptical orbits for all 9 planets (Mercury through Pluto), procedural atmospheric shaders, and interactive camera orbital controls.
+- **Touchless Optical Air Gestures**: In-browser local MediaPipe machine learning worker that tracks hands via webcam to seamlessly rotate the 3D scene, pinch-to-zoom, and cycle viewpoints without any physical touch or cloud data transfer.
+- **Tactical Hologram Communications (Direct Satellite Comms)**: Stark Industries Mark XLVII direct video & voice communication module featuring a widescreen crystal clear video stage (`540px` x `310px`), top-right live call duration timer overlay, Stark identity banner with glowing diamond reticles (`◈`), dedicated mic/camera controls, and 1-click WhatsApp (`wa.me`) / Phone Call (`tel:`) routing.
 - **Tactical Biometric & Master PIN Security**: Dual-layer OpenCV Haar Cascade facial recognition coupled with an emergency Master PIN (`2710`) manual bypass terminal.
 
 ---
