@@ -1,4 +1,4 @@
-# 🛠️ J.A.R.V.I.S. AI OS v3.2.5 — Developer & Contributor Guide
+# 🛠️ J.A.R.V.I.S. AI OS v3.3.0 — Developer & Contributor Guide
 
 Welcome to the **J.A.R.V.I.S. Developer Guide**. This document outlines how to set up the development environment, run the dual-server architecture, extend existing modules, and troubleshoot common issues.
 

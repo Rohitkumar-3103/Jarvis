@@ -1,6 +1,6 @@
 # 🏛️ J.A.R.V.I.S. AI OS — Architecture & System Design Specification
 
-This document provides the complete multi-tiered architecture, communication flows, component boundaries, execution pipelines, design systems, and security specifications for **J.A.R.V.I.S. AI OS v3.2.5**.
+This document provides the complete multi-tiered architecture, communication flows, component boundaries, execution pipelines, design systems, and security specifications for **J.A.R.V.I.S. AI OS v3.3.0**.
 
 ---
 

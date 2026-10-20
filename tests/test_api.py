@@ -19,7 +19,7 @@ def test_home_route(client):
     assert rv.status_code == 200
     json_data = rv.get_json()
     assert json_data['status'] == 'success'
-    assert json_data['version'] == '3.2.5'
+    assert json_data['version'] == '3.3.0'
 
 def test_chat_history_routes(client):
     """Test chat history database saving, loading, and deletion."""

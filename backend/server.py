@@ -40,12 +40,12 @@ def home():
     return jsonify({
         "status": "success",
         "service": "J.A.R.V.I.S. Cognitive Automation API Node",
-        "version": "3.2.5"
+        "version": "3.3.0"
     })
 
 def main():
     print("==================================================================")
-    print(" J.A.R.V.I.S. AUTOMATED COGNITIVE BACKEND SERVER v3.2.5             ")
+    print(" J.A.R.V.I.S. AUTOMATED COGNITIVE BACKEND SERVER v3.3.0             ")
     print("==================================================================")
     
     host = os.getenv("FLASK_HOST", "0.0.0.0")
