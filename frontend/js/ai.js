@@ -177,12 +177,15 @@ async function queryGeminiAPI(promptText) {
     }
 
     // Image Generation Intent Detection
+    // Image Generation Intent Detection (STRICTLY 2D ONLY — NO 3D)
     const imageKeywords = [
         "generate image", "generate picture", "generate photo", "create image", "create picture", "create photo", 
         "make image", "make picture", "make photo", "draw a", "draw", "paint a", "paint", "make a picture of", 
         "make a photo of", "image of", "picture of", "photo of", "show me an image", "show me a picture", 
         "design an image", "render a photo", "generate wallpaper", "create wallpaper", "ai art", "make art",
-        "draw make a", "draw make", "make a naruto", "draw naruto", "make naruto"
+        "draw make a", "draw make", "make a naruto", "draw naruto", "make naruto",
+        "india map", "map of india", "indian map", "draw map", "create map", "generate map", "map of",
+        "vector art", "2d art", "2d illustration", "flat art"
     ];
     const animeNames = ["naruto", "goku", "sasuke", "luffy", "zoro", "itachi", "kakashi", "vegeta", "anime", "manga"];
     const isImageRequest = imageKeywords.some(k => promptLower.includes(k)) || 
@@ -214,10 +217,10 @@ async function queryGeminiAPI(promptText) {
             }
         }
         cleanSubject = cleanSubject
-            .replace(/\b(3d render|3d modeling|3d model|3d|cgi|realistic photo|photorealistic|photograph|photo)\b/gi, "")
+            .replace(/\b(3d render|3d modeling|3d model|3d|cgi|realistic photo|photorealistic|photograph|photo|isometric|octane render)\b/gi, "")
             .replace(/\s+/g, " ")
             .trim();
-        if (!cleanSubject) cleanSubject = "Naruto Uzumaki";
+        if (!cleanSubject) cleanSubject = "India Map";
 
         const randomSeed = Math.floor(Math.random() * 1000000);
         const subjectLower = cleanSubject.toLowerCase();
@@ -230,21 +233,27 @@ async function queryGeminiAPI(promptText) {
         let customArtworkUrl = null;
 
         if (subjectLower.includes("naruto")) {
-            // Provide the authentic 1024x1024 2D action key visual matching user reference
+            // Authentic 1024x1024 2D action key visual matching user reference
             customArtworkUrl = 'assets/images/naruto_masterpiece_clean.png';
-            formattedPrompt = `masterpiece official 2D anime movie key visual of Naruto Uzumaki in dynamic combat action pose, one hand reaching forward toward camera in dramatic perspective foreshortening, other hand holding a swirling glowing bright blue Rasengan with radiating electrical chakra sparks, vibrant spiky yellow hair, intense blue eyes, whisker marks on cheeks, black Leaf Village headband with metallic silver plate and fluttering ribbons, iconic black and orange ninja jacket, detailed background of Hidden Leaf Village with Hokage rock carved faces monument and sunset sky with flying leaves, crisp 2D anime linework, rich cel-shaded color palette, dramatic anime lighting, 2D studio anime illustration, no 3D, no 3D CGI, no 3D render, no photorealism`;
+            formattedPrompt = `masterpiece official 2D anime movie key visual of Naruto Uzumaki in dynamic combat action pose, one hand reaching forward toward camera in dramatic perspective foreshortening, other hand holding a swirling glowing bright blue Rasengan with radiating electrical chakra sparks, vibrant spiky yellow hair, intense blue eyes, whisker marks on cheeks, black Leaf Village headband with metallic silver plate and fluttering ribbons, iconic black and orange ninja jacket, detailed background of Hidden Leaf Village with Hokage rock carved faces monument and sunset sky with flying leaves, crisp 2D anime linework, rich cel-shaded color palette, dramatic anime lighting, 2D studio anime illustration, strictly 2D only, completely flat 2D, no 3D, no 3D CGI, no 3D render, no photorealism`;
+        } else if (subjectLower.includes("india") && (subjectLower.includes("map") || subjectLower.includes("bharat"))) {
+            // Strictly flat 2D vector-style India HUD map
+            customArtworkUrl = 'assets/images/india_map_2d.jpg';
+            formattedPrompt = `masterpiece clean flat 2D vector graphic map of India, direct top-down orthographic 2D cartography, glowing neon cyan and saffron state borders, clean flat lines, technical HUD grid, strictly flat 2D plane, no 3D, no perspective, no 3D tilt, no 3D render, no isometric, no shadows, pure 2D vector art`;
+        } else if (subjectLower.includes("map")) {
+            formattedPrompt = `masterpiece clean flat 2D vector map of ${cleanSubject}, direct top-down orthographic 2D cartography, clean 2D vector lines, flat colored regions, minimalist HUD graphic, strictly flat 2D only, no 3D, no 3D render, no isometric, no perspective, completely flat 2D art`;
         } else if (subjectLower.includes("sasuke")) {
-            formattedPrompt = `masterpiece official 2D anime movie key visual of Sasuke Uchiha, hand holding crackling blue Chidori lightning blade, crimson Sharingan and purple Rinnegan eyes, spiky jet-black hair, Uchiha high-collar outfit with sword of Kusanagi, dramatic combat stance, background of stormy skies and lightning over Final Valley, sharp 2D anime linework, vibrant cel shading, cinematic 2D anime art, no 3D, no CGI, no photorealism`;
+            formattedPrompt = `masterpiece official 2D anime movie key visual of Sasuke Uchiha, hand holding crackling blue Chidori lightning blade, crimson Sharingan and purple Rinnegan eyes, spiky jet-black hair, Uchiha high-collar outfit with sword of Kusanagi, dramatic combat stance, background of stormy skies and lightning over Final Valley, sharp 2D anime linework, vibrant flat cel shading, cinematic 2D anime art, strictly 2D only, no 3D, no CGI, no photorealism`;
         } else if (subjectLower.includes("goku")) {
-            formattedPrompt = `masterpiece official 2D anime key visual of Son Goku in dynamic combat action stance, powering up bright glowing blue Kamehameha energy sphere between palms, electric golden aura, spiky Super Saiyan hair, intense warrior expression, orange Turtle School martial arts gi, background of shattered mountain terrain under dramatic sky with aura flares, crisp 2D anime cel shading, studio animation poster style, no 3D, no CGI, no 3D render`;
+            formattedPrompt = `masterpiece official 2D anime key visual of Son Goku in dynamic combat action stance, powering up bright glowing blue Kamehameha energy sphere between palms, electric golden aura, spiky Super Saiyan hair, intense warrior expression, orange Turtle School martial arts gi, background of shattered mountain terrain under dramatic sky with aura flares, crisp 2D anime cel shading, studio animation poster style, strictly 2D only, no 3D, no CGI, no 3D render`;
         } else if (subjectLower.includes("luffy")) {
-            formattedPrompt = `masterpiece official 2D anime key visual of Monkey D. Luffy, confident grin, extending Gear Second steam punch towards camera in dynamic perspective, signature straw hat, red vest, glowing conqueror haki lightning sparks, background of open ocean and pirate ship sails under bright sunny clouds, crisp 2D anime line art, vibrant cel shading, Eiichiro Oda anime style, no 3D, no CGI`;
+            formattedPrompt = `masterpiece official 2D anime key visual of Monkey D. Luffy, confident grin, extending Gear Second steam punch towards camera in dynamic perspective, signature straw hat, red vest, glowing conqueror haki lightning sparks, background of open ocean and pirate ship sails under bright sunny clouds, crisp 2D anime line art, vibrant flat cel shading, Eiichiro Oda anime style, strictly 2D only, no 3D, no CGI`;
         } else if (subjectLower.includes("iron man") || subjectLower.includes("ironman")) {
-            formattedPrompt = `masterpiece dynamic 2D graphic novel illustration of Iron Man in high-speed flight, extending palm repulsor towards viewer with blinding cyan-blue beam, glowing chest Arc Reactor, sleek crimson and gold Mark suit, dynamic cinematic wide-angle perspective, futuristic sci-fi cityscape background with sunset reflections, crisp 2D inked linework, bold comic cel-shading, vibrant neon glow, flat 2D graphic art, no 3D render, no CGI, no photorealism`;
+            formattedPrompt = `masterpiece dynamic 2D graphic novel illustration of Iron Man in high-speed flight, extending palm repulsor towards viewer with blinding cyan-blue beam, glowing chest Arc Reactor, sleek crimson and gold Mark suit, dynamic cinematic wide-angle perspective, futuristic sci-fi cityscape background with sunset reflections, crisp 2D inked linework, bold comic flat cel-shading, vibrant neon glow, flat 2D graphic art, strictly 2D only, completely flat 2D, no 3D render, no CGI, no photorealism`;
         } else if (isAnime) {
-            formattedPrompt = `masterpiece official 2D anime studio key visual of ${cleanSubject}, dynamic action perspective with dramatic camera angle, character in iconic combat pose with signature energy effects, sharp black inked anime linework, rich vibrant cel-shaded colors, detailed cinematic anime background environment with atmospheric lighting, Ufotable and Studio Pierrot film poster quality, completely flat 2D anime drawing, no 3D, not 3D, no 3D render, no CGI, no photorealism, avoid 3D`;
+            formattedPrompt = `masterpiece official 2D anime studio key visual of ${cleanSubject}, dynamic action perspective with dramatic camera angle, character in iconic combat pose with signature energy effects, sharp black inked anime linework, rich vibrant flat cel-shaded colors, detailed cinematic anime background environment with atmospheric lighting, Ufotable and Studio Pierrot film poster quality, completely flat 2D anime drawing, strictly 2D only, no 3D, not 3D, no 3D render, no CGI, no photorealism, avoid 3D`;
         } else {
-            formattedPrompt = `masterpiece dynamic 2D illustration of ${cleanSubject}, dramatic wide-angle perspective, clean 2D line art, vibrant graphic novel color palette, rich cel shading, detailed atmospheric environment background, professional digital 2D artwork, bold visual composition, completely flat 2D art, no 3D, not 3D, no 3D render, no CGI, no realistic photograph, no octane render, avoid 3D`;
+            formattedPrompt = `masterpiece clean flat 2D vector graphic illustration of ${cleanSubject}, direct frontal flat 2D perspective, clean 2D line art, vibrant flat graphic novel color palette, rich 2D flat cel shading, detailed atmospheric background, professional digital 2D artwork, bold visual composition, strictly 2D only, completely flat 2D art, no 3D, not 3D, no 3D render, no CGI, no realistic photograph, no octane render, avoid 3D`;
         }
         
         const imageUrl = customArtworkUrl || `https://image.pollinations.ai/prompt/${encodeURIComponent(formattedPrompt)}?width=1024&height=1024&seed=${randomSeed}&nologo=true&enhance=false`;
