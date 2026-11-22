@@ -57,7 +57,7 @@ Jarvis/
 │   ├── AGENTS.md                   # AI Assistant Mental Model, Architecture Rules & Invariants
 │   ├── PROJECT_OVERVIEW.md         # Full Subsystem Architecture & Module Mapping
 │   ├── JARVIS_TECHNICAL_PROJECT_REPORT.md  # Formal Technical & Academic System Report
-│   ├── JARVIS_Project_Details.pdf  # Master PDF Documentation Specification
+│   ├── JARVIS_Project_Detail.pdf   # Master PDF Documentation Specification (550 KB Compressed)
 │   ├── LICENSE                     # MIT Open-Source License
 │   ├── CHANGELOG.md                # Release History & Version Logs
 │   ├── CONTRIBUTING.md             # Developer Contribution Guidelines
