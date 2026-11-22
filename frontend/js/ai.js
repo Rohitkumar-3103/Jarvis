@@ -233,8 +233,7 @@ async function queryGeminiAPI(promptText) {
         let customArtworkUrl = null;
 
         if (subjectLower.includes("naruto")) {
-            // Authentic 1024x1024 2D action key visual matching user reference
-            customArtworkUrl = 'assets/images/naruto_masterpiece_clean.png';
+            // Dynamic flat 2D anime generation for Naruto
             formattedPrompt = `masterpiece official 2D anime movie key visual of Naruto Uzumaki in dynamic combat action pose, one hand reaching forward toward camera in dramatic perspective foreshortening, other hand holding a swirling glowing bright blue Rasengan with radiating electrical chakra sparks, vibrant spiky yellow hair, intense blue eyes, whisker marks on cheeks, black Leaf Village headband with metallic silver plate and fluttering ribbons, iconic black and orange ninja jacket, detailed background of Hidden Leaf Village with Hokage rock carved faces monument and sunset sky with flying leaves, crisp 2D anime linework, rich cel-shaded color palette, dramatic anime lighting, 2D studio anime illustration, strictly 2D only, completely flat 2D, no 3D, no 3D CGI, no 3D render, no photorealism`;
         } else if (subjectLower.includes("india") && (subjectLower.includes("map") || subjectLower.includes("bharat"))) {
             // Strictly flat 2D vector-style India HUD map
