@@ -46,7 +46,7 @@ function initSettingsForm() {
 function updateCognitionStatus() {
     if (!llmStatus) return;
     if (geminiApiKey && geminiApiKey.length > 10) {
-        llmStatus.textContent = "GEMINI CORE";
+        llmStatus.textContent = "GEMINI 3.8 FLASH";
         llmStatus.className = "status-card-value text-purple";
     } else {
         llmStatus.textContent = "LOCAL_ROUTER";

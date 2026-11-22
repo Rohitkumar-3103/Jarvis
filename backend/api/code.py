@@ -101,7 +101,7 @@ def classify_intent(prompt: str, key: str) -> str:
         return "regex"
 
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={key}"
         payload = {
             "contents": [{"parts": [{"text": (
                 "Classify this coding request into exactly one of these modes:\n"
@@ -181,7 +181,7 @@ def run_code_helper():
         system_instruction = SYSTEM_PROMPTS.get(active_mode, SYSTEM_PROMPTS["general"])
         mode_name = MODE_NAMES.get(active_mode, "General Coding")
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={key}"
         
         user_prompt = f"Language: {language}\n"
         if file_path:
