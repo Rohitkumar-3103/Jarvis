@@ -27,8 +27,8 @@ async function takeCommand(message) {
     // Project Details & Technical Blueprint PDF Download Trigger
     if (query.includes('download project details') || query.includes('project details') || query.includes('download pdf') || query.includes('project details pdf') || query.includes('download blueprint') || query.includes('system blueprint') || query.includes('download documentation') || query.includes('project blueprint')) {
         const link = document.createElement('a');
-        link.href = 'JARVIS_Project_Details.pdf';
-        link.download = 'JARVIS_Project_Details.pdf';
+        link.href = 'JARVIS_Project_Detail.pdf';
+        link.download = 'JARVIS_Project_Detail.pdf';
         link.target = '_blank';
         document.body.appendChild(link);
         link.click();
@@ -37,7 +37,7 @@ async function takeCommand(message) {
         const summaryText = `========================================================
     J.A.R.V.I.S. AI OS v3.3.0 — TECHNICAL BLUEPRINT & SPECS
 ========================================================
-📄 DOCUMENT    : JARVIS_Project_Details.pdf
+📄 DOCUMENT    : JARVIS_Project_Detail.pdf
 ⚡ ARCHITECTURE: Tactical Glassmorphic Web HUD + Flask REST Node
 🤖 COGNITION   : Dual-Layer Gemini 2.5/2.0 Flash + Local Knowledge
 🎙️ SPEECH      : Bilingual STT (en-IN/hi-IN) & Devanagari TTS
@@ -52,15 +52,15 @@ async function takeCommand(message) {
                     text: '⬇️ Download PDF',
                     action: () => {
                         const a = document.createElement('a');
-                        a.href = 'JARVIS_Project_Details.pdf';
-                        a.download = 'JARVIS_Project_Details.pdf';
+                        a.href = 'JARVIS_Project_Detail.pdf';
+                        a.download = 'JARVIS_Project_Detail.pdf';
                         a.click();
                     }
                 },
                 {
                     text: '👁️ View in Browser',
                     action: () => {
-                        window.open('JARVIS_Project_Details.pdf', '_blank');
+                        window.open('JARVIS_Project_Detail.pdf', '_blank');
                     }
                 }
             ]

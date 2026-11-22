@@ -2,13 +2,24 @@
 // J.A.R.V.I.S. 3.0 - Settings & Theme Configuration Panel
 // ==========================================================================
 
+function updateVolumeSliderFill(slider) {
+    if (!slider) slider = document.getElementById('settings-voice-volume');
+    if (!slider) return;
+    const val = parseFloat(slider.value) || 0;
+    const pct = Math.max(0, Math.min(100, Math.round(val * 100)));
+    slider.style.background = `linear-gradient(to right, var(--theme-primary, #00f0ff) 0%, var(--theme-primary, #00f0ff) ${pct}%, rgba(255, 255, 255, 0.1) ${pct}%, rgba(255, 255, 255, 0.1) 100%)`;
+}
+
 function initSettingsForm() {
     if (apiKeyInput) apiKeyInput.value = geminiApiKey;
     if (faceLockToggle) faceLockToggle.checked = faceLockEnabled;
     
     const volSlider = document.getElementById('settings-voice-volume');
     const volDisplay = document.getElementById('voice-volume-val-display');
-    if (volSlider) volSlider.value = voiceVolume;
+    if (volSlider) {
+        volSlider.value = voiceVolume;
+        updateVolumeSliderFill(volSlider);
+    }
     if (volDisplay) volDisplay.textContent = `${Math.round(voiceVolume * 100)}%`;
     
     const savedCustomColor = localStorage.getItem('jarvis_custom_theme_color');

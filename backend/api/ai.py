@@ -84,6 +84,10 @@ def _clean_hinglish(query: str):
     return re.sub(r'\s+', ' ', s).strip()
 
 def _web_intelligence(prompt: str):
+    p_lower = prompt.lower().strip()
+    # Guard: Do not search encyclopedia for conversational greetings or intros
+    if any(g in p_lower for g in ["how are you", "hello", "hi jarvis", "who are you", "i am", "my name is", "kaise ho", "kya haal"]):
+        return None
     clean_topic = _clean_hinglish(prompt)
     if not clean_topic or len(clean_topic) < 2:
         return None
@@ -143,7 +147,7 @@ def gen_response():
         # 3. Google Gemini API (Primary Cognitive Engine)
         active_gemini_key = client_key.strip() if (client_key and len(client_key.strip()) > 10) else _get_gemini_key()
         if active_gemini_key:
-            models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-exp']
+            models = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-2.5-flash']
             for m in models:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={active_gemini_key}"
                 payload = {

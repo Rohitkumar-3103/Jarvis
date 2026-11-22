@@ -522,7 +522,7 @@
                 <span class="dash-action-badge"><i class="fa-solid fa-cube"></i> 3D CORE</span>
             </a>
 
-            <a href="JARVIS_Project_Details.pdf" download="JARVIS_Project_Details.pdf" target="_blank" class="dash-action-card" onclick="closeDashboardSideMenu();">
+            <a href="JARVIS_Project_Detail.pdf" download="JARVIS_Project_Detail.pdf" target="_blank" class="dash-action-card" onclick="closeDashboardSideMenu();">
                 <div class="dash-action-card-left">
                     <div class="dash-action-icon-pod">
                         <i class="fa-solid fa-file-pdf"></i>
@@ -1257,7 +1257,7 @@
                         </div>
                         <div class="volume-control-box">
                             <i class="fa-solid fa-volume-low" style="color: var(--text-muted); font-size: 0.75rem;"></i>
-                            <input type="range" id="settings-voice-volume" class="volume-slider-range" min="0" max="1" step="0.05" value="1.0" oninput="document.getElementById('voice-volume-val-display').textContent = Math.round(this.value * 100) + '%'; voiceVolume = parseFloat(this.value); localStorage.setItem('jarvis_voice_volume', this.value);">
+                            <input type="range" id="settings-voice-volume" class="volume-slider-range" min="0" max="1" step="0.05" value="1.0" oninput="if (typeof updateVolumeSliderFill === 'function') updateVolumeSliderFill(this); document.getElementById('voice-volume-val-display').textContent = Math.round(this.value * 100) + '%'; voiceVolume = parseFloat(this.value); localStorage.setItem('jarvis_voice_volume', this.value);">
                             <i class="fa-solid fa-volume-high" style="color: var(--theme-primary); font-size: 0.75rem;"></i>
                         </div>
                     </div>

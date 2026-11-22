@@ -318,7 +318,7 @@ async function queryGeminiAPI(promptText) {
 
     // 1. Google Gemini API (Direct Client-Side Cognitive Query)
     if (geminiApiKey && geminiApiKey.length > 10) {
-        const models = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-exp'];
+        const models = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
         for (let model of models) {
             const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
             const requestPayload = {
@@ -389,6 +389,11 @@ function cleanHinglishQuery(query) {
 }
 
 async function fetchOnlineIntelligence(query) {
+    const qLower = query.toLowerCase().trim();
+    // Guard: Do not search encyclopedia for conversational greetings or user introductions
+    if (["hello", "how are you", "who are you", "hi", "hey", "i am", "my name is", "kaise ho"].some(g => qLower.includes(g))) {
+        return null;
+    }
     const cleanTopic = cleanHinglishQuery(query);
 
     if (!cleanTopic || cleanTopic.length < 2) return null;
@@ -441,6 +446,39 @@ async function fetchOnlineIntelligence(query) {
 async function generateFallbackKnowledge(query) {
     const q = query.toLowerCase().trim();
     const isNoExplanation = q.includes("no explanation") || q.includes("no explain");
+
+    // 0. User Name & Introduction Recognition
+    const nameMatch = q.match(/(?:i am|my name is|mera naam|naam|this is)\s+([a-z\s]+)/i);
+    if (nameMatch && !q.includes("what") && !q.includes("who") && !q.includes("definition") && !q.includes("meaning")) {
+        const rawName = nameMatch[1].trim();
+        if (rawName && rawName.length > 1) {
+            const formattedName = rawName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            const userObj = {
+                username: rawName.toLowerCase().replace(/\s+/g, ''),
+                fullname: formattedName,
+                role: "Primary User // Administrator",
+                avatar: "assets/images/avatar.png"
+            };
+            try {
+                localStorage.setItem('jarvis_user', JSON.stringify(userObj));
+                if (typeof loadUserProfile === 'function') loadUserProfile(userObj);
+            } catch(e) {}
+            return `Pleasure to meet you, ${formattedName}! I have updated your administrator profile on the Stark Mainframe. How may I assist you today, Sir?`;
+        }
+    }
+
+    // 0.1 Mathematics & Science Fundamentals
+    if (/\b(what is mathematics|what is maths|what is math|define mathematics|define maths|mathematics|maths)\b/i.test(q)) {
+        return "Mathematics is the universal science and abstract study of numbers, quantities, structures, space, and patterns. It provides the core analytical foundation for physics, engineering, computer science, and algorithmic logic, Sir.";
+    }
+
+    // 0.2 Dynamic & Mechanics Fundamentals
+    if (/\b(what is dynamic|what is dynamics|define dynamic|define dynamics|dynamic|dynamics)\b/i.test(q)) {
+        if (q.includes("programming") || q.includes("dp")) {
+            return "Dynamic Programming is an algorithmic optimization technique that breaks down complex problems into overlapping subproblems and memoizes intermediate solutions for maximum efficiency, Sir.";
+        }
+        return "In science and engineering, 'Dynamic' characterizes systems in continuous motion, change, or evolution driven by active forces. In classical mechanics, Dynamics analyzes the effect of forces and torques on moving bodies; in computing, dynamic signifies actions or memory managed at runtime, Sir.";
+    }
 
     // 1. Greetings & Identity
     if (/\b(hello|hi|hey|greetings|good morning|good evening|good afternoon)\b/i.test(q)) {
