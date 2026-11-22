@@ -313,13 +313,10 @@ def _build(description, language, output_path, args, timeout, speak=None, player
         last_output, run_failed = _run_file(path, args, timeout)
 
         if not run_failed:
-            msg = (
-                f"Build complete, sir. "
-                f"The code is working after {attempt} attempt{'s' if attempt > 1 else ''}. "
-                f"Saved to {path}."
-            )
-            if speak: speak(msg)
-            return f"{msg}\n\n```{lang}\n{code}\n```\n\n{last_output}"
+            if speak: speak("Build complete, sir. The code is working.")
+            if last_output and last_output.strip():
+                return f"```{lang}\n{code}\n```\n\n**Output:**\n```\n{last_output.strip()}\n```"
+            return f"```{lang}\n{code}\n```"
 
         print(f"[Code] [Fixing] Error on attempt {attempt}, fixing...")
         if player:
