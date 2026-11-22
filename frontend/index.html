@@ -1365,16 +1365,16 @@
 
     <!-- Custom Holographic Prompt/Confirm Overlay Dialog -->
     <div class="settings-modal-overlay" id="custom-prompt-overlay" style="display: none; z-index: 10000;">
-        <div class="settings-modal" style="max-width: 400px; animation: modal-slide-down 0.4s ease;">
+        <div class="settings-modal" style="max-width: 420px; animation: modal-slide-down 0.4s ease;">
             <div class="settings-header">
                 <h2 id="custom-prompt-title">SYSTEM INQUIRY</h2>
             </div>
-            <div class="settings-body" style="padding: 20px;">
+            <div class="settings-body" style="padding: 22px;">
                 <p id="custom-prompt-message" style="margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary);"></p>
                 <div id="custom-prompt-input-container">
-                    <input type="text" id="custom-prompt-input" class="settings-input" style="width: 100%; box-sizing: border-box; margin-bottom: 5px;" autocomplete="off">
+                    <input type="text" id="custom-prompt-input" class="custom-prompt-input settings-input-field" placeholder="Enter inquiry or search request..." autocomplete="off">
                 </div>
-                <div class="settings-actions" style="justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <div class="settings-actions" style="justify-content: flex-end; gap: 10px; margin-top: 18px; display: flex;">
                     <button class="hud-btn secondary" id="custom-prompt-btn-cancel">CANCEL</button>
                     <button class="hud-btn primary" id="custom-prompt-btn-ok">CONFIRM</button>
                 </div>

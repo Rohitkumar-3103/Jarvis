@@ -256,10 +256,10 @@ function showSystemPrompt(message, placeholder = "") {
         titleEl.textContent = "SYSTEM INQUIRY";
         msgEl.textContent = message;
         inputContainer.style.display = 'block';
-        inputEl.value = placeholder;
+        inputEl.value = "";
+        inputEl.placeholder = placeholder || "Enter search inquiry or command...";
         overlay.style.display = 'flex';
         inputEl.focus();
-        inputEl.select();
 
         const cleanUp = () => {
             overlay.style.display = 'none';
