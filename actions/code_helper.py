@@ -24,36 +24,49 @@ def _get_api_key() -> str:
         return json.load(f)["gemini_api_key"]
 
 
+CANDIDATE_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash"
+]
+
 def _get_gemini(model: str = GEMINI_MODEL):
     import requests
     api_key = _get_api_key()
 
     class _W:
         def generate_content(self, contents):
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            models_to_try = [model] + [m for m in CANDIDATE_MODELS if m != model]
             payload = {
                 "contents": [{"parts": [{"text": contents}]}]
             }
             
-            import time
-            for attempt in range(3):
-                res = requests.post(url, json=payload, timeout=20)
-                if res.status_code == 429:
-                    sleep_time = 2.5 * (attempt + 1)
-                    print(f"[Code] [API 429] Rate limited. Waiting {sleep_time}s before retry...")
-                    time.sleep(sleep_time)
-                    continue
-                
-                res.raise_for_status()
-                data = res.json()
-                text = data["candidates"][0]["content"]["parts"][0]["text"]
-                
-                class _Res:
-                    def __init__(self, text):
-                        self.text = text
-                return _Res(text)
-            
-            raise Exception("Gemini API rate limit exceeded (429). Please wait a moment and try again, Sir.")
+            last_err = None
+            for m in models_to_try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={api_key}"
+                try:
+                    t_val = 5 if "3.8" in m else 15
+                    res = requests.post(url, json=payload, timeout=t_val)
+                    if res.status_code == 200:
+                        data = res.json()
+                        candidates = data.get("candidates", [])
+                        if candidates:
+                            text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                            if text:
+                                class _Res:
+                                    def __init__(self, t):
+                                        self.text = t
+                                return _Res(text)
+                    else:
+                        clean_msg = f"Model {m} returned HTTP {res.status_code}"
+                        print(f"[Code] {clean_msg}")
+                        last_err = clean_msg
+                except Exception as e:
+                    clean_err = str(e).split("?key=")[0]
+                    print(f"[Code] Model {m} error: {clean_err}")
+                    last_err = clean_err
+
+            raise Exception(f"Cognitive code engine failed across fallback models ({last_err}). Please try again.")
 
     return _W()
 

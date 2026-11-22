@@ -33,6 +33,58 @@ ACRONYMS = {
     "SQL": "The full form of **SQL** is **Structured Query Language**, domain-specific language for managing relational databases, Sir."
 }
 
+SCIENCE_FORMULAS = {
+    "force": "The formula for Force is **F = m × a** (Force = Mass × Acceleration), where mass is in kilograms (kg) and acceleration is in m/s², measured in Newtons (N), Sir.",
+    "speed": "The formula for Speed is **v = d / t** (Speed = Distance ÷ Time), measured in meters per second (m/s), Sir.",
+    "velocity": "The formula for Velocity is **v = Δx / Δt** (Velocity = Displacement ÷ Change in Time), measured in m/s, Sir.",
+    "energy": "Einstein's mass-energy equivalence formula is **E = mc²**, where E is Energy, m is Mass, and c is the Speed of Light in vacuum (~3 × 10⁸ m/s), Sir.",
+    "kinetic energy": "The formula for Kinetic Energy is **KE = ½ m v²**, measured in Joules (J), Sir.",
+    "potential energy": "The formula for Gravitational Potential Energy is **PE = m × g × h**, measured in Joules (J), Sir.",
+    "work": "The formula for Work is **W = F × d × cos(θ)** (Work = Force × Displacement × cosine of angle), measured in Joules (J), Sir.",
+    "power": "The formula for Power is **P = W / t** (Power = Work ÷ Time), measured in Watts (W), Sir.",
+    "pressure": "The formula for Pressure is **P = F / A** (Pressure = Force ÷ Area), measured in Pascals (Pa), Sir.",
+    "density": "The formula for Density is **ρ = m / V** (Density = Mass ÷ Volume), measured in kg/m³, Sir.",
+    "momentum": "The formula for Linear Momentum is **p = m × v** (Momentum = Mass × Velocity), measured in kg·m/s, Sir.",
+    "acceleration": "The formula for Acceleration is **a = (v - u) / t** (Acceleration = Change in Velocity ÷ Time), measured in m/s², Sir.",
+    "ohm": "Ohm's Law states **V = I × R** (Voltage = Current × Resistance), measured in Volts (V), Sir.",
+    "voltage": "The formula for Voltage is **V = I × R** (Ohm's Law) or **V = W / Q**, Sir.",
+    "current": "The formula for Electric Current is **I = Q / t** (Current = Charge ÷ Time) or **I = V / R**, measured in Amperes (A), Sir.",
+    "resistance": "The formula for Electrical Resistance is **R = V / I** (Resistance = Voltage ÷ Current), measured in Ohms (Ω), Sir.",
+    "frequency": "The formula for Frequency is **f = 1 / T** (Frequency = 1 ÷ Time Period) or **f = v / λ**, measured in Hertz (Hz), Sir.",
+    "wavelength": "The formula for Wavelength is **λ = v / f** (Wavelength = Velocity ÷ Frequency), measured in meters (m), Sir.",
+    "gravity": "Newton's Law of Universal Gravitation is **F = G × (m₁ × m₂) / r²**, where G is the gravitational constant, Sir."
+}
+
+def _evaluate_science_formula(prompt: str):
+    p_lower = prompt.lower().strip()
+    if any(k in p_lower for k in ["formula", "paribhasha", "definition", "equation", "law"]):
+        for key, text in SCIENCE_FORMULAS.items():
+            if key in p_lower:
+                return text
+    # Also check direct names like "force formula", "speed formula", "ohms law"
+    for key, text in SCIENCE_FORMULAS.items():
+        if f"{key} formula" in p_lower or f"formula of {key}" in p_lower or f"formula for {key}" in p_lower:
+            return text
+    return None
+
+def _evaluate_conversational(prompt: str):
+    p_lower = prompt.lower().strip()
+    # User introduces themselves
+    name_m = re.search(r'\b(i am|my name is|mera naam|this is)\s+([a-zA-Z\s]+)', p_lower)
+    if name_m and not any(w in p_lower for w in ["what", "who", "definition", "meaning", "how", "why"]):
+        raw_name = name_m.group(2).strip().title()
+        if raw_name:
+            return f"Pleasure to assist you, Sir {raw_name}! All core subsystems and cognitive matrices are online and ready for your command."
+
+    # Conversational greetings
+    if p_lower in ["hello", "hi", "hey", "hello jarvis", "hi jarvis", "hey jarvis", "greetings"]:
+        return "Hello Sir! Systems are running at peak efficiency and fully operational. How may I assist you today?"
+    if any(q in p_lower for q in ["how are you", "how r u", "kya haal", "kaise ho"]):
+        return "All systems are operating at optimal parameters, Sir. Ready to execute your commands."
+    if any(q in p_lower for q in ["who are you", "tum kaun ho", "introduce yourself"]):
+        return "I am J.A.R.V.I.S., your Just A Rather Very Intelligent System. Standing by to assist across engineering, automation, and cognitive operations, Sir."
+    return None
+
 def _get_gemini_key():
     gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
     try:
@@ -132,6 +184,16 @@ def gen_response():
         if acronym_res:
             return jsonify({"status": "success", "response": acronym_res})
 
+        # 2.5 Science Formula solver
+        science_res = _evaluate_science_formula(prompt)
+        if science_res:
+            return jsonify({"status": "success", "response": science_res})
+
+        # 2.8 Conversational & Identity solver
+        conv_res = _evaluate_conversational(prompt)
+        if conv_res:
+            return jsonify({"status": "success", "response": conv_res})
+
         # Build prompt instructions
         cp_keywords = ["problem", "codeforces", "codechef", "leetcode", "atcoder", "hackerrank", "uva", "spoj", "sample input", "constraints", "write c++", "solve"]
         coding_keywords = ["code", "python", "javascript", "c++", "java", "html", "css", "function", "programming", "compile", "debug", "script", "regex"]
@@ -150,8 +212,13 @@ def gen_response():
         # 3. Google Gemini API (Primary Cognitive Engine)
         active_gemini_key = client_key.strip() if (client_key and len(client_key.strip()) > 10) else _get_gemini_key()
         if active_gemini_key:
-            models = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-2.5-flash']
-            for m in models:
+            # Gemini 3.8 Flash primary with resilient failover to 3.1 Flash Lite and 2.5 Flash
+            models_config = [
+                ('gemini-3.8-flash', 4),
+                ('gemini-3.1-flash-lite', 10),
+                ('gemini-2.5-flash', 10)
+            ]
+            for m, t_out in models_config:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={active_gemini_key}"
                 payload = {
                     "contents": [{"parts": [{"text": prompt}]}],
@@ -160,7 +227,7 @@ def gen_response():
                     }
                 }
                 try:
-                    res = requests.post(url, json=payload, timeout=5)
+                    res = requests.post(url, json=payload, timeout=t_out)
                     if res.status_code == 200:
                         candidates = res.json().get("candidates", [])
                         if candidates:
@@ -168,7 +235,7 @@ def gen_response():
                             if text:
                                 return jsonify({"status": "success", "response": badge + text.strip()})
                     else:
-                        print(f"[Gemini API Notice] Model {m} returned {res.status_code}: {res.text[:120]}")
+                        print(f"[Gemini API Notice] Model {m} returned {res.status_code}")
                 except Exception as e:
                     print(f"[Gemini API Exception] Model {m} failed: {e}")
 
@@ -182,7 +249,7 @@ def gen_response():
         topic_title = (clean_topic or prompt).title()
         return jsonify({
             "status": "success", 
-            "response": f"I have processed your query regarding {topic_title}, Sir. Google Gemini cognitive engine is configured and standing by."
+            "response": f"I have received your inquiry regarding {topic_title}, Sir. Core systems are standing by — please specify what details or analysis you would like me to provide."
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

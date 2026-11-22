@@ -318,9 +318,14 @@ async function queryGeminiAPI(promptText) {
 
     // 1. Google Gemini API (Direct Client-Side Cognitive Query)
     if (geminiApiKey && geminiApiKey.length > 10) {
-        const models = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
-        for (let model of models) {
-            const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+        // Gemini 3.8 Flash primary with resilient failover to 3.1 Flash Lite and 2.5 Flash
+        const modelsConfig = [
+            { model: 'gemini-3.8-flash', timeout: 4000 },
+            { model: 'gemini-3.1-flash-lite', timeout: 10000 },
+            { model: 'gemini-2.5-flash', timeout: 10000 }
+        ];
+        for (let cfg of modelsConfig) {
+            const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${cfg.model}:generateContent?key=${geminiApiKey}`;
             const requestPayload = {
                 contents: [{ parts: [{ text: promptText }] }],
                 systemInstruction: { parts: [{ text: activeInstruction }] }
@@ -328,7 +333,7 @@ async function queryGeminiAPI(promptText) {
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const timeoutId = setTimeout(() => controller.abort(), cfg.timeout);
                 const response = await fetch(apiEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -348,7 +353,7 @@ async function queryGeminiAPI(promptText) {
                     }
                 }
             } catch (err) {
-                console.warn(`Direct Gemini call failed for model ${model}:`, err);
+                console.warn(`Direct Gemini call failed for model ${cfg.model}:`, err);
             }
         }
     }
