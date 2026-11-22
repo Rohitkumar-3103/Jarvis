@@ -39,7 +39,10 @@ def _get_gemini_key():
         if os.path.exists(CONFIG_PATH):
             with open(CONFIG_PATH, "r", encoding="utf-8") as f:
                 d = json.load(f)
-                gemini_key = d.get("gemini_api_key", "").strip() or gemini_key
+                val = d.get("gemini_api_key", "").strip()
+                # Ignore OpenAI sk- keys accidentally saved into gemini_api_key
+                if val and not val.startswith("sk-"):
+                    gemini_key = val
     except Exception:
         pass
     return gemini_key
@@ -157,7 +160,7 @@ def gen_response():
                     }
                 }
                 try:
-                    res = requests.post(url, json=payload, timeout=12)
+                    res = requests.post(url, json=payload, timeout=5)
                     if res.status_code == 200:
                         candidates = res.json().get("candidates", [])
                         if candidates:

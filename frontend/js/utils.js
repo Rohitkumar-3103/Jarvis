@@ -4,10 +4,15 @@
 
 // Global state variables
 const BACKEND_URL = 'http://127.0.0.1:5000';
-// Purge any stale OpenAI / ChatGPT keys
+// Purge any stale OpenAI / ChatGPT keys mistakenly placed in gemini key
 try {
     localStorage.removeItem('jarvis_openai_key');
     localStorage.removeItem('jarvis_chatgpt_key');
+    const existing = (localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '').trim();
+    if (existing.startsWith('sk-')) {
+        localStorage.removeItem('jarvis_gemini_key');
+        localStorage.removeItem('jarvis_gemini_api_key');
+    }
 } catch (e) {}
 
 let rawApiKey = localStorage.getItem('jarvis_gemini_key') || localStorage.getItem('jarvis_gemini_api_key') || '';
